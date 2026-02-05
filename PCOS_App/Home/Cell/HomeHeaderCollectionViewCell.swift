@@ -97,17 +97,14 @@ class HomeHeaderCollectionViewCell: UICollectionViewCell {
     
     private func updateCycleDayLabel() {
         let cycleDay = calculateCurrentCycleDay()
-        if cycleDay > 0 {
-            cycleDayLabel.text = "Day \(cycleDay) of Cycle"
-        } else {
-            cycleDayLabel.text = "Getting Started"
-        }
+        cycleDayLabel.text = "Cycle Day \(cycleDay)"
+        
     }
     
     //SKS: I have not added calculation of cycle day if it happens before the month start, this is for each month, because that part like if it becomes 40 days and all we have to calculate according to the users cycle length
     private func calculateCurrentCycleDay() -> Int {
         guard !periodDates.isEmpty else {
-            return 0
+            return 2
         }
         
         let calendar = Calendar.current

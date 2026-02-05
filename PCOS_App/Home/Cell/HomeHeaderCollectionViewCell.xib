@@ -23,46 +23,44 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aiV-Pd-smO">
                         <rect key="frame" x="0.0" y="0.0" width="487" height="400"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZbB-xp-tyV">
-                                <rect key="frame" x="20" y="218" width="447" height="61"/>
-                                <string key="text">“Living with PCOS means listening to your body, not fighting it.”
-</string>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your body may be asking for rest and gentler movement today" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZbB-xp-tyV">
+                                <rect key="frame" x="20" y="223.33333333333334" width="447" height="42.333333333333343"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Getting Started" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lyA-zA-4dJ">
-                                <rect key="frame" x="151.33333333333337" y="109" width="184.66666666666663" height="33.666666666666657"/>
-                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Cycle Day 2" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lyA-zA-4dJ">
+                                <rect key="frame" x="158.33333333333337" y="130" width="170.66666666666663" height="37"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="31"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xjf-z9-c6r">
-                                <rect key="frame" x="181" y="287.66666666666669" width="125" height="50"/>
+                                <rect key="frame" x="181" y="289.66666666666669" width="125" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="XuK-qi-O3S"/>
                                     <constraint firstAttribute="width" constant="125" id="lbC-aZ-el1"/>
                                 </constraints>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Log Period"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Edit Period"/>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Menstrual Phase" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JLF-lI-kK0">
-                                <rect key="frame" x="176.66666666666666" y="159" width="133.99999999999997" height="22"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <rect key="frame" x="170.66666666666666" y="183.33333333333334" width="145.99999999999997" height="24"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle3"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="ZbB-xp-tyV" firstAttribute="top" secondItem="JLF-lI-kK0" secondAttribute="bottom" constant="37" id="1nj-Cz-zAL"/>
+                            <constraint firstItem="ZbB-xp-tyV" firstAttribute="top" secondItem="JLF-lI-kK0" secondAttribute="bottom" constant="16" id="1nj-Cz-zAL"/>
                             <constraint firstItem="ZbB-xp-tyV" firstAttribute="leading" secondItem="aiV-Pd-smO" secondAttribute="leading" constant="20" id="5Bm-sU-HVh"/>
                             <constraint firstItem="ZbB-xp-tyV" firstAttribute="centerX" secondItem="aiV-Pd-smO" secondAttribute="centerX" id="5l9-Z1-LEp"/>
+                            <constraint firstItem="lyA-zA-4dJ" firstAttribute="top" secondItem="aiV-Pd-smO" secondAttribute="top" constant="130" id="F0X-VN-7Rt"/>
                             <constraint firstItem="lyA-zA-4dJ" firstAttribute="centerX" secondItem="aiV-Pd-smO" secondAttribute="centerX" id="RYT-Y0-glj"/>
-                            <constraint firstAttribute="bottom" secondItem="xjf-z9-c6r" secondAttribute="bottom" constant="62.333333333333258" id="Ye5-JI-bhn"/>
                             <constraint firstItem="JLF-lI-kK0" firstAttribute="centerX" secondItem="aiV-Pd-smO" secondAttribute="centerX" id="ayL-eO-eKr"/>
                             <constraint firstItem="xjf-z9-c6r" firstAttribute="centerX" secondItem="aiV-Pd-smO" secondAttribute="centerX" id="hOg-Yy-uhN"/>
-                            <constraint firstItem="xjf-z9-c6r" firstAttribute="top" secondItem="ZbB-xp-tyV" secondAttribute="bottom" constant="8.6666666666667425" id="kUn-PB-qja"/>
+                            <constraint firstItem="xjf-z9-c6r" firstAttribute="top" secondItem="ZbB-xp-tyV" secondAttribute="bottom" constant="24" id="kUn-PB-qja"/>
                             <constraint firstItem="JLF-lI-kK0" firstAttribute="top" secondItem="lyA-zA-4dJ" secondAttribute="bottom" constant="16.333333333333314" id="qo2-Fl-oF1"/>
                             <constraint firstAttribute="trailing" secondItem="ZbB-xp-tyV" secondAttribute="trailing" constant="20" id="xaA-UM-SeC"/>
                         </constraints>

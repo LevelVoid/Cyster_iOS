@@ -86,7 +86,7 @@
                                 </buttonConfiguration>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="60" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p9J-s8-ome">
-                                <rect key="frame" x="52.333333333333343" y="45" width="25" height="24"/>
+                                <rect key="frame" x="52.333333333333343" y="44.333333333333336" width="25" height="24.000000000000007"/>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -101,13 +101,13 @@
                                 <color key="highlightedColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="60" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dTN-JF-Sii">
-                                <rect key="frame" x="52.333333333333343" y="91" width="25" height="24"/>
+                                <rect key="frame" x="52.333333333333343" y="90.333333333333329" width="25" height="24"/>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="/ 90 g" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mo3-xl-2LH">
-                                <rect key="frame" x="82.333333333333314" y="96" width="33" height="15"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="/ 180 g" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mo3-xl-2LH">
+                                <rect key="frame" x="82" y="96" width="48" height="15"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <nil key="textColor"/>
                                 <color key="highlightedColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -118,7 +118,7 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="/ 90 g" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nV8-fa-cc2">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="/ 60 g" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nV8-fa-cc2">
                                 <rect key="frame" x="82.333333333333329" y="143" width="33" height="15"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <nil key="textColor"/>
@@ -309,8 +309,18 @@
             </constraints>
             <size key="customSize" width="391" height="220"/>
             <connections>
+                <outlet property="carbsCompleted" destination="dTN-JF-Sii" id="Dwe-B3-bxC"/>
+                <outlet property="carbsGoal" destination="mo3-xl-2LH" id="rUS-uX-ewT"/>
                 <outlet property="dietActionCard" destination="TI1-bD-SHd" id="gRi-pM-SM3"/>
                 <outlet property="dietRecView" destination="Gjh-Bq-N2k" id="q9M-ca-hA0"/>
+                <outlet property="durationCompleted" destination="g1U-zr-LgJ" id="VGr-fz-xJ9"/>
+                <outlet property="durationGoal" destination="lo6-e6-wHO" id="q78-Mp-WSj"/>
+                <outlet property="fatsCompleted" destination="U4r-W8-B4R" id="Cgm-X4-tlB"/>
+                <outlet property="fatsGoal" destination="nV8-fa-cc2" id="xc7-YE-nJQ"/>
+                <outlet property="proteinCompleted" destination="p9J-s8-ome" id="ScA-Qw-hy0"/>
+                <outlet property="proteinGoal" destination="m2y-fh-Ims" id="4Us-D7-ENz"/>
+                <outlet property="stepsCompleted" destination="kEw-ht-cYw" id="8dV-v9-Sxx"/>
+                <outlet property="stepsGoal" destination="YIz-cC-33i" id="YRo-12-Nrc"/>
                 <outlet property="workoutActionCard" destination="Irb-4y-UuQ" id="1lm-f8-50o"/>
                 <outlet property="workoutRecView" destination="niN-Bj-Uqe" id="JR7-7W-zad"/>
             </connections>
@@ -327,10 +337,10 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGreenColor">
-            <color red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.20392156862745098" green="0.7803921568627451" blue="0.34901960784313724" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemIndigoColor">
-            <color red="0.34509803919999998" green="0.33725490200000002" blue="0.83921568629999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.38039215686274508" green="0.33333333333333331" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

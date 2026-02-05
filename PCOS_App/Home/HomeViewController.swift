@@ -16,9 +16,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        title = "Today"
-//        navigationController?.navigationBar.prefersLargeTitles = true
+        title = ""
         
         let bgColor = UIColor(hex: "#FCEEED")
         collectionView.backgroundColor = bgColor
@@ -409,6 +407,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         else if indexPath.section == 2 {
             // Sleep Card
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "quick_actions_cell", for: indexPath) as! QuickActionsCollectionViewCell
+            cell.configure()
             // Configure with sleep data if needed
             // cell.configure(with: sleepData)
             return cell
