@@ -13,6 +13,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     // Storing selected symptoms
     private var selectedSymptoms: [SymptomItem] = []
     private var recommendationCards : [Recommendation] = recommendations
+    private var currentSignalInfo: SignalInfo?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,37 +50,46 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        print("\nThis is HomeVC:",selectedSymptoms)
-        //navigationController?.navigationBar.prefersLargeTitles = true
-        collectionView.reloadData()
-    }
-    private func loadTodaysSymptoms() {
-        if let data = UserDefaults.standard.data(forKey: "todaysSymptoms"),
-           let symptoms = try? JSONDecoder().decode([SymptomItem].self, from: data) {
-            
-            // Check if symptoms are from today
-            let calendar = Calendar.current
-            let today = calendar.startOfDay(for: Date())
-            
-            // Filter only symptoms logged today
-            let todaysSymptoms = symptoms.filter { symptom in
-                let symptomDate = calendar.startOfDay(for: symptom.date!)
-                return symptomDate == today
-            }
-            
-            selectedSymptoms = todaysSymptoms
-            
-            // Update UserDefaults with filtered symptoms
-            if let encoded = try? JSONEncoder().encode(todaysSymptoms) {
-                UserDefaults.standard.set(encoded, forKey: "todaysSymptoms")
-            }
-            
-            DispatchQueue.main.async { [weak self] in
-                self?.collectionView.reloadData()
+            super.viewWillAppear(animated)
+            print("\nThis is HomeVC:",selectedSymptoms)
+            loadTodaysSymptoms()
+            collectionView.reloadData()
+        }
+        
+        private func loadTodaysSymptoms() {
+            if let data = UserDefaults.standard.data(forKey: "todaysSymptoms"),
+               let symptoms = try? JSONDecoder().decode([SymptomItem].self, from: data) {
+                
+                // Check if symptoms are from today
+                let calendar = Calendar.current
+                let today = calendar.startOfDay(for: Date())
+                
+                // Filter only symptoms logged today
+                let todaysSymptoms = symptoms.filter { symptom in
+                    let symptomDate = calendar.startOfDay(for: symptom.date!)
+                    return symptomDate == today
+                }
+                
+                selectedSymptoms = todaysSymptoms
+                
+                // Get signal info from the first selected symptom
+                if let firstSymptom = todaysSymptoms.first {
+                    currentSignalInfo = getSignalInfo(for: firstSymptom.name) ?? defaultSignalInfo
+                } else {
+                    currentSignalInfo = nil
+                }
+                
+                // Update UserDefaults with filtered symptoms
+                if let encoded = try? JSONEncoder().encode(todaysSymptoms) {
+                    UserDefaults.standard.set(encoded, forKey: "todaysSymptoms")
+                }
+                
+                DispatchQueue.main.async { [weak self] in
+                    self?.collectionView.reloadData()
+                }
             }
         }
-    }
+        
     func registerCells() {
         collectionView.register(
             UINib(nibName: "HomeHeaderCollectionViewCell", bundle: nil),
@@ -92,96 +102,83 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         )
         
         collectionView.register(
-            UINib(nibName: "SymptomItemCollectionViewCell", bundle: nil),
-            forCellWithReuseIdentifier: SymptomItemCollectionViewCell.identifier
+            UINib(nibName: "SignalsCollectionViewCell", bundle: nil),
+            forCellWithReuseIdentifier: "signals_cell"
         )
+        
         collectionView.register(
             UINib(nibName: "QuickActionsCollectionViewCell", bundle: nil),
             forCellWithReuseIdentifier: "quick_actions_cell"
         )
+        
         collectionView.register(
             UINib(nibName: "CyclePatternCollectionViewCell", bundle: nil),
             forCellWithReuseIdentifier: "cycle_pattern_cell"
         )
+        
         collectionView.register(
             UINib(nibName: "HomeRecommendationCollectionViewCell", bundle: nil),
             forCellWithReuseIdentifier: "recommendation_cell"
         )
+        
         collectionView.register(
-                UINib(nibName: "SleepCardCollectionViewCell", bundle: nil),
-                forCellWithReuseIdentifier: "sleep_card_cell"
-            )
+            UINib(nibName: "SleepCardCollectionViewCell", bundle: nil),
+            forCellWithReuseIdentifier: "sleep_card_cell"
+        )
+        
         collectionView.register(
             UINib(nibName: "HeaderCollectionReusableView", bundle: nil),
             forSupplementaryViewOfKind: "header",
             withReuseIdentifier: "header_cell"
         )
     }
-    
-    @objc func addTapped() {
         
-        if let vc = storyboard?.instantiateViewController(withIdentifier: "ProfileTableViewController") as? ProfileTableViewController {
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-    
-    @objc func leftBarButtonTapped() {
-        
-        // COMMENTED OUT: Will pass period dates to FullCalendarViewController later
-        /*
-         if let vc = storyboard?.instantiateViewController(withIdentifier: "FullCalendarViewController") as? FullCalendarViewController {
-         // Load saved period dates
-         var periodDates: [Date] = []
-         if let timestamps = UserDefaults.standard.array(forKey: "SavedPeriodDates") as? [TimeInterval] {
-         periodDates = timestamps.map { Date(timeIntervalSince1970: $0) }.sorted()
-         }
-         
-         // Pass the dates to FullCalendarViewController
-         vc.periodDates = periodDates
-         
-         navigationController?.pushViewController(vc, animated: true)
-         }
-         */
-        
-        if let vc = storyboard?.instantiateViewController(withIdentifier: "FullCalendarViewController") as? FullCalendarViewController {
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-    
-    func createCompositionalLayout() -> UICollectionViewLayout {
-        return UICollectionViewCompositionalLayout { (sectionIndex, env) -> NSCollectionLayoutSection? in
-            switch sectionIndex {
-            case 0: return self.createHomeHeaderSection()
-            case 1: return self.createSymptomSection()
-            case 2: return self.createQuickActionsSection()
-            case 3: return self.createRecommendationSection()
-            case 4: return self.createSleepCardSection()
-            case 5: return self.createCycleSection()
-            default:
-                return nil
+        @objc func addTapped() {
+            if let vc = storyboard?.instantiateViewController(withIdentifier: "ProfileTableViewController") as? ProfileTableViewController {
+                navigationController?.pushViewController(vc, animated: true)
             }
         }
-    }
-    
-    func createHomeHeaderSection() -> NSCollectionLayoutSection {
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(420))
-        let group = NSCollectionLayoutGroup.vertical(layoutSize: itemSize, subitems: [NSCollectionLayoutItem(layoutSize: itemSize)])
-        let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = .zero
-        return section
-    }
-    
-    func createSymptomSection() -> NSCollectionLayoutSection {
         
+        @objc func leftBarButtonTapped() {
+            if let vc = storyboard?.instantiateViewController(withIdentifier: "FullCalendarViewController") as? FullCalendarViewController {
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        }
+        
+        func createCompositionalLayout() -> UICollectionViewLayout {
+            return UICollectionViewCompositionalLayout { (sectionIndex, env) -> NSCollectionLayoutSection? in
+                switch sectionIndex {
+                case 0: return self.createHomeHeaderSection()
+                case 1: return self.createSignalsSection()
+                case 2: return self.createQuickActionsSection()
+                case 3: return self.createRecommendationSection()
+                case 4: return self.createSleepCardSection()
+                case 5: return self.createCycleSection()
+                default:
+                    return nil
+                }
+            }
+        }
+        
+        func createHomeHeaderSection() -> NSCollectionLayoutSection {
+            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(420))
+            let group = NSCollectionLayoutGroup.vertical(layoutSize: itemSize, subitems: [NSCollectionLayoutItem(layoutSize: itemSize)])
+            let section = NSCollectionLayoutSection(group: group)
+            section.contentInsets = .zero
+            return section
+        }
+        
+    func createSignalsSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
-            widthDimension: .absolute(80),
-            heightDimension: .absolute(100)
+            widthDimension: .absolute(105),
+            heightDimension: .absolute(120) 
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
+        //SKS: NEED TO MAKE HERE TO SIZE COLLECTION VIEW
         let groupSize = NSCollectionLayoutSize(
-            widthDimension: .estimated(80),
-            heightDimension: .absolute(100)
+            widthDimension: .estimated(140),
+            heightDimension: .absolute(160)
         )
         
         let group = NSCollectionLayoutGroup.horizontal(
@@ -195,301 +192,322 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             top: 0, leading: 16, bottom: 16, trailing: 20
         )
         section.orthogonalScrollingBehavior = .continuous
-        addHeader(to: section)
-        return section
-    }
-    func createQuickActionsSection() -> NSCollectionLayoutSection {
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(300))
-        let group = NSCollectionLayoutGroup.vertical(layoutSize: itemSize, subitems: [NSCollectionLayoutItem(layoutSize: itemSize)])
-        let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 10, trailing: 16)
-        
-        addHeader(to: section)
-        
-        return section
-    }
-    
-    
-    func createCycleSection() -> NSCollectionLayoutSection {
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(547))
-        let group = NSCollectionLayoutGroup.vertical(layoutSize: itemSize, subitems: [NSCollectionLayoutItem(layoutSize: itemSize)])
-        let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 10, trailing: 16)
-        
-        addHeader(to: section)
-        
-        return section
-    }
-    func createRecommendationSection() -> NSCollectionLayoutSection {
-        let itemSize = NSCollectionLayoutSize(
-            widthDimension: .absolute(285), // Fixed width for each card
-            heightDimension: .absolute(196) // Adjusted height
-        )
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        
-        let groupSize = NSCollectionLayoutSize(
-            widthDimension: .absolute(285),
-            heightDimension: .absolute(196)
-        )
-        
-        let group = NSCollectionLayoutGroup.horizontal(
-            layoutSize: groupSize,
-            subitems: [item]
-        )
-        
-        let section = NSCollectionLayoutSection(group: group)
-        section.interGroupSpacing = 16 // Space between cards
-        section.contentInsets = NSDirectionalEdgeInsets(
-            top: 0,
-            leading: 16,
-            bottom: 20,
-            trailing: 16
-        )
-        section.orthogonalScrollingBehavior = .continuous // Enable horizontal scrolling
         
         addHeader(to: section)
         return section
     }
-    func createSleepCardSection() -> NSCollectionLayoutSection {
-        let itemSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(200) // Adjust based on your card height
-        )
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
-        let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(200)
-        )
-        let group = NSCollectionLayoutGroup.vertical(
-            layoutSize: groupSize,
-            subitems: [item]
-        )
-        
-        let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = NSDirectionalEdgeInsets(
-            top: 0,
-            leading: 16,
-            bottom: 16,
-            trailing: 16
-        )
-        
-        addHeader(to: section)
-        return section
-    }
-    
-    func addHeader(to section: NSCollectionLayoutSection) {
-        let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(40))
-        let headerItem = NSCollectionLayoutBoundarySupplementaryItem(
-            layoutSize: headerSize,
-            elementKind: "header",
-            alignment: .top
-        )
-        section.boundarySupplementaryItems = [headerItem]
-    }
-    
-    func passData(symptoms: [SymptomItem]) -> [SymptomItem] {
-        self.selectedSymptoms = symptoms
-        let todaysKey = self.getTodaysKey()
-        if let encoded = try? JSONEncoder().encode(symptoms) {
-            UserDefaults.standard.set(encoded, forKey: todaysKey)
-        }
-        DispatchQueue.main.async { [weak self] in
-            self?.collectionView.reloadData()
-        }
-        return symptoms
-    }
-    
-    func homeHeaderCellDidTapLogPeriod(_ cell: HomeHeaderCollectionViewCell) {
-        let calendarVC = LogPeriodCalendarViewController()
-        calendarVC.delegate = self
-        
-        // Present in a navigation controller for the navigation bar to show
-        let navController = UINavigationController(rootViewController: calendarVC)
-        navController.modalPresentationStyle = .pageSheet // or .formSheet for smaller size
-        
-        // Optional: Configure sheet presentation (iOS 15+)
-        if let sheet = navController.sheetPresentationController {
-            sheet.detents = [.large()] // Full screen height
-            sheet.prefersGrabberVisible = true // Show the handle at top
-        }
-        
-        present(navController, animated: true)
-    }
-    
-    func didSavePeriodDates(_ dates: [Date], cycleDay: Int) {
-        print("Received period dates: \(dates.count) dates")
-        print("Current cycle day: \(cycleDay)")
-        
-        // Reload the header section to update the cycle day label
-        DispatchQueue.main.async { [weak self] in
-            self?.collectionView.reloadSections(IndexSet(integer: 0))
-        }
-        
-        // for debug
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        dates.forEach { date in
-            print("Period date: \(formatter.string(from: date))")
-        }
-    }
-    
-    // Helper to get today's key
-    private func getTodaysKey() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return "symptoms_\(formatter.string(from: Date()))"
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "showSymptomLogger",
-           let symptomLoggerVC = segue.destination as? SymptomLoggerViewController {
+        func createQuickActionsSection() -> NSCollectionLayoutSection {
+            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(300))
+            let group = NSCollectionLayoutGroup.vertical(layoutSize: itemSize, subitems: [NSCollectionLayoutItem(layoutSize: itemSize)])
+            let section = NSCollectionLayoutSection(group: group)
+            section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 10, trailing: 16)
             
-            symptomLoggerVC.delegate = self
+            addHeader(to: section)
             
-            symptomLoggerVC.setSelectedSymptoms(selectedSymptoms)
+            return section
+        }
+        
+        func createCycleSection() -> NSCollectionLayoutSection {
+            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(547))
+            let group = NSCollectionLayoutGroup.vertical(layoutSize: itemSize, subitems: [NSCollectionLayoutItem(layoutSize: itemSize)])
+            let section = NSCollectionLayoutSection(group: group)
+            section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 10, trailing: 16)
             
-            symptomLoggerVC.onSymptomsSelected = { [weak self] symptoms in
-                guard let self = self else { return }
+            addHeader(to: section)
+            
+            return section
+        }
+        
+        func createRecommendationSection() -> NSCollectionLayoutSection {
+            let itemSize = NSCollectionLayoutSize(
+                widthDimension: .absolute(285),
+                heightDimension: .absolute(196)
+            )
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+            
+            let groupSize = NSCollectionLayoutSize(
+                widthDimension: .absolute(285),
+                heightDimension: .absolute(196)
+            )
+            
+            let group = NSCollectionLayoutGroup.horizontal(
+                layoutSize: groupSize,
+                subitems: [item]
+            )
+            
+            let section = NSCollectionLayoutSection(group: group)
+            section.interGroupSpacing = 16
+            section.contentInsets = NSDirectionalEdgeInsets(
+                top: 0,
+                leading: 16,
+                bottom: 20,
+                trailing: 16
+            )
+            section.orthogonalScrollingBehavior = .continuous
+            
+            addHeader(to: section)
+            return section
+        }
+        
+        func createSleepCardSection() -> NSCollectionLayoutSection {
+            let itemSize = NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1.0),
+                heightDimension: .estimated(200)
+            )
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+            
+            let groupSize = NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1.0),
+                heightDimension: .estimated(200)
+            )
+            let group = NSCollectionLayoutGroup.vertical(
+                layoutSize: groupSize,
+                subitems: [item]
+            )
+            
+            let section = NSCollectionLayoutSection(group: group)
+            section.contentInsets = NSDirectionalEdgeInsets(
+                top: 0,
+                leading: 16,
+                bottom: 16,
+                trailing: 16
+            )
+            
+            addHeader(to: section)
+            return section
+        }
+        
+        func addHeader(to section: NSCollectionLayoutSection) {
+            let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(40))
+            let headerItem = NSCollectionLayoutBoundarySupplementaryItem(
+                layoutSize: headerSize,
+                elementKind: "header",
+                alignment: .top
+            )
+            section.boundarySupplementaryItems = [headerItem]
+        }
+        
+        func passData(symptoms: [SymptomItem]) -> [SymptomItem] {
+            self.selectedSymptoms = symptoms
+            
+            // Update signal info based on first symptom
+            if let firstSymptom = symptoms.first {
+                currentSignalInfo = getSignalInfo(for: firstSymptom.name) ?? defaultSignalInfo
+            } else {
+                currentSignalInfo = nil
+            }
+            
+            let todaysKey = self.getTodaysKey()
+            if let encoded = try? JSONEncoder().encode(symptoms) {
+                UserDefaults.standard.set(encoded, forKey: todaysKey)
+            }
+            DispatchQueue.main.async { [weak self] in
+                self?.collectionView.reloadData()
+            }
+            return symptoms
+        }
+        
+        func homeHeaderCellDidTapLogPeriod(_ cell: HomeHeaderCollectionViewCell) {
+            let calendarVC = LogPeriodCalendarViewController()
+            calendarVC.delegate = self
+            
+            let navController = UINavigationController(rootViewController: calendarVC)
+            navController.modalPresentationStyle = .pageSheet
+            
+            if let sheet = navController.sheetPresentationController {
+                sheet.detents = [.large()]
+                sheet.prefersGrabberVisible = true
+            }
+            
+            present(navController, animated: true)
+        }
+        
+        func didSavePeriodDates(_ dates: [Date], cycleDay: Int) {
+            print("Received period dates: \(dates.count) dates")
+            print("Current cycle day: \(cycleDay)")
+            
+            DispatchQueue.main.async { [weak self] in
+                self?.collectionView.reloadSections(IndexSet(integer: 0))
+            }
+            
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            dates.forEach { date in
+                print("Period date: \(formatter.string(from: date))")
+            }
+        }
+        
+        private func getTodaysKey() -> String {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            return "symptoms_\(formatter.string(from: Date()))"
+        }
+        
+        override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+            if segue.identifier == "showSymptomLogger",
+               let symptomLoggerVC = segue.destination as? SymptomLoggerViewController {
                 
-                self.selectedSymptoms = symptoms
+                symptomLoggerVC.delegate = self
+                symptomLoggerVC.setSelectedSymptoms(selectedSymptoms)
                 
-                // Save with today's date key
-                let todaysKey = self.getTodaysKey()
-                if let encoded = try? JSONEncoder().encode(symptoms) {
-                    UserDefaults.standard.set(encoded, forKey: todaysKey)
-                }
-                
-                DispatchQueue.main.async {
-                    self.collectionView.reloadData()
+                symptomLoggerVC.onSymptomsSelected = { [weak self] symptoms in
+                    guard let self = self else { return }
+                    
+                    self.selectedSymptoms = symptoms
+                    
+                    // Update signal info
+                    if let firstSymptom = symptoms.first {
+                        self.currentSignalInfo = getSignalInfo(for: firstSymptom.name) ?? defaultSignalInfo
+                    } else {
+                        self.currentSignalInfo = nil
+                    }
+                    
+                    let todaysKey = self.getTodaysKey()
+                    if let encoded = try? JSONEncoder().encode(symptoms) {
+                        UserDefaults.standard.set(encoded, forKey: todaysKey)
+                    }
+                    
+                    DispatchQueue.main.async {
+                        self.collectionView.reloadData()
+                    }
                 }
             }
         }
     }
-}
 
-extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        switch section {
-        case 0:
-            return 1  // Header
-        case 1:
-            return selectedSymptoms.count + 1  // Symptoms
-        case 2:
-            return 1
-        case 3:
-            return recommendationCards.count   // Recommendations
-        case 4:
-            return 1  // Sleep Card
-        case 5:
-            return 1  // Cycle Pattern
-        default:
-            return 0
+    extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+        func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+            switch section {
+            case 0:
+                return 1  // Header
+            case 1:
+                // Always show Add button + signal cards for selected symptoms
+                return 1 + selectedSymptoms.count  // +1 for Add button
+            case 2:
+                return 1  // Quick Actions
+            case 3:
+                return recommendationCards.count  // Recommendations
+            case 4:
+                return 1  // Sleep Card
+            case 5:
+                return 1  // Cycle Pattern
+            default:
+                return 0
+            }
         }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if indexPath.section == 0 {
+        
+        func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+            if indexPath.section == 0 {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "home_header", for: indexPath) as! HomeHeaderCollectionViewCell
                 cell.delegate = self
                 return cell
             }
             else if indexPath.section == 1 {
+                // First item is always the Add button
                 if indexPath.item == 0 {
                     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AddSymptomCollectionViewCell", for: indexPath) as! AddSymptomCollectionViewCell
                     return cell
                 }
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SymptomItemCollectionViewCell", for: indexPath) as! SymptomItemCollectionViewCell
-                let symptom = selectedSymptoms[indexPath.item - 1]
-                cell.configureWithCategory(with: symptom)
+                
+                // Remaining items are signal cards for each symptom
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "signals_cell", for: indexPath) as! SignalsCollectionViewCell
+                
+                let symptomIndex = indexPath.item - 1
+                if symptomIndex < selectedSymptoms.count {
+                    let symptom = selectedSymptoms[symptomIndex]
+                    if let signalInfo = getSignalInfo(for: symptom.name) {
+                        cell.configure(with: signalInfo)
+                    } else {
+                        cell.configure(with: defaultSignalInfo)
+                    }
+                }
+                
                 return cell
             }
-        else if indexPath.section == 2 {
-            // Sleep Card
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "quick_actions_cell", for: indexPath) as! QuickActionsCollectionViewCell
-            cell.configure()
-            // Configure with sleep data if needed
-            // cell.configure(with: sleepData)
-            return cell
-        }
+            else if indexPath.section == 2 {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "quick_actions_cell", for: indexPath) as! QuickActionsCollectionViewCell
+                cell.configure()
+                return cell
+            }
             else if indexPath.section == 3 {
-                // Recommendation Card
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "recommendation_cell", for: indexPath) as! HomeRecommendationCollectionViewCell
                 let recommendation = recommendationCards[indexPath.item]
                 cell.configure(with: recommendation)
                 return cell
             }
             else if indexPath.section == 4 {
-                // Sleep Card
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "sleep_card_cell", for: indexPath) as! SleepCardCollectionViewCell
-                // Configure with sleep data if needed
-                // cell.configure(with: sleepData)
                 return cell
             }
             else if indexPath.section == 5 {
-                // Cycle Pattern Card
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cycle_pattern_cell", for: indexPath) as! CyclePatternCollectionViewCell
                 return cell
             }
-            // Fallback
+            
             return UICollectionViewCell()
-    }
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 6
-    }
-    
-    
-    func collectionView(_ collectionView: UICollectionView,viewForSupplementaryElementOfKind kind: String,at indexPath:IndexPath)->UICollectionReusableView{
-        
-        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: "header", withReuseIdentifier: "header_cell", for: indexPath) as! HeaderCollectionReusableView
-        
-        if indexPath.section == 1 {
-            headerView.configureHeader(with: "Today's PCOS Signals")
-        }else if indexPath.section == 2 {
-            headerView.configureHeader(with: "Quick Actions")
-        }else if indexPath.section == 3 {
-            headerView.configureHeader(with: "What May Happen Next")
-        } else if indexPath.section == 4 {
-            headerView.configureHeader(with: "Sleep Patterns")
-        } else if indexPath.section == 5 {
-            headerView.configureHeader(with: "Cycle Trends")
-        }else {
-            headerView.configureHeader(with: "Explore Routines")
         }
-        return headerView
-    }
-    
-    func collectionView(_ collectionView: UICollectionView,
-                        didSelectItemAt indexPath: IndexPath) {
         
-        if indexPath.section == 1 {
-            if indexPath.item == 0 {
-                performSegue(withIdentifier: "showSymptomLogger", sender: self)
+        func numberOfSections(in collectionView: UICollectionView) -> Int {
+            return 6
+        }
+        
+        func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+            
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: "header", withReuseIdentifier: "header_cell", for: indexPath) as! HeaderCollectionReusableView
+            
+            if indexPath.section == 1 {
+                headerView.configureHeader(with: "Today's PCOS Signals")
+            } else if indexPath.section == 2 {
+                headerView.configureHeader(with: "Quick Actions")
+            } else if indexPath.section == 3 {
+                headerView.configureHeader(with: "What May Happen Next")
+            } else if indexPath.section == 4 {
+                headerView.configureHeader(with: "Sleep Patterns")
+            } else if indexPath.section == 5 {
+                headerView.configureHeader(with: "Cycle Trends")
+            } else {
+                headerView.configureHeader(with: "Explore Routines")
             }
+            return headerView
         }
-        if indexPath.section == 2 {
+        
+        func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+            
+            if indexPath.section == 1 {
+                if indexPath.item == 0 {
+                    // Tapped on Add Symptom button
+                    performSegue(withIdentifier: "showSymptomLogger", sender: self)
+                } else {
+                    // Tapped on a signal card - maybe show details
+                    let symptomIndex = indexPath.item - 1
+                    if symptomIndex < selectedSymptoms.count {
+                        // You can add logic here to show more details about the signal
+                        print("Tapped on signal: \(selectedSymptoms[symptomIndex].name)")
+                    }
+                }
+            }
+            
+            if indexPath.section == 2 {
                 // Handle quickactions tap if needed
-                // performSegue(withIdentifier: "QuickActionsDetails", sender: self)
             }
-        
-        if indexPath.section == 3 {
-            if indexPath.item == 0 {
-                performSegue(withIdentifier: "showProtein", sender: self)
-            } else if indexPath.item == 1 {
-                performSegue(withIdentifier: "showInsulin", sender: self)
-            } else if indexPath.item == 2 {
-                performSegue(withIdentifier: "showWorkoutPush", sender: self)
+            
+            if indexPath.section == 3 {
+                if indexPath.item == 0 {
+                    performSegue(withIdentifier: "showProtein", sender: self)
+                } else if indexPath.item == 1 {
+                    performSegue(withIdentifier: "showInsulin", sender: self)
+                } else if indexPath.item == 2 {
+                    performSegue(withIdentifier: "showWorkoutPush", sender: self)
+                }
             }
-        }
-        if indexPath.section == 4 {
+            
+            if indexPath.section == 4 {
                 // Handle sleep card tap if needed
-                // performSegue(withIdentifier: "showSleepDetails", sender: self)
             }
-        if indexPath.section == 5 {
-            performSegue(withIdentifier: "showCycleReport", sender: nil)
+            
+            if indexPath.section == 5 {
+                performSegue(withIdentifier: "showCycleReport", sender: nil)
+            }
         }
-        
     }
-}
-
