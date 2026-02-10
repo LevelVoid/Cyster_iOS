@@ -51,6 +51,12 @@
                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cal-IZ-mZX">
+                                <rect key="frame" x="245" y="12" width="40" height="35"/>
+                                <color key="tintColor" systemColor="systemGrayColor"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="chevron.right" catalog="system"/>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
@@ -60,9 +66,11 @@
                             <constraint firstItem="X1v-IE-pS9" firstAttribute="leading" secondItem="dVt-sr-CGK" secondAttribute="leading" constant="16" id="FXw-0U-7e6"/>
                             <constraint firstItem="QWe-Dr-yty" firstAttribute="leading" secondItem="dVt-sr-CGK" secondAttribute="leading" constant="16" id="MT5-jA-jVb"/>
                             <constraint firstItem="k1T-uC-Hg0" firstAttribute="leading" secondItem="dVt-sr-CGK" secondAttribute="leading" constant="16" id="MhS-BS-eOP"/>
+                            <constraint firstAttribute="trailing" secondItem="Cal-IZ-mZX" secondAttribute="trailing" id="Vv1-OO-wBE"/>
                             <constraint firstAttribute="trailing" secondItem="QWe-Dr-yty" secondAttribute="trailing" constant="16" id="WZs-fU-cFD"/>
                             <constraint firstAttribute="bottom" secondItem="X1v-IE-pS9" secondAttribute="bottom" constant="16" id="cYx-Va-sLj"/>
                             <constraint firstAttribute="trailing" secondItem="X1v-IE-pS9" secondAttribute="trailing" constant="16" id="dP1-AU-II3"/>
+                            <constraint firstItem="Cal-IZ-mZX" firstAttribute="top" secondItem="dVt-sr-CGK" secondAttribute="top" constant="12" id="mK6-hr-NsJ"/>
                         </constraints>
                     </view>
                 </subviews>
@@ -82,15 +90,19 @@
                 <outlet property="iconImageView" destination="5CU-dh-OWQ" id="Xf6-1i-ndW"/>
                 <outlet property="titleLabel" destination="QWe-Dr-yty" id="XGJ-GN-moy"/>
             </connections>
-            <point key="canvasLocation" x="83.969465648854964" y="163.73239436619718"/>
+            <point key="canvasLocation" x="83.206106870229007" y="163.38028169014086"/>
         </collectionViewCell>
     </objects>
     <resources>
+        <image name="chevron.right" catalog="system" width="97" height="128"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBlueColor">
             <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGrayColor">
+            <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

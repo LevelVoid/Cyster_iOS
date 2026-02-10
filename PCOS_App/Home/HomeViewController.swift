@@ -17,7 +17,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = ""
+        title = "Today"
         
         let bgColor = UIColor(hex: "#FCEEED")
         collectionView.backgroundColor = bgColor
@@ -161,7 +161,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         }
         
         func createHomeHeaderSection() -> NSCollectionLayoutSection {
-            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(420))
+            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(380))
             let group = NSCollectionLayoutGroup.vertical(layoutSize: itemSize, subitems: [NSCollectionLayoutItem(layoutSize: itemSize)])
             let section = NSCollectionLayoutSection(group: group)
             section.contentInsets = .zero
@@ -198,7 +198,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     }
         
         func createQuickActionsSection() -> NSCollectionLayoutSection {
-            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(300))
+            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(310))
             let group = NSCollectionLayoutGroup.vertical(layoutSize: itemSize, subitems: [NSCollectionLayoutItem(layoutSize: itemSize)])
             let section = NSCollectionLayoutSection(group: group)
             section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 10, trailing: 16)

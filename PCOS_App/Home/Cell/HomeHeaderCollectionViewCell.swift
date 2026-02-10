@@ -67,7 +67,7 @@ class HomeHeaderCollectionViewCell: UICollectionViewCell {
         ]
         
         // Adjust locations to control where the fade starts (0.8 = 80% down)
-        gradientLayer.locations = [0.0, 0.8, 0.95]
+        gradientLayer.locations = [0.0, 0.9, 0.95]
         gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.0)
         gradientLayer.endPoint = CGPoint(x: 0.5, y: 1.0)
         

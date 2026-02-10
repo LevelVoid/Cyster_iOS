@@ -18,7 +18,7 @@ class SignalsCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         // Initialization code
         
-        SignalsCardView.layer.cornerRadius = 10
+        SignalsCardView.layer.cornerRadius = 20
     }
     
     func configure(with signalInfo: SignalInfo) {
