@@ -138,11 +138,12 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
                 navigationController?.pushViewController(vc, animated: true)
             }
         }
+    }
+    
+    @objc func leftBarButtonTapped() {
         
-        @objc func leftBarButtonTapped() {
-            if let vc = storyboard?.instantiateViewController(withIdentifier: "FullCalendarViewController") as? FullCalendarViewController {
-                navigationController?.pushViewController(vc, animated: true)
-            }
+        if let vc = storyboard?.instantiateViewController(withIdentifier: "FullCalendarViewController") as? FullCalendarViewController {
+            navigationController?.pushViewController(vc, animated: true)
         }
         
         func createCompositionalLayout() -> UICollectionViewLayout {
