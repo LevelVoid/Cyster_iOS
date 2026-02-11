@@ -67,7 +67,7 @@ class HomeHeaderCollectionViewCell: UICollectionViewCell {
         ]
         
         // Adjust locations to control where the fade starts (0.8 = 80% down)
-        gradientLayer.locations = [0.0, 0.8, 0.95]
+        gradientLayer.locations = [0.0, 0.9, 0.95]
         gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.0)
         gradientLayer.endPoint = CGPoint(x: 0.5, y: 1.0)
         
@@ -97,17 +97,14 @@ class HomeHeaderCollectionViewCell: UICollectionViewCell {
     
     private func updateCycleDayLabel() {
         let cycleDay = calculateCurrentCycleDay()
-        if cycleDay > 0 {
-            cycleDayLabel.text = "Day \(cycleDay) of Cycle"
-        } else {
-            cycleDayLabel.text = "Getting Started"
-        }
+        cycleDayLabel.text = "Cycle Day \(cycleDay)"
+        
     }
     
     //SKS: I have not added calculation of cycle day if it happens before the month start, this is for each month, because that part like if it becomes 40 days and all we have to calculate according to the users cycle length
     private func calculateCurrentCycleDay() -> Int {
         guard !periodDates.isEmpty else {
-            return 0
+            return 2
         }
         
         let calendar = Calendar.current
