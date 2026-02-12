@@ -18,23 +18,23 @@ let signalsDataStore: [SignalInfo] = [
     SignalInfo(
         symptomName: "Fatigue",
         title: "Why you may feel Fatigued",
-        imageName: "fatigue_signal" // Replace with your actual image name
+        imageName: "fatigue"
     ),
     SignalInfo(
         symptomName: "Cramps",
         title: "Gentle Relief for Cramps",
-        imageName: "cramps_signal" // Replace with your actual image name
+        imageName: "cramps"
     ),
     SignalInfo(
         symptomName: "Bloating",
         title: "Taming your PCOS Bloating",
-        imageName: "bloating_signal" // Replace with your actual image name
+        imageName: "cycle" 
     ),
     // Add more signals as needed
     SignalInfo(
         symptomName: "Mood Swings",
         title: "Understanding Your Mood Changes",
-        imageName: "mood_signal"
+        imageName: "cycle"
     ),
     SignalInfo(
         symptomName: "Acne",
@@ -61,6 +61,6 @@ func getSignalInfo(for symptomName: String) -> SignalInfo? {
 // Default signal for when no match is found
 let defaultSignalInfo = SignalInfo(
     symptomName: "General",
-    title: "Understanding Your PCOS Signals",
-    imageName: "default_signal" // Default image
+    title: "Understanding your cycle and PCOS",
+    imageName: "cycle" // Default image
 )
