@@ -7,12 +7,6 @@
 
 import UIKit
 
-struct CycleData {
-    let month: String
-    let cycleLength: Int
-    let periodLength: Int
-}
-
 class PeriodCycleChartView: UIView {
     
     private let scrollView = UIScrollView()
@@ -113,12 +107,14 @@ class PeriodCycleChartView: UIView {
         contentView.widthAnchor.constraint(equalToConstant: totalWidth).isActive = true
         
         // Calculate average
-        let avgCycleLength = cycleData.map { $0.cycleLength }.reduce(0, +) / cycleData.count
-        let maxCycleLength = cycleData.map { $0.cycleLength }.max() ?? 30
+        let cycleLengths = cycleData.map{ $0.cycleLength}
+        let avgCycleLength = cycleLengths.reduce ( 0,+ ) / max(cycleLengths.count,1)
+        let maxCycleLength = cycleLengths.max() ?? 30
         
         // Add average line
         //        averageLineView.removeFromSuperview()
         //        contentView.addSubview(averageLineView)
+        
         
         let avgY = chartHeight - (CGFloat(avgCycleLength) / CGFloat(maxCycleLength + 5)) * chartHeight + 20
         

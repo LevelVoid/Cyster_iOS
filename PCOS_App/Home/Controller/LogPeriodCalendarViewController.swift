@@ -122,6 +122,9 @@ class LogPeriodCalendarViewController: UIViewController {
         // Save to UserDefaults
         savePeriodDates(sortedDates)
         
+        let newCycle = CycleDataStore.shared.createCycle(from: sortedDates)
+        CycleDataStore.shared.addCycle(newCycle)
+        
         // Pass data back to delegate
         delegate?.didSavePeriodDates(sortedDates, cycleDay: cycleDay)
         

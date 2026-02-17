@@ -42,3 +42,30 @@ struct SupportCategoryAssets {
 }
 
 //NOTE:CHANGES TO BE MADE IN MODEL->need to add for multiple values for support your body today->less repetition of data
+struct PhaseSignal {
+    let phaseName: String
+    let title: String
+    let illustration: String
+}
+
+//struct PhaseSignalStore {
+//
+//    static func signals(for phase: CyclePhase) -> [PhaseSignal] {
+//        switch phase {
+//        case .follicular:
+//            return follicularSignals
+//        case .ovulation:
+//            return ovulationSignals
+//        case .luteal:
+//            return lutealSignals
+//        case .menstrual:
+//            return menstrualSignals
+//        }
+//    }
+//}
+
+
+enum DisplaySignal {
+    case symptom(PCOSSignal)
+    case phase(PhaseSignal)
+}

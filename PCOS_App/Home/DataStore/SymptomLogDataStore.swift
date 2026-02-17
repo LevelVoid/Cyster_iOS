@@ -112,6 +112,24 @@ class SymptomDataStore {
             return []
         }
     }
+    //newly added to get all the symptoms
+    static func loadAllSymptomsLastNDays(_ days: Int = 30) -> [SymptomItem] {
+        var result: [SymptomItem] = []
+        let calendar = Calendar.current
+        
+        for offset in 0..<days {
+            if let date = calendar.date(byAdding: .day, value: -offset, to: Date()) {
+                let daily = loadSymptoms(for: date)
+                result.append(contentsOf: daily)
+            }
+        }
+        
+        // Remove duplicates by name
+        let unique = Dictionary(grouping: result, by: { $0.name })
+            .compactMap { $0.value.first }
+        
+        return unique
+    }
 }
 
 // MARK: - Codable Wrapper
