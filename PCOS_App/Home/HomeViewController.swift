@@ -15,7 +15,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     private var displaySignals: [DisplaySignal] = []
     private var recommendationCards : [Recommendation] = recommendations
     private var allSymptoms: [SymptomItem] = []
-
+    private var aboutPCOSArticles: [AboutPCOSSection] = []
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Today"
@@ -49,6 +49,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         allSymptoms = SymptomDataStore.loadAllSymptomsLastNDays(30)
         loadTodaysSymptoms()
         buildDisplaySignals()
+        aboutPCOSArticles = AboutPCOSDataStore.shared.fetchSections()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -332,13 +333,13 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     func createAboutPCOSSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .absolute(340),
-            heightDimension: .absolute(320)
+            heightDimension: .absolute(180)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .absolute(340),
-            heightDimension: .absolute(320)
+            heightDimension: .absolute(180)
         )
         
         let group = NSCollectionLayoutGroup.horizontal(
@@ -469,8 +470,8 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
             return 1  // Cycle Pattern
         case 6:
             return  allSymptoms.count
-//        case 7:
-//            return  aboutPCOSArticles.count
+        case 7:
+            return  aboutPCOSArticles.count
         default:
             return 0
         }
@@ -546,7 +547,14 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
             cell.configure(cycles: cycles, symptom: symptom)
             return cell
         }else if indexPath.section == 7 {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "about_pcos_cell", for: indexPath) as! AboutPCOSCollectionViewCell
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: "about_pcos_cell",
+                for: indexPath
+            ) as! AboutPCOSCollectionViewCell
+
+            let article = aboutPCOSArticles[indexPath.item]
+            cell.configure(with: article)
+
             return cell
         }
         
@@ -648,6 +656,16 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         
         if indexPath.section == 5 {
             performSegue(withIdentifier: "showCycleReport", sender: nil)
+        }
+        if indexPath.section == 7 {
+            let article = aboutPCOSArticles[indexPath.item]
+
+            let vc = storyboard?.instantiateViewController(
+                withIdentifier: "AboutPCOSViewController"
+            ) as! AboutPCOSViewController
+
+            vc.section = article
+            navigationController?.pushViewController(vc, animated: true)
         }
         
     }
