@@ -199,7 +199,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 12
         section.contentInsets = NSDirectionalEdgeInsets(
-            top: 0, leading: 16, bottom: 16, trailing: 20
+            top: 4, leading: 16, bottom: 16, trailing: 16
         )
         section.orthogonalScrollingBehavior = .continuous
         addHeader(to: section)
@@ -217,7 +217,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         )
         let section = NSCollectionLayoutSection(group: group)
         section.contentInsets = NSDirectionalEdgeInsets(
-            top: 0, leading: 16, bottom: 10, trailing: 16
+            top: 4, leading: 16, bottom: 16, trailing: 16
         )
         addHeader(to: section)
         return section
@@ -226,7 +226,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     func createCycleSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
-            heightDimension: .absolute(547)
+            heightDimension: .absolute(500)
         )
         let group = NSCollectionLayoutGroup.vertical(
             layoutSize: itemSize,
@@ -234,7 +234,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         )
         let section = NSCollectionLayoutSection(group: group)
         section.contentInsets = NSDirectionalEdgeInsets(
-            top: 0, leading: 16, bottom: 10, trailing: 16
+            top: 4, leading: 16, bottom: 16, trailing: 16
         )
         addHeader(to: section)
         return section
@@ -257,7 +257,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 16
         section.contentInsets = NSDirectionalEdgeInsets(
-            top: 0, leading: 16, bottom: 20, trailing: 16
+            top: 4, leading: 16, bottom: 16, trailing: 16
         )
         section.orthogonalScrollingBehavior = .continuous
         addHeader(to: section)
@@ -267,12 +267,12 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     func createSleepCardSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(200)
+            heightDimension: .estimated(180)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(200)
+            heightDimension: .estimated(180)
         )
         let group = NSCollectionLayoutGroup.vertical(
             layoutSize: groupSize,
@@ -280,7 +280,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         )
         let section = NSCollectionLayoutSection(group: group)
         section.contentInsets = NSDirectionalEdgeInsets(
-            top: 0, leading: 16, bottom: 16, trailing: 16
+            top: 4, leading: 16, bottom: 16, trailing: 16
         )
         addHeader(to: section)
         return section
@@ -303,7 +303,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 16
         section.contentInsets = NSDirectionalEdgeInsets(
-            top: 0, leading: 16, bottom: 20, trailing: 16
+            top: 4, leading: 16, bottom: 16, trailing: 16
         )
         section.orthogonalScrollingBehavior = .continuous
         addHeader(to: section)
@@ -327,7 +327,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 16
         section.contentInsets = NSDirectionalEdgeInsets(
-            top: 0, leading: 16, bottom: 20, trailing: 16
+            top: 4, leading: 16, bottom: 16, trailing: 16
         )
         section.orthogonalScrollingBehavior = .continuous
         addHeader(to: section)
