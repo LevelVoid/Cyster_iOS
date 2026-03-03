@@ -10,10 +10,16 @@ import Foundation
 struct PCOSSignalStore {
 
     static let allSignals: [PCOSSignal] = [
+        redSpottingPCOSSignal,
+        brownSpottingPCOSSignal,
         acnePCOSSignal,
         hirsutismPCOSSignal,
+        skinDarkeningPCOSSignal,
+        hairLossPCOSSignal,
         crampsPCOSSignal,
-        hairLossPCOSSignal
+        lowerBackPCOSSignal,
+        tenderBreastsPCOSSignal,
+        headachePCOSSignal
     ]
 
     static func signal(for symptomName: String) -> PCOSSignal? {

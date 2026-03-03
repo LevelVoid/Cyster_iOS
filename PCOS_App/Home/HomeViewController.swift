@@ -639,7 +639,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         case 5:
             performSegue(withIdentifier: "showCycleReport", sender: nil)
             
-        case 6:
+        case 7:
             let article = aboutPCOSArticles[indexPath.item]
             let vc = storyboard?.instantiateViewController(
                 withIdentifier: "AboutPCOSViewController"

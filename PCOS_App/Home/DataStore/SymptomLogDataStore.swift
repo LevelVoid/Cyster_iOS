@@ -22,7 +22,7 @@ class SymptomDataStore {
     
     // MARK: - Load Symptoms
     static func loadSymptoms(for date: Date) -> [SymptomItem] {
-        let calendar = Calendar.current
+        _ = Calendar.current
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         
