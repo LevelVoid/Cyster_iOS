@@ -74,6 +74,30 @@ extension Phase {
             return .clear
         }
     }
-}
 
+    var displayName: String {
+        switch self {
+        case .menstrual:  return "Menstrual Phase"
+        case .follicular: return "Follicular Phase"
+        case .ovulation:  return "Ovulation Phase"
+        case .luteal:     return "Luteal Phase"
+        case .unknown:    return "Cycle Phase"
+        }
+    }
+
+    var quote: String {
+        switch self {
+        case .menstrual:
+            return "Your body may be asking for rest and gentler movement today"
+        case .follicular:
+            return "Energy is building — a great time to try something new"
+        case .ovulation:
+            return "You may feel more confident and energetic today"
+        case .luteal:
+            return "Be gentle with yourself — your body is preparing for the next cycle"
+        case .unknown:
+            return "Track your cycle to get personalised insights"
+        }
+    }
+}
 

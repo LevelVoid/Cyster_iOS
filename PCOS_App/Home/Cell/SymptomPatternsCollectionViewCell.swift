@@ -69,8 +69,8 @@ class SymptomPatternsCollectionViewCell:
         func configure(cycles: [CycleData], symptom: SymptomItem) {
             self.symptom = symptom
             
-            // Always keep last 3 cycles only
-            self.cycles = Array(cycles.suffix(3))
+            // Keep the 3 most recent cycles (newest-first input)
+            self.cycles = Array(cycles.prefix(3))
             
             NameLabel.text = symptom.name
             SymptomImage.image = UIImage(named: symptom.icon)

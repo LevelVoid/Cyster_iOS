@@ -122,14 +122,11 @@ class LogPeriodCalendarViewController: UIViewController {
         // Save to UserDefaults
         savePeriodDates(sortedDates)
         
-        let newCycle = CycleDataStore.shared.createCycle(from: sortedDates)
-        CycleDataStore.shared.addCycle(newCycle)
+        // Rebuild all cycles from the period dates (groups contiguous runs)
+        CycleDataStore.shared.rebuildCycles(from: sortedDates)
         
         // Pass data back to delegate
         delegate?.didSavePeriodDates(sortedDates, cycleDay: cycleDay)
-        
-        print("Selected dates: \(sortedDates)")
-        print("Cycle Day: \(cycleDay)")
         
         dismiss(animated: true)
     }
@@ -173,13 +170,27 @@ class LogPeriodCalendarViewController: UIViewController {
     }
     
     private func loadSavedDates() {
+        let cal = Calendar.current
+
+        // 1. Load any previously saved dates from UserDefaults
         if let timestamps = UserDefaults.standard.array(forKey: "SavedPeriodDates") as? [TimeInterval] {
             selectedDates = Set(timestamps.map { Date(timeIntervalSince1970: $0) })
-            collectionView.reloadData()
         }
+
+        // 2. Also pull period dates from existing cycle data (includes mock cycles)
+        for cycle in CycleDataStore.shared.cycles {
+            let periodDays = cycle.days.filter { $0.phase == .menstrual }
+            for day in periodDays {
+                if let date = cal.date(byAdding: .day, value: day.dayIndex - 1, to: cycle.startDate) {
+                    selectedDates.insert(cal.startOfDay(for: date))
+                }
+            }
+        }
+
+        collectionView.reloadData()
     }
     
-    //selects 5 days in the beginning
+    // Auto-selects `days` days from startDate (may include future dates for continuity)
     private func selectDateRange(from startDate: Date, days: Int = 5) {
         for i in 0..<days {
             if let date = calendar.date(byAdding: .day, value: i, to: startDate) {
@@ -277,17 +288,21 @@ extension LogPeriodCalendarViewController: UICollectionViewDelegate {
         guard let selectedDate = days[indexPath.item] else { return }
         
         let normalizedDate = calendar.startOfDay(for: selectedDate)
+        let today = calendar.startOfDay(for: Date())
         
         if selectedDates.contains(normalizedDate) {
-            // Deselect
+            // Always allow deselecting, even future dates
             selectedDates.remove(normalizedDate)
+        } else if selectedDates.isEmpty {
+            // First period day must be today or earlier
+            guard normalizedDate <= today else { return }
+            selectDateRange(from: normalizedDate, days: 5)
         } else {
-            // Select - if it's the first selection, auto-select 5 days
-            if selectedDates.isEmpty {
-                selectDateRange(from: normalizedDate, days: 5)
-            } else {
-                selectedDates.insert(normalizedDate)
-            }
+            // Adding extra days manually — allow future only if a period is already started
+            // (i.e. at least one selected date is today or earlier)
+            let hasValidStart = selectedDates.contains { $0 <= today }
+            guard hasValidStart else { return }
+            selectedDates.insert(normalizedDate)
         }
         
         collectionView.reloadData()

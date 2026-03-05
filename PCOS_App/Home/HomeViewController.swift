@@ -87,7 +87,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     }
 
     private func getCurrentPhase() -> Phase {
-        return .menstrual
+        return CycleDataStore.shared.currentPhaseInfo().phase
     }
 
     func registerCells() {
@@ -378,15 +378,12 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     // MARK: - LogPeriodCalendarDelegate
     
     func didSavePeriodDates(_ dates: [Date], cycleDay: Int) {
-        print("Received period dates: \(dates.count) dates")
-        print("Current cycle day: \(cycleDay)")
+        // Reload cycles so currentPhaseInfo picks up the new data
+        CycleDataStore.shared.loadCycles()
+        buildDisplaySignals()
         DispatchQueue.main.async { [weak self] in
-            self?.collectionView.reloadSections(IndexSet(integer: 0))
-        }
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        dates.forEach { date in
-            print("Period date: \(formatter.string(from: date))")
+            // Reload header (0), signals (1), cycle trends (5), symptom patterns (6)
+            self?.collectionView.reloadSections(IndexSet([0, 1, 5, 6]))
         }
     }
     
@@ -487,6 +484,8 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
                 for: indexPath
             ) as! HomeHeaderCollectionViewCell
             cell.delegate = self
+            let info = CycleDataStore.shared.currentPhaseInfo()
+            cell.configure(cycleDay: info.cycleDay, phase: info.phase)
             return cell
             
         case 1:
@@ -541,6 +540,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
                 withReuseIdentifier: "cycle_pattern_cell",
                 for: indexPath
             ) as! CyclePatternCollectionViewCell
+            cell.refreshChart()
             return cell
             
         case 6:
@@ -549,7 +549,8 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
                 for: indexPath
             ) as! SymptomPatternsCollectionViewCell
             let symptom = allSymptoms[indexPath.item]
-            let cycles = CycleDataStore.shared.loadRecentCycles()
+            // Pass only completed previous cycles (newest-first), not the ongoing one
+            let cycles = CycleDataStore.shared.previousCycles(count: 3)
             cell.configure(cycles: cycles, symptom: symptom)
             return cell
             

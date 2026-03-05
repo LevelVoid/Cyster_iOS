@@ -54,9 +54,13 @@ class CyclePatternCollectionViewCell: UICollectionViewCell {
 //    periodCycleChartView.configure(with: sampleData)
 //    }
     private func setupPeriodCycleChart() {
-        let cycles = CycleDataStore.shared.loadRecentCycles(count: 6)
+        // Show only completed cycles (exclude the current ongoing one)
+        let cycles = CycleDataStore.shared.previousCycles(count: 6)
         periodCycleChartView.configure(with: cycles)
     }
 
-    
+    /// Call from cellForItemAt to refresh chart data on every display
+    func refreshChart() {
+        setupPeriodCycleChart()
+    }
 }
