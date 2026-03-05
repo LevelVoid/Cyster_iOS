@@ -22,8 +22,8 @@ class QuickActionsCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var carbsCompleted: UILabel!
     @IBOutlet weak var proteinCompleted: UILabel!
     
-    @IBOutlet weak var dietRecView: UIView!
-    @IBOutlet weak var workoutRecView: UIView!
+//    @IBOutlet weak var dietRecView: UIView!
+//    @IBOutlet weak var workoutRecView: UIView!
     
     weak var delegate: QuickActionsDelegate?
     
@@ -31,8 +31,8 @@ class QuickActionsCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         dietActionCard.layer.cornerRadius = 20
         workoutActionCard.layer.cornerRadius = 20
-        dietRecView.layer.cornerRadius = 10
-        workoutRecView.layer.cornerRadius = 10
+//        dietRecView.layer.cornerRadius = 10
+//        workoutRecView.layer.cornerRadius = 10
     }
     
     func configure() {

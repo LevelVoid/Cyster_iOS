@@ -25,7 +25,8 @@ struct SymptomCategory {
             SymptomItem(name: "Acne", icon: "AcneIcon",category: "Skin and Hair"),
             SymptomItem(name: "Hair Loss", icon: "HairLossIcon",category: "Skin and Hair"),
             SymptomItem(name: "Skin Darkening", icon: "SkinDarkeningIcon",category: "Skin and Hair"),
-            SymptomItem(name: "Hirsutism", icon: "HirutismIcon",category: "Skin and Hair")
+            SymptomItem(name: "Hirsutism", icon: "HirutismIcon",category: "Skin and Hair"),
+            SymptomItem(name: "Skin Tags", icon: "HirutismIcon",category: "Skin and Hair")
         ]),
         SymptomCategory(title: "Lifestyle", items: [
             SymptomItem(name: "Fatigue", icon: "FatigueIcon",category: "Lifestyle"),
@@ -47,9 +48,9 @@ struct SymptomCategory {
             SymptomItem(name: "Creamy", icon: "CreamyIcon",category: "Discharge"),
             SymptomItem(name: "Watery", icon: "WateryIcon",category: "Discharge"),
             SymptomItem(name: "Egg White", icon: "EggWhiteIcon",category: "Discharge"),
-            SymptomItem(name: "Unusual", icon: "UnusualIcon",category: "Discharge"),
-            SymptomItem(name: "Position Cervix", icon: "PositionCervixIcon",category: "Discharge"),
-            SymptomItem(name: "Texture", icon: "TextureIcon",category: "Discharge")
+            SymptomItem(name: "Unusual", icon: "UnusualIcon",category: "Discharge")
+//            SymptomItem(name: "Position Cervix", icon: "PositionCervixIcon",category: "Discharge"),
+//            SymptomItem(name: "Texture", icon: "TextureIcon",category: "Discharge")
         ]),
         SymptomCategory(title: "Gut Health", items: [
             SymptomItem(name: "Bloating", icon: "BloatingIcon",category: "Gut Health"),
