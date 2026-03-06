@@ -104,18 +104,28 @@ class SymptomPatternsCollectionViewCell:
                 let columns = self.maxDayCount()
 
                 // One day cell
+//                let itemSize = NSCollectionLayoutSize(
+//                    widthDimension: .absolute(44),
+//                    heightDimension: .absolute(45)
+//                )
+//                
+//                let item = NSCollectionLayoutItem(layoutSize: itemSize)
+//
+//                // One ROW = days laid out horizontally
+//                let rowGroupSize = NSCollectionLayoutSize(
+//                    widthDimension: .estimated(CGFloat(columns) * 68),
+//                    heightDimension: .absolute(64)
+                //)
                 let itemSize = NSCollectionLayoutSize(
-                    widthDimension: .absolute(44),
-                    heightDimension: .absolute(45)
+                    widthDimension: .absolute(34),
+                    heightDimension: .absolute(34)
+                )
+                let item = NSCollectionLayoutItem(layoutSize: itemSize)
+                let rowGroupSize = NSCollectionLayoutSize(
+                    widthDimension: .estimated(CGFloat(columns) * 40),
+                    heightDimension: .absolute(38)
                 )
                 
-                let item = NSCollectionLayoutItem(layoutSize: itemSize)
-
-                // One ROW = days laid out horizontally
-                let rowGroupSize = NSCollectionLayoutSize(
-                    widthDimension: .estimated(CGFloat(columns) * 68),
-                    heightDimension: .absolute(64)
-                )
                 let rowGroup = NSCollectionLayoutGroup.horizontal(
                     layoutSize: rowGroupSize,
                     subitem: item,

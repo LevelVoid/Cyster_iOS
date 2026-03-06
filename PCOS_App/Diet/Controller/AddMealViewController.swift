@@ -54,7 +54,7 @@ class AddMealViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(hex: "#FCEEED")
         navigationController?.navigationBar.prefersLargeTitles = false
         title = "Add Meal"
         

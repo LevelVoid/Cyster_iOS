@@ -171,7 +171,8 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     func createHomeHeaderSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
-            heightDimension: .absolute(380)
+//            heightDimension: .absolute(380)
+            heightDimension: .estimated(220)
         )
         let group = NSCollectionLayoutGroup.vertical(
             layoutSize: itemSize,
