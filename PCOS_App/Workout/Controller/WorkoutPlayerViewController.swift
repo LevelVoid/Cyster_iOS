@@ -714,6 +714,8 @@ class WorkoutPlayerViewController: UIViewController {
             )
             
             WorkoutSessionManager.shared.completedWorkouts.append(completed)
+            // Persist to disk so duration metrics graph shows this session
+            CompletedWorkoutsDataStore.shared.save(completed)
             dismiss(animated: true)
         }
         
@@ -733,6 +735,9 @@ class WorkoutPlayerViewController: UIViewController {
                 exercises: activeWorkout.exercises
             )
             WorkoutSessionManager.shared.completedWorkouts.append(completedWorkout)
+            
+            // Persist to disk so MetricsViewController duration graph survives app restarts
+            CompletedWorkoutsDataStore.shared.save(completedWorkout)
             
             let summaryVC = UIStoryboard(name: "Workout", bundle: nil)
                 .instantiateViewController(withIdentifier: "SummaryViewController") as! SummaryViewController

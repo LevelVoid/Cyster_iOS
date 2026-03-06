@@ -98,26 +98,43 @@ class DailyActivityDataStore {
     }
     
     // MARK: - Sync with Workouts
-    
+
+    /// Syncs a completed workout session into the daily activity.
+    /// Session calories (from HealthKit window / Keytel estimate) are stored in caloriesBurned.
     func syncWorkout(_ workout: CompletedWorkout) {
         let calendar = Calendar.current
         let workoutDate = calendar.startOfDay(for: workout.date)
-        
+
         var activity = getActivity(for: workoutDate) ?? DailyActivity(date: workoutDate)
-        activity.addWorkout(durationSeconds: workout.durationSeconds)
+
+        // Accumulate session duration
+        activity.activeDurationSeconds += workout.durationSeconds
+
+        // Store session calories (best estimate stored on CompletedWorkout)
+        let sessionCals = Int(workout.caloriesBurned)
+        if sessionCals > 0 {
+            activity.caloriesBurned = sessionCals
+        } else {
+            // Fallback if calories weren't set: use duration estimate (~6 cal/min)
+            let minutes = Double(workout.durationSeconds) / 60.0
+            activity.caloriesBurned = Int(minutes * 6.0)
+        }
+
         save(activity)
     }
 
-    /// Merges real HealthKit steps and calories into today's activity, replacing estimated values.
-    /// HealthKit data always takes priority over duration-based estimates.
-    func mergeHealthKitData(date: Date = Date(), steps: Int, calories: Int) {
+    /// Merges real HealthKit steps into today's activity AND stores total daily HealthKit calories
+    /// separately so MetricsViewController can combine session + background HealthKit calories.
+    func mergeHealthKitData(date: Date = Date(), steps: Int, healthKitDailyCalories: Int) {
         let calendar = Calendar.current
         let targetDate = calendar.startOfDay(for: date)
         var activity = getActivity(for: targetDate) ?? DailyActivity(date: targetDate)
 
-        // Replace estimated values with real HealthKit data
-        if steps > 0    { activity.steps = steps }
-        if calories > 0 { activity.caloriesBurned = calories }
+        // Replace estimated step values with real HealthKit data
+        if steps > 0 { activity.steps = steps }
+
+        // Store the HealthKit all-day calories so metrics graph can combine it with session cals
+        if healthKitDailyCalories > 0 { activity.healthKitCalories = healthKitDailyCalories }
 
         save(activity)
     }
@@ -126,3 +143,4 @@ class DailyActivityDataStore {
         userDefaults.removeObject(forKey: key)
     }
 }
+

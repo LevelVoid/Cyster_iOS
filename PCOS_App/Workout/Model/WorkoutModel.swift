@@ -314,6 +314,7 @@ struct CompletedWorkout: Codable {
     var startTime: Date        // used for Apple Watch HR query window
     var durationSeconds: Int
     var exercises: [WorkoutExercise]
+    var caloriesBurned: Double = 0  // best estimate for this session only
 }
 //read why using class and not struct here
 class WorkoutSessionManager {

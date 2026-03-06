@@ -94,14 +94,18 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     
     private func buildDisplaySignals() {
         displaySignals.removeAll()
-        let currentPhase = getCurrentPhase()
-        let phaseSignals = PhaseSignalDataStore.shared.signals(for: currentPhase)
-        displaySignals.append(contentsOf: phaseSignals)
+        
+        // 1. Logged Symptoms First
         for symptom in selectedSymptoms {
             if let signal = PCOSSignalStore.signal(for: symptom.name) {
                 displaySignals.append(.symptom(signal))
             }
         }
+        
+        // 2. Phase Cards Second
+        let currentPhase = getCurrentPhase()
+        let phaseSignals = PhaseSignalDataStore.shared.signals(for: currentPhase)
+        displaySignals.append(contentsOf: phaseSignals)
     }
 
     private func getCurrentPhase() -> Phase {

@@ -47,76 +47,84 @@ class SummaryViewController: UIViewController {
     }
     
     // MARK: - Calories Source Label
-    
-    /// Adds a small subtitle under the calorie value label indicating data source
+
+    /// Creates the source label but keeps it hidden — source is printed to console for debugging.
     private func addCaloriesSourceLabel() {
         guard caloriesCard != nil else { return }
         let label = UILabel()
-        label.font = .systemFont(ofSize: 11, weight: .regular)
-        label.textColor = .secondaryLabel
-        label.textAlignment = .center
-        label.text = "Calculating…"
+        label.isHidden = true   // hidden — debug info goes to console instead
         label.translatesAutoresizingMaskIntoConstraints = false
         caloriesCard.addSubview(label)
-        NSLayoutConstraint.activate([
-            label.centerXAnchor.constraint(equalTo: caloriesCard.centerXAnchor),
-            label.bottomAnchor.constraint(equalTo: caloriesCard.bottomAnchor, constant: -12)
-        ])
         caloriesSourceLabel = label
     }
     
     func setupUI() {
         containerView.layer.cornerRadius = 24
-        
+
         // ---- DURATION ----
         let totalSeconds = completedWorkout.durationSeconds
         durationValueLabel.text = formatDuration(totalSeconds)
-    
-        
-        // ---- CALORIES (fallback estimate) ----
-        let estimatedCalories = Double(totalSeconds) * 0.18
-        caloriesValueLabel.text = String(format: "%.0f", estimatedCalories)
-        
-        
+
+        // ---- CALORIES — show placeholder until real data arrives ----
+        // Do NOT show a duration-based estimate; wait for HealthKit / heart-rate data.
+        caloriesValueLabel.text = "—"
+
         // ---- EXERCISES DONE ----
         let completedExercises = completedWorkout.exercises.filter {
             $0.sets.allSatisfy { $0.completionState == .completed }
         }.count
-        
         exercisesDoneLabel.text = "\(completedExercises)"
     }
 
+    /// Tracks how many times we have retried the HealthKit fetch (max 2).
+    private var hkFetchRetries = 0
+
     // MARK: - HealthKit Calorie Calculation
-    
+
     /// Attempts to get the best calorie estimate using the following priority:
-    /// 1. Apple Watch activeEnergyBurned via HealthKit
-    /// 2. Keytel formula from Apple Watch heart rate
-    /// 3. Duration-based estimate (already shown in setupUI)
+    /// 1. Apple Watch activeEnergyBurned during this workout window (start → end)
+    /// 2. Keytel formula from Apple Watch heart rate during this workout window
+    /// 3. Shows 0 with "No Watch Data" if neither is available
+    ///
+    /// A 5-second delay is applied before the first fetch because Apple Watch
+    /// takes several seconds (sometimes up to 30s) to sync data to HealthKit
+    /// after a session ends. A second retry fires after 15 more seconds.
     private func fetchBestCalorieEstimate() {
-        // First try: HealthKit active calories (whole day — Apple Watch / Fitness app)
-        HealthKitManager.shared.fetchTodayActiveCalories { [weak self] totalDayCals in
+        // Wait before first attempt to allow Watch → HealthKit sync
+        let delay: TimeInterval = hkFetchRetries == 0 ? 5 : 0
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+            self?.runCalorieQuery()
+        }
+    }
+
+    private func runCalorieQuery() {
+        let start = completedWorkout.startTime
+        let end = start.addingTimeInterval(TimeInterval(completedWorkout.durationSeconds))
+
+        // First try: HealthKit active calories ONLY for this session's window
+        HealthKitManager.shared.fetchActiveCalories(from: start, to: end) { [weak self] sessionCals in
             guard let self = self else { return }
-            
-            if totalDayCals > 0 {
-                // Use the full-day active calories as it's real Apple Watch data
+
+            if sessionCals > 0 {
+                print("[Calories] Source: via Apple Watch (direct HK calories) | Value: \(sessionCals) kcal")
                 DispatchQueue.main.async {
-                    self.caloriesValueLabel.text = String(format: "%.0f", totalDayCals)
-                    self.caloriesSourceLabel?.text = "via Apple Health"
+                    self.caloriesValueLabel.text = String(format: "%.0f", sessionCals)
+                    self.saveAndSyncCalories(sessionCals)
                 }
             } else {
-                // Second try: Keytel formula from heart rate during THIS workout
+                print("[Calories] No direct HK calorie data found — trying heart rate...")
                 self.fetchHeartRateBasedCalories()
             }
         }
     }
-    
+
     private func fetchHeartRateBasedCalories() {
         let start = completedWorkout.startTime
         let end = start.addingTimeInterval(TimeInterval(completedWorkout.durationSeconds))
-        
+
         HealthKitManager.shared.fetchHeartRate(from: start, to: end) { [weak self] avgHR in
             guard let self = self else { return }
-            
+
             if let avgHR = avgHR, avgHR > 0 {
                 let durationMin = Double(self.completedWorkout.durationSeconds) / 60.0
                 let hkm = HealthKitManager.shared
@@ -127,17 +135,42 @@ class SummaryViewController: UIViewController {
                     durationMin: durationMin,
                     isFemale: true
                 )
+                print("[Calories] Source: Keytel formula | Avg HR: \(Int(avgHR)) bpm | Duration: \(String(format: "%.1f", durationMin)) min | Age: \(hkm.userAge) | Weight: \(hkm.userWeightKg) kg | Result: \(String(format: "%.1f", calories)) kcal")
                 DispatchQueue.main.async {
                     self.caloriesValueLabel.text = String(format: "%.0f", calories)
-                    self.caloriesSourceLabel?.text = "via Apple Watch ♥ \(Int(avgHR)) bpm"
+                    self.saveAndSyncCalories(calories)
                 }
             } else {
-                // Fallback — duration estimate already shown; just update label
-                DispatchQueue.main.async {
-                    self.caloriesSourceLabel?.text = "Estimated"
+                // No data yet — retry up to 2 times (Watch can take up to ~30s to sync)
+                if self.hkFetchRetries < 2 {
+                    self.hkFetchRetries += 1
+                    print("[Calories] No HR data yet — retry \(self.hkFetchRetries)/2 in 15s...")
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 15) { [weak self] in
+                        self?.runCalorieQuery()
+                    }
+                } else {
+                    print("[Calories] All retries exhausted — no Apple Watch or no HR recorded")
+                    DispatchQueue.main.async {
+                        self.caloriesValueLabel.text = "—"
+                        self.saveAndSyncCalories(0)
+                    }
                 }
             }
         }
+    }
+
+    /// Saves the final calorie value to completedWorkout and syncs to DailyActivityDataStore.
+    private func saveAndSyncCalories(_ calories: Double) {
+        // Update the in-memory CompletedWorkout so WorkoutSessionManager has the value
+        completedWorkout.caloriesBurned = calories
+
+        // Also update the CompletedWorkout stored in WorkoutSessionManager
+        if let idx = WorkoutSessionManager.shared.completedWorkouts.firstIndex(where: { $0.id == completedWorkout.id }) {
+            WorkoutSessionManager.shared.completedWorkouts[idx].caloriesBurned = calories
+        }
+
+        // Sync to DailyActivityDataStore so MetricsViewController graph shows session calories
+        DailyActivityDataStore.shared.syncWorkout(completedWorkout)
     }
 
     
@@ -241,7 +274,7 @@ class SummaryViewController: UIViewController {
         }
     }
     func confettiImage(shape: String, color: UIColor) -> UIImage? {
-        let size = CGSize(width: 20, height: 20)
+        let size = CGSize(width: 10, height: 10)
         let renderer = UIGraphicsImageRenderer(size: size)
         
         return renderer.image { context in
@@ -249,19 +282,19 @@ class SummaryViewController: UIViewController {
             
             switch shape {
             case "square":
-                let rect = CGRect(x: 2, y: 2, width: 16, height: 16)
+                let rect = CGRect(x: 1, y: 1, width: 8, height: 8)
                 context.cgContext.fill(rect)
                 
             case "triangle":
                 let path = UIBezierPath()
-                path.move(to: CGPoint(x: size.width/2, y: 2))
-                path.addLine(to: CGPoint(x: 2, y: size.height - 2))
-                path.addLine(to: CGPoint(x: size.width - 2, y: size.height - 2))
+                path.move(to: CGPoint(x: size.width/2, y: 1))
+                path.addLine(to: CGPoint(x: 1, y: size.height - 1))
+                path.addLine(to: CGPoint(x: size.width - 1, y: size.height - 1))
                 path.close()
                 path.fill()
                 
             case "circle":
-                let rect = CGRect(x: 2, y: 2, width: 16, height: 16)
+                let rect = CGRect(x: 1, y: 1, width: 8, height: 8)
                 context.cgContext.fillEllipse(in: rect)
                 
             default:

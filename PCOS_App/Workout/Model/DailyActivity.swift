@@ -10,25 +10,28 @@ import Foundation
 struct DailyActivity: Codable {
     let date: Date
     var steps: Int
+    /// Calories burned during in-app workout sessions only.
     var caloriesBurned: Int
     var activeDurationSeconds: Int
-    
-    init(date: Date, steps: Int = 0, caloriesBurned: Int = 0, activeDurationSeconds: Int = 0) {
+    /// All-day active calories from Apple Health / Apple Watch (background tracking).
+    /// Combined with caloriesBurned for the metrics graph total.
+    var healthKitCalories: Int
+
+    init(date: Date, steps: Int = 0, caloriesBurned: Int = 0, activeDurationSeconds: Int = 0, healthKitCalories: Int = 0) {
         self.date = date
         self.steps = steps
         self.caloriesBurned = caloriesBurned
         self.activeDurationSeconds = activeDurationSeconds
+        self.healthKitCalories = healthKitCalories
     }
-    
-    // Helper to merge workout data into daily activity
-    mutating func addWorkout(durationSeconds: Int) {
-        self.activeDurationSeconds += durationSeconds
-        
-        // Estimate calories: ~6 cal/min
-        let minutes = Double(durationSeconds) / 60.0
-        self.caloriesBurned += Int(minutes * 6.0)
-        
-        // Estimate steps: ~110 steps/min
-        self.steps += Int(minutes * 110.0)
+
+    /// Total calories for the day: session cals + background Apple Health cals.
+    var totalCalories: Int {
+        // If we have HealthKit all-day calories, use them as the base (they may already include session burn).
+        // We add session calories only when HealthKit returned 0 (no Watch / no permission).
+        if healthKitCalories > 0 {
+            return healthKitCalories + caloriesBurned
+        }
+        return caloriesBurned
     }
 }

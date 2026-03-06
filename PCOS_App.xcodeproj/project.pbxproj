@@ -169,7 +169,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PCOS_App/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Please give camera access to scan barcode.";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Please give Health access for steps,cals,sleep";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "PCOS App reads your steps, calories, heart rate, and sleep data to help you track your health journey.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "PCOS App may write workout summaries to Apple Health for a complete picture of your activity.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -180,7 +181,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.abhinaya-rajarajan.PCOSApp";
+				PRODUCT_BUNDLE_IDENTIFIER = "-90604.com.dnyaneshwari.PCOSApp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -204,7 +205,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PCOS_App/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Please give camera access to scan barcode.";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Please give Health access for steps,cals,sleep";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "PCOS App reads your steps, calories, heart rate, and sleep data to help you track your health journey.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "PCOS App may write workout summaries to Apple Health for a complete picture of your activity.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -215,7 +217,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "-74MDX8R3T.com.dnyaneshwari.PCOSApp";
+				PRODUCT_BUNDLE_IDENTIFIER = "-90604.com.dnyaneshwari.PCOSApp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;

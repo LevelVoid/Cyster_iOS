@@ -388,20 +388,26 @@ extension WorkoutViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // Sync today's workout time
+
+        let calendar = Calendar.current
+        let today = Date()
+
+        // Duration card: total in-app workout seconds today
         cards[2].done = Double(WorkoutSessionManager.shared.getTime())
-        cards[0].done = (cards[2].done ?? 0) * 1.5
-        
-        // IMPORTANT: Sync completed workouts to DailyActivityDataStore
+
+        // Cals card: start from today's real session calories (persisted on disk)
+        // HealthKit will add background calories on top once the async fetch returns
+        let todaySessionCals = CompletedWorkoutsDataStore.shared.loadAll()
+            .filter { calendar.isDate($0.date, inSameDayAs: today) }
+            .reduce(0.0) { $0 + $1.caloriesBurned }
+        cards[0].done = todaySessionCals
+
+        // Steps card: keep last known value; HealthKit update will replace it below
+        // (cards[1].done is untouched here — fetchHealthKitData fills it)
+
         syncWorkoutsToActivityStore()
-        
-        print("View appeared")
-        for i in cards {
-            print(i.name, i.done, i.toBeDone)
-        }
         collectionView.reloadData()
-        
+
         // Fetch live HealthKit data and update cards + DataStore
         fetchHealthKitData()
     }
@@ -444,21 +450,24 @@ extension WorkoutViewController {
         
         group.notify(queue: .main) { [weak self] in
             guard let self = self else { return }
-            
-            // Update goal cards with real values
+
+            // Steps card — real HealthKit value
             if hkSteps > 0 {
-                self.cards[1].done = Double(hkSteps)   // Steps card (index 1)
+                self.cards[1].done = Double(hkSteps)
             }
-            if hkCalories > 0 {
-                self.cards[0].done = hkCalories        // Cals burnt card (index 0)
-            }
-            
+
+            // Cals card — HealthKit all-day background + today's in-app session calories
+            let todaySessionCals = CompletedWorkoutsDataStore.shared.loadAll()
+                .filter { Calendar.current.isDate($0.date, inSameDayAs: Date()) }
+                .reduce(0.0) { $0 + $1.caloriesBurned }
+            self.cards[0].done = hkCalories + todaySessionCals
+
             // Persist into DataStore so MetricsViewController charts reflect real HK data
             DailyActivityDataStore.shared.mergeHealthKitData(
                 steps: hkSteps,
-                calories: Int(hkCalories)
+                healthKitDailyCalories: Int(hkCalories)
             )
-            
+
             self.collectionView.reloadData()
         }
     }

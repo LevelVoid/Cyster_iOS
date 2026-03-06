@@ -62,6 +62,35 @@ final class HealthKitManager {
         store.execute(query)
     }
 
+    /// Fetches per-day step counts from HealthKit over a date range.
+    /// Returns a dictionary keyed by start-of-day Date → step count.
+    func fetchDailySteps(from start: Date, to end: Date, completion: @escaping ([Date: Int]) -> Void) {
+        guard let stepType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
+            completion([:]); return
+        }
+        let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: .strictStartDate)
+        let interval = DateComponents(day: 1)
+        let anchor = Calendar.current.startOfDay(for: start)
+
+        let query = HKStatisticsCollectionQuery(
+            quantityType: stepType,
+            quantitySamplePredicate: predicate,
+            options: .cumulativeSum,
+            anchorDate: anchor,
+            intervalComponents: interval
+        )
+        query.initialResultsHandler = { _, results, _ in
+            var stepsByDay: [Date: Int] = [:]
+            results?.enumerateStatistics(from: start, to: end) { statistics, _ in
+                let day = Calendar.current.startOfDay(for: statistics.startDate)
+                let steps = Int(statistics.sumQuantity()?.doubleValue(for: .count()) ?? 0)
+                if steps > 0 { stepsByDay[day] = steps }
+            }
+            completion(stepsByDay)
+        }
+        store.execute(query)
+    }
+
     // MARK: - Active Calories
 
     /// Fetches today's total active calories burned from HealthKit (Apple Watch / Fitness app).
@@ -81,30 +110,106 @@ final class HealthKitManager {
         store.execute(query)
     }
 
+    /// Fetches per-day active calories from HealthKit over a date range.
+    /// Returns a dictionary keyed by start-of-day Date → kilocalories.
+    func fetchDailyActiveCalories(from start: Date, to end: Date, completion: @escaping ([Date: Double]) -> Void) {
+        guard let calType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) else {
+            completion([:]); return
+        }
+        let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: [])
+        let interval = DateComponents(day: 1)
+        let anchor = Calendar.current.startOfDay(for: start)
+
+        let query = HKStatisticsCollectionQuery(
+            quantityType: calType,
+            quantitySamplePredicate: predicate,
+            options: .cumulativeSum,
+            anchorDate: anchor,
+            intervalComponents: interval
+        )
+        query.initialResultsHandler = { _, results, _ in
+            var calsByDay: [Date: Double] = [:]
+            results?.enumerateStatistics(from: start, to: end) { statistics, _ in
+                let day = Calendar.current.startOfDay(for: statistics.startDate)
+                let cals = statistics.sumQuantity()?.doubleValue(for: HKUnit.kilocalorie()) ?? 0
+                if cals > 0 { calsByDay[day] = cals }
+            }
+            completion(calsByDay)
+        }
+        store.execute(query)
+    }
+
+    // MARK: - Active Calories (time-windowed)
+
+    /// Fetches active calories burned within a specific time window (e.g. a single workout session).
+    /// Uses no strict option so Apple Watch batch-writes that overlap the boundary are included.
+    func fetchActiveCalories(from start: Date, to end: Date, completion: @escaping (Double) -> Void) {
+        guard let calType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) else {
+            completion(0); return
+        }
+        // No strict option — include any sample that overlaps the window (handles Watch batch writes)
+        let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: [])
+        let query = HKStatisticsQuery(
+            quantityType: calType,
+            quantitySamplePredicate: predicate,
+            options: .cumulativeSum
+        ) { _, result, _ in
+            let cals = result?.sumQuantity()?.doubleValue(for: HKUnit.kilocalorie()) ?? 0
+            completion(cals)
+        }
+        store.execute(query)
+    }
+
     // MARK: - Heart Rate
 
-    /// Fetches heart rate samples within a workout window and returns the average BPM.
+    /// Fetches average heart rate for a workout session using a two-pass strategy:
+    /// Pass 1 — exact session window (most accurate, uses real exercise HR)
+    /// Pass 2 — ±5 min expanded window (fallback for passive Watch sampling cadence)
+    /// Returns nil only when both passes find no data.
     func fetchHeartRate(from start: Date, to end: Date, completion: @escaping (Double?) -> Void) {
         guard let hrType = HKObjectType.quantityType(forIdentifier: .heartRate) else {
             completion(nil); return
         }
-        let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: .strictStartDate)
-        let query = HKSampleQuery(
+
+        // PASS 1: exact session window
+        let exactPredicate = HKQuery.predicateForSamples(withStart: start, end: end, options: [])
+        let exactQuery = HKSampleQuery(
             sampleType: hrType,
-            predicate: predicate,
+            predicate: exactPredicate,
             limit: HKObjectQueryNoLimit,
             sortDescriptors: nil
-        ) { _, samples, _ in
-            guard let samples = samples as? [HKQuantitySample], !samples.isEmpty else {
-                completion(nil); return
+        ) { [weak self] _, samples, _ in
+            guard let self = self else { return }
+            if let samples = samples as? [HKQuantitySample], !samples.isEmpty {
+                // ✅ Real session HR found — use it
+                let avg = samples.reduce(0.0) { $0 + $1.quantity.doubleValue(for: HKUnit(from: "count/min")) }
+                    / Double(samples.count)
+                completion(avg)
+            } else {
+                // PASS 2: expand ±5 min (handles passive Watch sampling cadence)
+                let expandedStart = start.addingTimeInterval(-5 * 60)
+                let expandedEnd   = end.addingTimeInterval(5 * 60)
+                let expandedPredicate = HKQuery.predicateForSamples(withStart: expandedStart, end: expandedEnd, options: [])
+                let expandedQuery = HKSampleQuery(
+                    sampleType: hrType,
+                    predicate: expandedPredicate,
+                    limit: HKObjectQueryNoLimit,
+                    sortDescriptors: nil
+                ) { _, expandedSamples, _ in
+                    guard let expandedSamples = expandedSamples as? [HKQuantitySample],
+                          !expandedSamples.isEmpty else {
+                        completion(nil); return
+                    }
+                    let avg = expandedSamples.reduce(0.0) { $0 + $1.quantity.doubleValue(for: HKUnit(from: "count/min")) }
+                        / Double(expandedSamples.count)
+                    completion(avg)
+                }
+                self.store.execute(expandedQuery)
             }
-            let total = samples.reduce(0.0) {
-                $0 + $1.quantity.doubleValue(for: HKUnit(from: "count/min"))
-            }
-            completion(total / Double(samples.count))
         }
-        store.execute(query)
+        store.execute(exactQuery)
     }
+
 
     // MARK: - Keytel Heart-Rate Calorie Formula
 
