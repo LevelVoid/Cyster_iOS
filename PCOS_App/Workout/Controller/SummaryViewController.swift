@@ -219,46 +219,37 @@ class SummaryViewController: UIViewController {
         var cells: [CAEmitterCell] = []
         
         for color in colors {
-            // Create multiple particles per color for better effect
-            for _ in 0..<2 {
+            for _ in 0..<1 {                              // 1 particle per color (was 2)
                 let cell = CAEmitterCell()
-                
-                // Emission settings
-                cell.birthRate = 6
-                cell.lifetime = 10.0
-                cell.lifetimeRange = 3
-                
-                // Velocity and direction
-                cell.velocity = CGFloat.random(in: 200...350)
-                cell.velocityRange = 100
-                cell.emissionLongitude = .pi  // Downward
-                cell.emissionRange = .pi / 3  // Spread angle
-                
-                // Rotation
-                cell.spin = CGFloat.random(in: 2...5)
-                cell.spinRange = 3
-                
-                // Size
-                cell.scale = CGFloat.random(in: 0.3...0.6)
-                cell.scaleRange = 0.2
-                cell.scaleSpeed = -0.05  // Gradually shrink
-                
-                // Physics
-                cell.yAcceleration = 150  // Gravity effect
-                cell.xAcceleration = CGFloat.random(in: -20...20)  // Slight drift
-                
-                // Appearance
-                cell.alphaSpeed = -0.1  // Fade out gradually
+
+                cell.birthRate = 3                         // was 6
+                cell.lifetime = 6.0                        // was 10.0
+                cell.lifetimeRange = 2                     // was 3
+
+                cell.velocity = CGFloat.random(in: 150...250)   // was 200...350
+                cell.velocityRange = 60                    // was 100
+                cell.emissionLongitude = .pi
+                cell.emissionRange = .pi / 4              // tighter spread (was .pi / 3)
+
+                cell.spin = CGFloat.random(in: 1...3)     // was 2...5
+                cell.spinRange = 2                         // was 3
+
+                cell.scale = CGFloat.random(in: 0.2...0.4)  // was 0.3...0.6
+                cell.scaleRange = 0.1                      // was 0.2
+                cell.scaleSpeed = -0.05
+
+                cell.yAcceleration = 150
+                cell.xAcceleration = CGFloat.random(in: -20...20)
+
+                cell.alphaSpeed = -0.15                    // fades faster (was -0.1)
                 cell.color = color.cgColor
-                
-                // Random shape for variety
+
                 let shapes = ["circle", "square", "triangle"]
                 let randomShape = shapes.randomElement() ?? "circle"
                 cell.contents = confettiImage(shape: randomShape, color: color)?.cgImage
-                
+
                 cells.append(cell)
             }
-            
         }
         confettiLayer.emitterCells = cells
         view.layer.addSublayer(confettiLayer)
