@@ -54,7 +54,7 @@ class AddMealViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(hex: "#FCEEED")
+//        view.backgroundColor = UIColor(hex: "#FCEEED")
         navigationController?.navigationBar.prefersLargeTitles = false
         title = "Add Meal"
         
@@ -86,6 +86,19 @@ class AddMealViewController: UIViewController {
     private func setupSearchBar() {
         searchTextField.placeholder = "Search for a meal"
         searchTextField.delegate = self
+        
+        // Remove the default background
+        searchTextField.backgroundImage = UIImage()
+        searchTextField.backgroundColor = .clear
+        
+        // Style the inner text field as capsule
+        if let searchField = searchTextField.value(forKey: "searchField") as? UITextField {
+            searchField.backgroundColor = .white
+            searchField.layer.cornerRadius = 18
+            searchField.layer.masksToBounds = true
+            searchField.layer.borderWidth = 1
+            searchField.layer.borderColor = UIColor.systemGray5.cgColor
+        }
     }
     
     private func setupSegmentedControl() {
@@ -106,21 +119,12 @@ class AddMealViewController: UIViewController {
         }
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.separatorStyle = .none
-        tableView.backgroundColor = .white
         tableView.rowHeight = 60
-        tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+        tableView.sectionHeaderTopPadding = 0
+        tableView.sectionHeaderHeight = 0
+        tableView.sectionFooterHeight = 0
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "FoodItemCell")
-        
-        if #available(iOS 11.0, *) {
-            tableView.insetsContentViewsToSafeArea = false
-        }
-        tableView.separatorInset = .zero
-        if #available(iOS 13.0, *) {
-            tableView.directionalLayoutMargins = .zero
-        }
-        tableView.layoutMargins = .zero
-        tableView.cellLayoutMarginsFollowReadableWidth = false
+
     }
     
     // MARK: - Data Loading
@@ -378,10 +382,7 @@ extension AddMealViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseId)
             ?? UITableViewCell(style: .subtitle, reuseIdentifier: reuseId)
         
-        cell.separatorInset = .zero
-        cell.layoutMargins = .zero
-        cell.preservesSuperviewLayoutMargins = false
-        cell.contentView.preservesSuperviewLayoutMargins = false
+        cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
         cell.selectionStyle = .none
         
         if isShowingRecent {
