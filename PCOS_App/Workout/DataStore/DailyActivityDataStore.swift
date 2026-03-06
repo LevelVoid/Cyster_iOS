@@ -107,7 +107,21 @@ class DailyActivityDataStore {
         activity.addWorkout(durationSeconds: workout.durationSeconds)
         save(activity)
     }
-    
+
+    /// Merges real HealthKit steps and calories into today's activity, replacing estimated values.
+    /// HealthKit data always takes priority over duration-based estimates.
+    func mergeHealthKitData(date: Date = Date(), steps: Int, calories: Int) {
+        let calendar = Calendar.current
+        let targetDate = calendar.startOfDay(for: date)
+        var activity = getActivity(for: targetDate) ?? DailyActivity(date: targetDate)
+
+        // Replace estimated values with real HealthKit data
+        if steps > 0    { activity.steps = steps }
+        if calories > 0 { activity.caloriesBurned = calories }
+
+        save(activity)
+    }
+
     func clearAll() {
         userDefaults.removeObject(forKey: key)
     }

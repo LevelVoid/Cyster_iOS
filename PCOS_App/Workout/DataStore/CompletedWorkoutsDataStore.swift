@@ -136,9 +136,11 @@ extension CompletedWorkoutsDataStore {
         ]
 
         // MARK: - Completed Workout
+        let workoutStart = calendar.date(byAdding: .minute, value: -30, to: Date()) ?? today
         let completedWorkout = CompletedWorkout(
             routineName: "Full Body Beginner",
             date: today,
+            startTime: workoutStart,
             durationSeconds: 1800, // 30 mins
             exercises: workoutExercises
         )

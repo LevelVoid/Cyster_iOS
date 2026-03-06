@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSHealthShareUsageDescription</key>
+	<string>PCOS App reads your steps, calories, heart rate, and sleep data to help you track your health journey.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>PCOS App may write workout summaries to Apple Health for a complete picture of your activity.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

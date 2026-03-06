@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import HealthKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -13,7 +14,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        // Request HealthKit authorization up-front so the permission sheet
+        // appears at launch rather than mid-workout.
+        HealthKitManager.shared.requestAuthorization { granted, error in
+            if let error = error {
+                print("HealthKit auth error: \(error.localizedDescription)")
+            } else {
+                print("HealthKit authorization granted: \(granted)")
+            }
+        }
         return true
     }
 

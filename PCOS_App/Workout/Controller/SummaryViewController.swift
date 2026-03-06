@@ -1,11 +1,5 @@
-//
-//  SummaryViewController.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 11/12/25.
-//
-
 import UIKit
+import HealthKit
 
 class SummaryViewController: UIViewController {
     
@@ -32,6 +26,9 @@ class SummaryViewController: UIViewController {
     @IBOutlet weak var exercisesCard: UIView!
     @IBOutlet weak var durationCard: UIView!
     
+    /// Small label below the calorie number to show data source ("via Apple Watch", "Estimated")
+    private var caloriesSourceLabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -40,25 +37,45 @@ class SummaryViewController: UIViewController {
         
         navigationItem.hidesBackButton = true
         
-        
-        
+        addCaloriesSourceLabel()
         setupUI()
         applyCardStyling()
         showConfetti()
+        
+        // Async: try to get better calorie estimate from HealthKit / Apple Watch
+        fetchBestCalorieEstimate()
     }
     
+    // MARK: - Calories Source Label
+    
+    /// Adds a small subtitle under the calorie value label indicating data source
+    private func addCaloriesSourceLabel() {
+        guard caloriesCard != nil else { return }
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 11, weight: .regular)
+        label.textColor = .secondaryLabel
+        label.textAlignment = .center
+        label.text = "Calculating…"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        caloriesCard.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: caloriesCard.centerXAnchor),
+            label.bottomAnchor.constraint(equalTo: caloriesCard.bottomAnchor, constant: -12)
+        ])
+        caloriesSourceLabel = label
+    }
     
     func setupUI() {
-        containerView.layer.cornerRadius=24
+        containerView.layer.cornerRadius = 24
         
         // ---- DURATION ----
         let totalSeconds = completedWorkout.durationSeconds
         durationValueLabel.text = formatDuration(totalSeconds)
     
         
-        // ---- CALORIES ----
-        let calories = Double(totalSeconds) * 0.18
-        caloriesValueLabel.text = String(format: "%.0f", calories)
+        // ---- CALORIES (fallback estimate) ----
+        let estimatedCalories = Double(totalSeconds) * 0.18
+        caloriesValueLabel.text = String(format: "%.0f", estimatedCalories)
         
         
         // ---- EXERCISES DONE ----
@@ -68,6 +85,61 @@ class SummaryViewController: UIViewController {
         
         exercisesDoneLabel.text = "\(completedExercises)"
     }
+
+    // MARK: - HealthKit Calorie Calculation
+    
+    /// Attempts to get the best calorie estimate using the following priority:
+    /// 1. Apple Watch activeEnergyBurned via HealthKit
+    /// 2. Keytel formula from Apple Watch heart rate
+    /// 3. Duration-based estimate (already shown in setupUI)
+    private func fetchBestCalorieEstimate() {
+        // First try: HealthKit active calories (whole day — Apple Watch / Fitness app)
+        HealthKitManager.shared.fetchTodayActiveCalories { [weak self] totalDayCals in
+            guard let self = self else { return }
+            
+            if totalDayCals > 0 {
+                // Use the full-day active calories as it's real Apple Watch data
+                DispatchQueue.main.async {
+                    self.caloriesValueLabel.text = String(format: "%.0f", totalDayCals)
+                    self.caloriesSourceLabel?.text = "via Apple Health"
+                }
+            } else {
+                // Second try: Keytel formula from heart rate during THIS workout
+                self.fetchHeartRateBasedCalories()
+            }
+        }
+    }
+    
+    private func fetchHeartRateBasedCalories() {
+        let start = completedWorkout.startTime
+        let end = start.addingTimeInterval(TimeInterval(completedWorkout.durationSeconds))
+        
+        HealthKitManager.shared.fetchHeartRate(from: start, to: end) { [weak self] avgHR in
+            guard let self = self else { return }
+            
+            if let avgHR = avgHR, avgHR > 0 {
+                let durationMin = Double(self.completedWorkout.durationSeconds) / 60.0
+                let hkm = HealthKitManager.shared
+                let calories = hkm.estimateCaloriesFromHeartRate(
+                    avgHR: avgHR,
+                    ageYears: hkm.userAge,
+                    weightKg: hkm.userWeightKg,
+                    durationMin: durationMin,
+                    isFemale: true
+                )
+                DispatchQueue.main.async {
+                    self.caloriesValueLabel.text = String(format: "%.0f", calories)
+                    self.caloriesSourceLabel?.text = "via Apple Watch ♥ \(Int(avgHR)) bpm"
+                }
+            } else {
+                // Fallback — duration estimate already shown; just update label
+                DispatchQueue.main.async {
+                    self.caloriesSourceLabel?.text = "Estimated"
+                }
+            }
+        }
+    }
+
     
     func applyCardStyling() {
         let cards = [caloriesCard, exercisesCard, durationCard]

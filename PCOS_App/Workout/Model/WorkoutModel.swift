@@ -307,13 +307,13 @@ struct ActiveWorkout {
         
     }
 }
-struct CompletedWorkout : Codable {
+struct CompletedWorkout: Codable {
     var id = UUID()
     var routineName: String
     var date: Date
+    var startTime: Date        // used for Apple Watch HR query window
     var durationSeconds: Int
     var exercises: [WorkoutExercise]
-    
 }
 //read why using class and not struct here
 class WorkoutSessionManager {

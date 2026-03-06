@@ -708,6 +708,7 @@ class WorkoutPlayerViewController: UIViewController {
             let completed = CompletedWorkout(
                 routineName: activeWorkout.routine.name,
                 date: Date(),
+                startTime: activeWorkout.startTime,
                 durationSeconds: activeWorkout.durationSeconds,
                 exercises: activeWorkout.exercises
             )
@@ -719,25 +720,25 @@ class WorkoutPlayerViewController: UIViewController {
     private func finishWorkoutAndShowSummary() {
             timer?.invalidate()
             
-            let elapsed = Int(Date().timeIntervalSince(activeWorkout.startTime))
+            let workoutStart = activeWorkout.startTime
+            let elapsed = Int(Date().timeIntervalSince(workoutStart))
             activeWorkout.durationSeconds = elapsed
             activeWorkout.finish()
             
             let completedWorkout = CompletedWorkout(
                 routineName: activeWorkout.routine.name,
                 date: Date(),
+                startTime: workoutStart,
                 durationSeconds: elapsed,
                 exercises: activeWorkout.exercises
             )
-            //now completed workout added to the list of completed wokrouts 
             WorkoutSessionManager.shared.completedWorkouts.append(completedWorkout)
             
             let summaryVC = UIStoryboard(name: "Workout", bundle: nil)
                 .instantiateViewController(withIdentifier: "SummaryViewController") as! SummaryViewController
             
             summaryVC.completedWorkout = completedWorkout
-        navigationController?.pushViewController(summaryVC, animated: true)
-        
+            navigationController?.pushViewController(summaryVC, animated: true)
         }
    //UNCOMMENT IF NEED : SKIP EXERCSIE instead of set
     

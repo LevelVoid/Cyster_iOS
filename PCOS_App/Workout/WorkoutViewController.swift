@@ -401,6 +401,9 @@ extension WorkoutViewController {
             print(i.name, i.done, i.toBeDone)
         }
         collectionView.reloadData()
+        
+        // Fetch live HealthKit data and update cards + DataStore
+        fetchHealthKitData()
     }
     
     // NEW METHOD: Sync all completed workouts to activity store
@@ -414,5 +417,49 @@ extension WorkoutViewController {
         }
         
         print("Sync complete!")
+    }
+    
+    // MARK: - HealthKit Live Data
+    
+    /// Fetches today's real steps and calories from HealthKit and updates both the UI cards
+    /// and the DailyActivityDataStore (so MetricsViewController charts also reflect real data).
+    private func fetchHealthKitData() {
+        var hkSteps: Int = 0
+        var hkCalories: Double = 0
+        let group = DispatchGroup()
+        
+        // --- Steps ---
+        group.enter()
+        HealthKitManager.shared.fetchTodaySteps { steps in
+            hkSteps = steps
+            group.leave()
+        }
+        
+        // --- Active Calories ---
+        group.enter()
+        HealthKitManager.shared.fetchTodayActiveCalories { cals in
+            hkCalories = cals
+            group.leave()
+        }
+        
+        group.notify(queue: .main) { [weak self] in
+            guard let self = self else { return }
+            
+            // Update goal cards with real values
+            if hkSteps > 0 {
+                self.cards[1].done = Double(hkSteps)   // Steps card (index 1)
+            }
+            if hkCalories > 0 {
+                self.cards[0].done = hkCalories        // Cals burnt card (index 0)
+            }
+            
+            // Persist into DataStore so MetricsViewController charts reflect real HK data
+            DailyActivityDataStore.shared.mergeHealthKitData(
+                steps: hkSteps,
+                calories: Int(hkCalories)
+            )
+            
+            self.collectionView.reloadData()
+        }
     }
 }

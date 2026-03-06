@@ -8,7 +8,9 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     private var recommendationCards: [Recommendation] = recommendations
     private var allSymptoms: [SymptomItem] = []
     private var aboutPCOSArticles: [AboutPCOSSection] = []
-    
+    /// Cached sleep data fetched from HealthKit — nil until first fetch or if not available
+    private var sleepData: SleepData? = nil
+
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.prefersLargeTitles = false
@@ -53,6 +55,22 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         loadTodaysSymptoms()
         buildDisplaySignals()
         collectionView.reloadData()
+        
+        // Fetch last night's sleep from HealthKit
+        fetchSleepData()
+    }
+
+    // MARK: - HealthKit Sleep Fetch
+
+    private func fetchSleepData() {
+        HealthKitManager.shared.fetchSleepLastNight { [weak self] data in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.sleepData = data
+                // Reload only the sleep card section (4)
+                self.collectionView.reloadSections(IndexSet(integer: 4))
+            }
+        }
     }
 
     private func loadTodaysSymptoms() {
@@ -534,6 +552,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
                 withReuseIdentifier: "sleep_card_cell",
                 for: indexPath
             ) as! SleepCardCollectionViewCell
+            cell.configure(with: sleepData)
             return cell
             
         case 5:
