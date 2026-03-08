@@ -22,9 +22,7 @@ class QuickActionsCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var carbsCompleted: UILabel!
     @IBOutlet weak var proteinCompleted: UILabel!
     
-//    @IBOutlet weak var dietRecView: UIView!
-//    @IBOutlet weak var workoutRecView: UIView!
-    
+ 
     weak var delegate: QuickActionsDelegate?
     
     override func awakeFromNib() {
@@ -36,6 +34,7 @@ class QuickActionsCollectionViewCell: UICollectionViewCell {
     }
     
     func configure() {
+        // Diet Data from Core Data
         let totals = FoodLogDataSource.todaysMeal.reduce(into: (0.0, 0.0, 0.0)) { result, food in
             result.0 += food.proteinContent
             result.1 += food.carbsContent
@@ -44,7 +43,19 @@ class QuickActionsCollectionViewCell: UICollectionViewCell {
         proteinCompleted.text = "\(Int(totals.0))"
         carbsCompleted.text = "\(Int(totals.1))"
         fatsCompleted.text = "\(Int(totals.2))"
+        
+        // Workout Data from Core Data (CDDailyContext)
+        let allActivities = DailyActivityDataStore.shared.loadAll()
+        let calendar = Calendar.current
+        let todayActivity = allActivities.first(where: { calendar.isDateInToday($0.date) })
+        
+        let todayMinutes = (todayActivity?.activeDurationSeconds ?? 0) / 60
+        let todaySteps = todayActivity?.steps ?? 0
+        
+        durationCompleted.text = "\(todayMinutes)"
+        stepsCompleted.text = "\(todaySteps)"
     }
+
 
     @IBAction func addMeal(_ sender: Any) {
         delegate?.quickActionsDidTapAddMeal()

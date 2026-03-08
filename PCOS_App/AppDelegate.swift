@@ -84,7 +84,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         print("📂 Core Data path: \(NSPersistentContainer.defaultDirectoryURL())")
-
+        FoodLogDataSource.seedSampleDataIfNeeded()
         return true
     }
 

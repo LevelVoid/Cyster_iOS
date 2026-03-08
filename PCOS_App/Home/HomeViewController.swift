@@ -400,12 +400,6 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         collectionView.reloadData()
     }
     
-//    private func getTodaysKey() -> String {
-//        let formatter = DateFormatter()
-//        formatter.dateFormat = "yyyy-MM-dd"
-//        return "symptoms_\(formatter.string(from: Date()))"
-//    }
-    
     // MARK: - Segue
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -441,21 +435,42 @@ extension HomeViewController: QuickActionsDelegate {
             print("Error: Could not instantiate AddMealViewController")
             return
         }
+        addMealVC.delegate = self      // ← was missing!
         addMealVC.dietDelegate = self
         navigationController?.pushViewController(addMealVC, animated: true)
     }
+
     
     func quickActionsDidTapStartWorkout() {
         // Navigate to your workout VC here
     }
 }
 
-// MARK: - AddDescribedMealDelegate
-extension HomeViewController: AddDescribedMealDelegate {
-    func didConfirmMeal(_ food: Food) {
+// MARK: - AddMealDelegate
+extension HomeViewController: AddMealDelegate {
+    func didAddMeal(_ food: Food) {
+        FoodLogDataSource.addFoodBarCode(food)
+        navigationController?.popToRootViewController(animated: true)
         collectionView.reloadSections(IndexSet(integer: 2))
     }
 }
+
+
+// MARK: - AddDescribedMealDelegate
+extension HomeViewController: AddDescribedMealDelegate {
+    func didConfirmMeal(_ food: Food) {
+        FoodLogDataSource.addFoodBarCode(food)
+        if presentedViewController != nil {
+            dismiss(animated: true) { [weak self] in
+                self?.navigationController?.popToRootViewController(animated: true)
+            }
+        } else {
+            navigationController?.popToRootViewController(animated: true)
+        }
+        collectionView.reloadSections(IndexSet(integer: 2))
+    }
+}
+
 
 // MARK: - UICollectionViewDataSource & Delegate
 extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {

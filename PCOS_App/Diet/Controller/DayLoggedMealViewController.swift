@@ -76,9 +76,9 @@ class DayLoggedMealViewController: UIViewController {
             let selectedDayEnd = calendar.date(byAdding: .day, value: 1, to: selectedDayStart)!
             
             meals = allMeals.filter { meal in
-                meal.isLogged && meal.timeStamp >= selectedDayStart && meal.timeStamp < selectedDayEnd
+                meal.timeStamp >= selectedDayStart && meal.timeStamp < selectedDayEnd
             }.sorted { $0.timeStamp < $1.timeStamp }
-            
+
             if meals.isEmpty {
                 daysMeal.isHidden = true
                 noMealsLabel.isHidden = false

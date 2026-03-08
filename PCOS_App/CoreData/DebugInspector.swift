@@ -138,6 +138,29 @@ struct DebugInspector {
                 print("║    (empty)")
             }
         }
+        
+        // CDFoodLog
+        let foodRequest: NSFetchRequest<CDFoodLog> = CDFoodLog.fetchRequest()
+        foodRequest.sortDescriptors = [NSSortDescriptor(key: "timeStamp", ascending: false)]
+        foodRequest.fetchLimit = 10
+        if let foods = try? context.fetch(foodRequest) {
+            print("║                                                              ║")
+            print("║  🍽️ CDFoodLog (\(foods.count) shown, limit 10)                ║")
+            let formatter = DateFormatter()
+            formatter.dateFormat = "dd MMM HH:mm"
+            for f in foods {
+                let d = f.timeStamp != nil ? formatter.string(from: f.timeStamp!) : "nil"
+                let name = f.name ?? "?"
+                let p = Int(f.proteinContent)
+                let c = Int(f.carbsContent)
+                let fat = Int(f.fatsContent)
+                print("║    [\(d)] \(name) | P:\(p) C:\(c) F:\(fat)")
+            }
+            if foods.isEmpty {
+                print("║    (empty)")
+            }
+        }
+
 
         
         print("║  ─────────────────────────────────────────────────────────── ║")

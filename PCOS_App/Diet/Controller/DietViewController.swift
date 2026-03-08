@@ -188,16 +188,11 @@ class DietViewController: UIViewController {
     // MARK: - Data
 
     private func filterTodaysFoods() {
-        let startOfToday = Calendar.current.startOfDay(for: Date())
-        let startOfTomorrow = Calendar.current.date(byAdding: .day, value: 1, to: startOfToday)!
-        todaysFoods = FoodLogDataSource.sampleFoods.filter {
-            $0.timeStamp >= startOfToday && $0.timeStamp < startOfTomorrow
-        }.sorted { $0.timeStamp > $1.timeStamp }
+        todaysFoods = FoodLogDataSource.todaysMeal.sorted { $0.timeStamp > $1.timeStamp }
 
         tableView.reloadData()
 
         if todaysFoods.isEmpty {
-            // Small delay so the section header has been laid out before we read its frame
             DispatchQueue.main.async {
                 self.showQuoteCard()
             }

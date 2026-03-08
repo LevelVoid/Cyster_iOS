@@ -138,7 +138,6 @@ class AddMealViewController: UIViewController {
     private func loadRecentMeals() {
         let allMeals = FoodLogDataSource.sampleFoods
         recentMeals = Array(allMeals
-            .filter { $0.isLogged }
             .sorted { $0.timeStamp > $1.timeStamp }
             .prefix(5))
         filteredRecentMeals = recentMeals
