@@ -100,6 +100,44 @@ struct DebugInspector {
                 print("║    (empty)")
             }
         }
+        
+        // CDDailyContext
+        let contextRequest: NSFetchRequest<CDDailyContext> = CDDailyContext.fetchRequest()
+        contextRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        contextRequest.fetchLimit = 7
+        if let dailyContexts = try? context.fetch(contextRequest) {
+            print("║                                                              ║")
+            print("║  📅 CDDailyContext (\(dailyContexts.count) shown, limit 7)   ║")
+            let formatter = DateFormatter()
+            formatter.dateFormat = "dd MMM yyyy"
+            for c in dailyContexts {
+                let d = c.date != nil ? formatter.string(from: c.date!) : "nil"
+                print("║    [\(d)] Steps: \(c.steps)  |  Cals: \(c.totalCalories)  |  Active: \(c.activeDurationSeconds)s")
+            }
+            if dailyContexts.isEmpty {
+                print("║    (empty)")
+            }
+        }
+
+        // CDCompletedWorkout
+        let workoutRequest: NSFetchRequest<CDCompletedWorkout> = CDCompletedWorkout.fetchRequest()
+        workoutRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        workoutRequest.fetchLimit = 3
+        if let workouts = try? context.fetch(workoutRequest) {
+            print("║                                                              ║")
+            print("║  🏋️ CDCompletedWorkout (\(workouts.count) shown, limit 3)    ║")
+            let formatter = DateFormatter()
+            formatter.dateFormat = "dd MMM yyyy"
+            for w in workouts {
+                let d = w.date != nil ? formatter.string(from: w.date!) : "nil"
+                let name = w.routineName ?? "Unknown"
+                let exCount = w.exercises.count
+                print("║    [\(d)] \(name) | \(Int(w.durationSeconds/60))m | \(exCount) exercises")
+            }
+            if workouts.isEmpty {
+                print("║    (empty)")
+            }
+        }
 
         
         print("║  ─────────────────────────────────────────────────────────── ║")

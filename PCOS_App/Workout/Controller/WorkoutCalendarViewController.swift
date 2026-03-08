@@ -101,12 +101,10 @@ class WorkoutCalendarViewController: UIViewController {
         workoutDates.removeAll()
 
         let today = Date()
-        for i in 0..<365 {
-            if let date = calendar.date(byAdding: .day, value: -i, to: today) {
-                if CompletedWorkoutsDataStore.shared.hasCompletedWorkout(on: date) {
-                    workoutDates.insert(calendar.startOfDay(for: date))
-                }
-            }
+        // Fetch all workouts once and map them to their start-of-day dates
+        let allWorkouts = CompletedWorkoutsDataStore.shared.loadAll()
+        for workout in allWorkouts {
+            workoutDates.insert(calendar.startOfDay(for: workout.date))
         }
     }
 
@@ -150,7 +148,7 @@ class WorkoutCalendarViewController: UIViewController {
     }
     
     private func hasWorkout(_ date: Date) -> Bool {
-        CompletedWorkoutsDataStore.shared.hasCompletedWorkout(on: date)
+        workoutDates.contains(calendar.startOfDay(for: date))
     }
 
     
