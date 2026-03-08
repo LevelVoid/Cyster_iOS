@@ -83,6 +83,25 @@ struct DebugInspector {
             }
         }
         
+        // CDSymptomLog
+        let symptomRequest: NSFetchRequest<CDSymptomLog> = CDSymptomLog.fetchRequest()
+        symptomRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        symptomRequest.fetchLimit = 20
+        if let symptoms = try? context.fetch(symptomRequest) {
+            print("║                                                              ║")
+            print("║  🩺 CDSymptomLog (\(symptoms.count) shown, limit 20)         ║")
+            let formatter = DateFormatter()
+            formatter.dateFormat = "dd MMM"
+            for s in symptoms {
+                let d = s.date != nil ? formatter.string(from: s.date!) : "nil"
+                print("║    [\(d)] \(s.symptomName ?? "?") (\(s.symptomCategory ?? "?"))")
+            }
+            if symptoms.isEmpty {
+                print("║    (empty)")
+            }
+        }
+
+        
         print("║  ─────────────────────────────────────────────────────────── ║")
     }
     

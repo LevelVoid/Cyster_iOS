@@ -13,7 +13,7 @@ import UIKit
 class SymptomLoggerViewController: UIViewController {
     //var viewModel: SymptomLoggerViewModel = SymptomLoggerViewModel()
     
-    
+    var logDate: Date = Date()  // defaults to today
     @IBOutlet weak var collectionView: UICollectionView!
     weak var delegate: DataPassDelegate?
     private var categories = SymptomCategory.allCategories
@@ -100,7 +100,7 @@ class SymptomLoggerViewController: UIViewController {
                 name: symptom.name,
                 icon: symptom.icon,
                 isSelected: true,
-                date: Date(),
+                date: logDate,
                 category: symptom.category
             )
             symptoms.append(logged)
