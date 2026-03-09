@@ -14,8 +14,6 @@ struct Food: Codable, Identifiable {
     var timeStamp: Date
     var servingSize: Double
     var weight: Double? //Add more values for testing in datasource
-    var isSelected: Bool = false
-    var isLogged: Bool = false
     var desc: String = ""
     // Base macros (if not ingredient-based)
     var proteinContent: Double
@@ -113,7 +111,7 @@ extension OFFProduct{
             let food: Food = Food(
                 id: UUID(),
                 name: product_name ?? "Unknown Food",
-                image: "dietPlaceholder",
+                image: image_url,
                 timeStamp: Date(),
                 servingSize: 100,
                 proteinContent: nutr?.proteins100g ?? 0,

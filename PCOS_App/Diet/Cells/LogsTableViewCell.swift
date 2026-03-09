@@ -35,10 +35,24 @@ class LogsTableViewCell: UITableViewCell {
         carbs.text = "\(Int(log.carbsContent))g"
         protein.text = "\(Int(log.proteinContent))g"
         calories.text = "\(Int(log.calories))kcal"
-        foodImg.image = UIImage(named: log.image ?? "biryani")
         innerCell.layer.cornerRadius = 16
         foodImg.clipsToBounds = true
         foodImg.layer.cornerRadius = 12
+        
+        // Image loading with full fallback chain
+        if let imageName = log.image, imageName.hasPrefix("http"),
+           let url = URL(string: imageName) {
+            // Remote URL → load async with placeholder
+            foodImg.image = UIImage(named: "dietPlaceholder")
+            loadImage(from: url)
+        } else if let imageName = log.image, !imageName.isEmpty,
+                  let localImg = UIImage(named: imageName) {
+            // Valid local asset
+            foodImg.image = localImg
+        } else {
+            // No URL, no local image → placeholder
+            foodImg.image = UIImage(named: "dietPlaceholder")
+        }
     }
 
     private func loadImage(from url: URL) {

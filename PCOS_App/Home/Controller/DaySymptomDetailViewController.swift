@@ -113,44 +113,26 @@ class DaySymptomDetailViewController: UIViewController, UITableViewDataSource, U
             }
         }
         
-        private func calculateCycleDay(for date: Date) -> Int? {
-            // Load period dates from UserDefaults
-            guard let timestamps = UserDefaults.standard.array(forKey: "SavedPeriodDates") as? [TimeInterval] else {
-                return nil
+    private func calculateCycleDay(for date: Date) -> Int? {
+        let cycles = CycleDataStore.shared.cycles
+        let selectedDay = calendar.startOfDay(for: date)
+        
+        // Find the cycle that contains this date
+        for cycle in cycles {
+            let cycleStart = calendar.startOfDay(for: cycle.startDate)
+            guard cycleStart <= selectedDay else { continue }
+            
+            let daysDiff = calendar.dateComponents([.day], from: cycleStart, to: selectedDay).day ?? 0
+            let cycleDay = daysDiff + 1
+            
+            // Check if this date falls within this cycle
+            if cycleDay <= cycle.cycleLength {
+                return cycleDay
             }
-            
-            let periodDates = timestamps.map { calendar.startOfDay(for: Date(timeIntervalSince1970: $0)) }
-                .sorted()
-            
-            guard !periodDates.isEmpty else {
-                return nil
-            }
-            
-            let selectedDayStart = calendar.startOfDay(for: date)
-            
-            // Find the most recent period start date on or before the selected date
-            var lastPeriodStart: Date?
-            
-            for periodDate in periodDates.reversed() {
-                if periodDate <= selectedDayStart {
-                    lastPeriodStart = periodDate
-                    break
-                }
-            }
-            
-            guard let periodStart = lastPeriodStart else {
-                return nil
-            }
-            
-            // Calculate days since period start
-            let components = calendar.dateComponents([.day], from: periodStart, to: selectedDayStart)
-            
-            if let days = components.day {
-                return days + 1 // Cycle day 1 is the first day of period
-            }
-            
-            return nil
         }
+        return nil
+    }
+
         
         // Public Method to Update Date
         func updateDate(_ newDate: Date) {
@@ -174,7 +156,7 @@ class DaySymptomDetailViewController: UIViewController, UITableViewDataSource, U
             
             // Pass currently selected symptoms
             symptomLoggerVC.setSelectedSymptoms(symptoms)
-            
+            symptomLoggerVC.logDate = selectedDate
             // Set up delegate
             symptomLoggerVC.delegate = self
             

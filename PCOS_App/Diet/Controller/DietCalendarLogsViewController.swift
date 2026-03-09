@@ -82,15 +82,8 @@ class DietCalendarLogsViewController: UIViewController {
     
     // MARK: - Data Loading
     private func loadMealDates() {
-        mealDates.removeAll()
-        
-        let allMeals = FoodLogDataSource.sampleFoods
-        for meal in allMeals where meal.isLogged {
-            let dayStart = calendar.startOfDay(for: meal.timeStamp)
-            mealDates.insert(dayStart)
-        }
-        
-        print("DEBUG: Loaded \(mealDates.count) dates with logged meals")
+        mealDates = FoodLogDataSource.allMealDates()
+        print("DEBUG: Loaded \(mealDates.count) dates with meals from Core Data")
     }
     
     // MARK: - Helper Methods

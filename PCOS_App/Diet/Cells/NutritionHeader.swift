@@ -115,33 +115,34 @@ class NutritionHeader: UITableViewHeaderFooterView {
     }
     
     
-    func setValues(){
-        for index in FoodLogDataSource.todaysMeal.indices {
-            var food = FoodLogDataSource.todaysMeal[index]
-            if !food.isLogged {
-                calories += food.calories
-                fats += food.fatsContent
-                protein += food.proteinContent
-                carbs += food.carbsContent
-
-                // mark as logged on the actual element
-                food.isLogged = true // or food.toggleLog()
-                let ptr = FoodLogDataSource.sampleFoods.firstIndex(where: {$0.id == food.id})
-                FoodLogDataSource.sampleFoods[ptr!] = food// write back
-            }
+    func setValues() {
+        // Reset accumulators
+        calories = 0
+        fats = 0
+        protein = 0
+        carbs = 0
+        
+        // Simply sum today's meals from Core Data — no mutation needed
+        for food in FoodLogDataSource.todaysMeal {
+            calories += food.calories
+            fats += food.fatsContent
+            protein += food.proteinContent
+            carbs += food.carbsContent
         }
+        
         calToBeConsumed.text = "/2000kcal"
         caloriesConsumed.text = "\(Int(calories))"
         fatsGm.text = "\(Int(fats))"
         proteinGm.text = "\(Int(protein))"
         carbsGm.text = "\(Int(carbs))"
         
-        fatsProgress.progress = Float(fats/60)
-        carbsProgress.progress = Float(carbs/180)
-        proteinProgress.progress = Float(protein/90)
+        fatsProgress.progress = Float(fats / 60)
+        carbsProgress.progress = Float(carbs / 180)
+        proteinProgress.progress = Float(protein / 90)
         
-        progressCircle.setProgress(to: Float(calories)/2000)
+        progressCircle.setProgress(to: Float(calories) / 2000)
     }
+
     
     func updateValues(_ food: Food){
         calories += food.calories

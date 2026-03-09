@@ -64,10 +64,13 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Refresh allSymptoms so symptoms logged via the calendar are immediately reflected
-        allSymptoms = SymptomDataStore.loadAllSymptomsLastNDays(365)
+        #if DEBUG
+        DebugInspector.printAll()
+        #endif
         loadTodaysSymptoms()
+        allSymptoms = SymptomDataStore.loadAllSymptomsLastNDays(30)
         buildDisplaySignals()
+        collectionView.collectionViewLayout = createCompositionalLayout()
         collectionView.reloadData()
         
         loadTodaySleepLog()
@@ -174,22 +177,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     
     
     private func loadTodaysSymptoms() {
-        if let data = UserDefaults.standard.data(forKey: "todaysSymptoms"),
-           let symptoms = try? JSONDecoder().decode([SymptomItem].self, from: data) {
-            let calendar = Calendar.current
-            let today = calendar.startOfDay(for: Date())
-            let todaysSymptoms = symptoms.filter { symptom in
-                let symptomDate = calendar.startOfDay(for: symptom.date!)
-                return symptomDate == today
-            }
-            selectedSymptoms = todaysSymptoms
-            if let encoded = try? JSONEncoder().encode(todaysSymptoms) {
-                UserDefaults.standard.set(encoded, forKey: "todaysSymptoms")
-            }
-            DispatchQueue.main.async { [weak self] in
-                self?.collectionView.reloadData()
-            }
-        }
+        selectedSymptoms = SymptomDataStore.loadSymptoms(for: Date())
     }
     private func loadTodaySleepLog() {
         todaySleepLog = SleepDataStore.shared.loadTodaySleepLog()
@@ -488,15 +476,13 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     
     func passData(symptoms: [SymptomItem]) -> [SymptomItem] {
         self.selectedSymptoms = symptoms
-        let todaysKey = self.getTodaysKey()
-        if let encoded = try? JSONEncoder().encode(symptoms) {
-            UserDefaults.standard.set(encoded, forKey: todaysKey)
-        }
+        SymptomDataStore.saveSymptoms(symptoms, for: Date())
         DispatchQueue.main.async { [weak self] in
             self?.collectionView.reloadData()
         }
         return symptoms
     }
+
     
     // MARK: - HomeHeaderCollectionViewCellDelegate
     
@@ -523,12 +509,6 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         collectionView.reloadData()
     }
     
-    private func getTodaysKey() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return "symptoms_\(formatter.string(from: Date()))"
-    }
-    
     // MARK: - Segue
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -539,10 +519,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             symptomLoggerVC.onSymptomsSelected = { [weak self] symptoms in
                 guard let self = self else { return }
                 self.selectedSymptoms = symptoms
-                let todaysKey = self.getTodaysKey()
-                if let encoded = try? JSONEncoder().encode(symptoms) {
-                    UserDefaults.standard.set(encoded, forKey: todaysKey)
-                }
+                SymptomDataStore.saveSymptoms(symptoms, for: Date())
                 DispatchQueue.main.async {
                     self.collectionView.reloadData()
                 }
@@ -572,9 +549,11 @@ extension HomeViewController: QuickActionsDelegate {
             print("Error: Could not instantiate AddMealViewController")
             return
         }
+        addMealVC.delegate = self      // ← was missing!
         addMealVC.dietDelegate = self
         navigationController?.pushViewController(addMealVC, animated: true)
     }
+
     
     func quickActionsDidTapStartWorkout() {
         let currentPhase = CycleDataStore.shared.currentPhaseInfo().phase
@@ -592,12 +571,31 @@ extension HomeViewController: QuickActionsDelegate {
     }
 }
 
-// MARK: - AddDescribedMealDelegate
-extension HomeViewController: AddDescribedMealDelegate {
-    func didConfirmMeal(_ food: Food) {
+// MARK: - AddMealDelegate
+extension HomeViewController: AddMealDelegate {
+    func didAddMeal(_ food: Food) {
+        FoodLogDataSource.addFoodBarCode(food)
+        navigationController?.popToRootViewController(animated: true)
         collectionView.reloadSections(IndexSet(integer: 2))
     }
 }
+
+
+// MARK: - AddDescribedMealDelegate
+extension HomeViewController: AddDescribedMealDelegate {
+    func didConfirmMeal(_ food: Food) {
+        FoodLogDataSource.addFoodBarCode(food)
+        if presentedViewController != nil {
+            dismiss(animated: true) { [weak self] in
+                self?.navigationController?.popToRootViewController(animated: true)
+            }
+        } else {
+            navigationController?.popToRootViewController(animated: true)
+        }
+        collectionView.reloadSections(IndexSet(integer: 2))
+    }
+}
+
 
 // MARK: - UICollectionViewDataSource & Delegate
 extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {

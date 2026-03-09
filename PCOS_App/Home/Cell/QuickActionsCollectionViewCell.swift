@@ -36,8 +36,8 @@ class QuickActionsCollectionViewCell: UICollectionViewCell {
         workoutActionCard.layer.cornerRadius = 20
     }
     
-    func configure(steps: Int = 0, calories: Int = 0, duration: Int = 0, recommendedRoutineName: String? = nil) {
-        // Diet data
+    func configure() {
+        // Diet Data from Core Data
         let totals = FoodLogDataSource.todaysMeal.reduce(into: (0.0, 0.0, 0.0)) { result, food in
             result.0 += food.proteinContent
             result.1 += food.carbsContent
@@ -46,30 +46,19 @@ class QuickActionsCollectionViewCell: UICollectionViewCell {
         proteinCompleted.text = "\(Int(totals.0))"
         carbsCompleted.text = "\(Int(totals.1))"
         fatsCompleted.text = "\(Int(totals.2))"
-
-        // Workout data — mapped correctly based on Workout tab:
-        // Flame icon (calories): stepsCompleted / stepsGoal
-        // Walk icon (steps): durationCompleted / durationGoal
-        // Clock icon (duration): workoutDurationCompleted / workoutDurationGoal
         
-        stepsCompleted.text = "\(calories)"
-        stepsGoal?.text = "/ 300 cal"
+        // Workout Data from Core Data (CDDailyContext)
+        let allActivities = DailyActivityDataStore.shared.loadAll()
+        let calendar = Calendar.current
+        let todayActivity = allActivities.first(where: { calendar.isDateInToday($0.date) })
         
-        durationCompleted.text = "\(steps)"
-        durationGoal?.text = "/ 800"
+        let todayMinutes = (todayActivity?.activeDurationSeconds ?? 0) / 60
+        let todaySteps = todayActivity?.steps ?? 0
         
-        // Workout View Controller stores duration goal as 120s directly in the cards logic.
-        workoutDurationCompleted?.text = "\(duration)"
-        workoutDurationGoal?.text = "/ 120s"
-
-        // Set recommended routine name on the workout button
-//        if let routineName = recommendedRoutineName {
-//            workoutButton?.setTitle(routineName, for: .normal)
-//            var config = workoutButton?.configuration
-//            config?.title = routineName
-//            workoutButton?.configuration = config
-//        }
+        durationCompleted.text = "\(todayMinutes)"
+        stepsCompleted.text = "\(todaySteps)"
     }
+
 
     @IBAction func addMeal(_ sender: Any) {
         delegate?.quickActionsDidTapAddMeal()

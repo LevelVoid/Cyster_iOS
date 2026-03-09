@@ -202,7 +202,7 @@ class AddDescribedMealViewController: UIViewController {
         print("DEBUG: Calculated macros - P: \(totalProtein), C: \(totalCarbs), F: \(totalFat)")
         
         let tempFoodItem = FoodItem(
-            id: foodItem?.id ?? UUID(),
+            id: foodItem?.id ?? 0,
             name: foodItem?.name ?? food?.name ?? "Described Meal",
             calories: Int((totalProtein * 4) + (totalCarbs * 4) + (totalFat * 9)),
             image: (foodItem?.image ?? food?.image) ?? "dietPlaceholder",
@@ -273,8 +273,6 @@ class AddDescribedMealViewController: UIViewController {
                 timeStamp: Date(),
                 servingSize: food.servingSize * servingMultiplier,
                 weight: food.weight,
-                isSelected: false,
-                isLogged: true,
                 desc: food.desc,
                 proteinContent: totalProtein,
                 carbsContent: totalCarbs,
@@ -291,8 +289,6 @@ class AddDescribedMealViewController: UIViewController {
                 timeStamp: Date(),
                 servingSize: foodItem.servingSize * servingMultiplier,
                 weight: nil,
-                isSelected: false,
-                isLogged: true,
                 desc: foodItem.desc,
                 proteinContent: totalProtein,
                 carbsContent: totalCarbs,
