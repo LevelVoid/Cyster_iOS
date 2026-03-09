@@ -340,10 +340,14 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     func createCycleSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
-            heightDimension: .absolute(470)     //with text 500
+            heightDimension: .estimated(540)
+        )
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .estimated(540)
         )
         let group = NSCollectionLayoutGroup.vertical(
-            layoutSize: itemSize,
+            layoutSize: groupSize,
             subitems: [NSCollectionLayoutItem(layoutSize: itemSize)]
         )
         let section = NSCollectionLayoutSection(group: group)
@@ -813,8 +817,8 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
             }
         case 4:
             performSegue(withIdentifier: "showSleepReport", sender: nil)
-        case 5:
-            performSegue(withIdentifier: "showCycleReport", sender: nil)
+//        case 5:
+//            performSegue(withIdentifier: "showCycleReport", sender: nil)
             
         case 7:
             let article = aboutPCOSArticles[indexPath.item]
