@@ -7,11 +7,28 @@
 
 import Foundation
 
+// MARK: - SleepRating Enum
+enum SleepRating: Int, CaseIterable, Codable {
+    case deep = 4
+    case normal = 3
+    case light = 2
+    case disturbed = 1
+
+    var title: String {
+        switch self {
+        case .deep: return "Deep Sleep"
+        case .normal: return "Normal Sleep"
+        case .light: return "Light Sleep"
+        case .disturbed: return "Disturbed Sleep"
+        }
+    }
+}
+
 // MARK: - SleepLog Model
 struct SleepLog: Codable {
     let sleepTime: Date
     let wakeTime: Date
-    let rating: Double
+    let rating: SleepRating
 
     /// Total sleep duration in seconds
     var totalDuration: TimeInterval {

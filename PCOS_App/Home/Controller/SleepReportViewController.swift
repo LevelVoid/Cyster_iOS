@@ -9,52 +9,352 @@ import UIKit
 
 class SleepReportViewController: UIViewController {
 
+// MARK: - Properties
     @IBOutlet weak var observationCard: UIView!
     @IBOutlet weak var suggestionCard: UIView!
     @IBOutlet weak var chartContainerView: UIView!
     
-  
     @IBOutlet weak var sleepInfoCard: UIView!
     @IBOutlet weak var dietRec: UIView!
     @IBOutlet weak var workoutRec: UIView!
     @IBOutlet weak var miscRec: UIView!
     
     @IBOutlet weak var logSleepButton: UIButton!
-    private var dataPoints: [SleepChartDataModel] = []
-    private var hostingController: UIHostingController<AnyView>?
-    private var currentTimeRange: SleepChartTimeRange = .week
-    private var chartID = UUID()
+    
+    private var dataPoints: [SleepChartDataModel] = [] {
+        didSet { updateChart() }
+    }
+    
+    private var currentTimeRange: SleepChartTimeRange = .week {
+        didSet { updateChart() }
+    }
+    
+    // UI Components for Programmatic conversion
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
+    private let segmentedControl = UISegmentedControl(items: ["Week", "Month", "Year"])
+    private var nativeChartHostingController: UIHostingController<SleepChartView>?
+    
+    private let observedLabel = UILabel()
+    private let observationLoadingIndicator = UIActivityIndicatorView(style: .medium)
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Sleep Patterns"
-        navigationController?.navigationBar.prefersLargeTitles = false
+        // Hide navigation bar to use our custom top bar
+        navigationController?.setNavigationBarHidden(true, animated: false)
         
-        setupStyling()
+        // Hide all original storyboard ui elements entirely to prevent layout overlaps
+        view.subviews.forEach { $0.isHidden = true }
+        
+        setupProgrammaticUI()
         loadData(for: .week)
-        setupChart()
-        setupExistingLogButton()
     }
     
-
-    private func setupExistingLogButton() {
-        // Style the existing button found in the storyboard
-        logSleepButton.setTitle("Log Your Sleep", for: .normal)
-        logSleepButton.setTitleColor(.white, for: .normal)
-        logSleepButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
-        logSleepButton.backgroundColor = UIColor(hex: "#FE7A96")
-        logSleepButton.layer.cornerRadius = 20
-        logSleepButton.addTarget(self, action: #selector(logSleepTapped), for: .touchUpInside)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
 
-    @objc private func logSleepTapped() {
+    private func setupProgrammaticUI() {
+        view.backgroundColor = UIColor(hex: "#FCEEED")
+        
+        // 1. Scroll View
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.showsVerticalScrollIndicator = false
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor)
+        ])
+        
+        // 2. Navigation Header
+        let navBar = setupNavigationBar()
+        contentView.addSubview(navBar)
+        
+        NSLayoutConstraint.activate([
+            navBar.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            navBar.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
+            navBar.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24),
+            navBar.heightAnchor.constraint(equalToConstant: 44)
+        ])
+        
+        // 3. Chart Card
+        let chartCard = setupChartCard()
+        contentView.addSubview(chartCard)
+        
+        NSLayoutConstraint.activate([
+            chartCard.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 24),
+            chartCard.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
+            chartCard.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24)
+        ])
+        
+        // 4. Observations Section
+        let observationSection = setupObservationSection()
+        contentView.addSubview(observationSection)
+        
+        NSLayoutConstraint.activate([
+            observationSection.topAnchor.constraint(equalTo: chartCard.bottomAnchor, constant: 24),
+            observationSection.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            observationSection.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
+        ])
+        
+        // 5. Importance Section
+        let importanceSection = setupImportanceSection()
+        contentView.addSubview(importanceSection)
+        
+        NSLayoutConstraint.activate([
+            importanceSection.topAnchor.constraint(equalTo: observationSection.bottomAnchor, constant: 24),
+            importanceSection.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            importanceSection.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            importanceSection.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -40)
+        ])
+    }
+    
+    private func setupNavigationBar() -> UIView {
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        
+        let backBtn = UIButton(type: .system)
+        backBtn.translatesAutoresizingMaskIntoConstraints = false
+        backBtn.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        backBtn.tintColor = .black
+        backBtn.backgroundColor = .white
+        backBtn.layer.cornerRadius = 22
+        backBtn.layer.shadowColor = UIColor.black.cgColor
+        backBtn.layer.shadowOpacity = 0.05
+        backBtn.layer.shadowOffset = CGSize(width: 0, height: 2)
+        backBtn.layer.shadowRadius = 5
+        backBtn.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
+        
+        let titleLbl = UILabel()
+        titleLbl.translatesAutoresizingMaskIntoConstraints = false
+        titleLbl.text = "Sleep Patterns"
+        titleLbl.font = .systemFont(ofSize: 18, weight: .bold)
+        titleLbl.textColor = .black
+        titleLbl.textAlignment = .center
+        
+        let addBtn = UIButton(type: .system)
+        addBtn.translatesAutoresizingMaskIntoConstraints = false
+        addBtn.setImage(UIImage(systemName: "plus"), for: .normal)
+        addBtn.tintColor = .black
+        addBtn.backgroundColor = .white
+        addBtn.layer.cornerRadius = 22
+        addBtn.layer.shadowColor = UIColor.black.cgColor
+        addBtn.layer.shadowOpacity = 0.05
+        addBtn.layer.shadowOffset = CGSize(width: 0, height: 2)
+        addBtn.layer.shadowRadius = 5
+        addBtn.addTarget(self, action: #selector(presentSleepLogger), for: .touchUpInside)
+        
+        container.addSubview(backBtn)
+        container.addSubview(titleLbl)
+        container.addSubview(addBtn)
+        
+        NSLayoutConstraint.activate([
+            backBtn.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            backBtn.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            backBtn.widthAnchor.constraint(equalToConstant: 44),
+            backBtn.heightAnchor.constraint(equalToConstant: 44),
+            
+            titleLbl.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+            titleLbl.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            
+            addBtn.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            addBtn.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            addBtn.widthAnchor.constraint(equalToConstant: 44),
+            addBtn.heightAnchor.constraint(equalToConstant: 44),
+        ])
+        
+        return container
+    }
+    
+    private func setupChartCard() -> UIView {
+        let card = UIView()
+        card.translatesAutoresizingMaskIntoConstraints = false
+        card.backgroundColor = .white
+        card.layer.cornerRadius = 16
+        
+        // Segmented Control
+        segmentedControl.translatesAutoresizingMaskIntoConstraints = false
+        segmentedControl.selectedSegmentIndex = 0
+        segmentedControl.addTarget(self, action: #selector(segmentChanged(_:)), for: .valueChanged)
+        
+        let segContainer = UIView()
+        segContainer.translatesAutoresizingMaskIntoConstraints = false
+        segContainer.addSubview(segmentedControl)
+        card.addSubview(segContainer)
+        
+        // Chart SwiftUI Host
+        let chartHost = UIHostingController(rootView: SleepChartView(dataPoints: dataPoints, timeRange: currentTimeRange))
+        nativeChartHostingController = chartHost
+        
+        addChild(chartHost)
+        chartHost.view.translatesAutoresizingMaskIntoConstraints = false
+        chartHost.view.backgroundColor = .clear
+        card.addSubview(chartHost.view)
+        chartHost.didMove(toParent: self)
+        
+        NSLayoutConstraint.activate([
+            segmentedControl.centerXAnchor.constraint(equalTo: segContainer.centerXAnchor),
+            segmentedControl.centerYAnchor.constraint(equalTo: segContainer.centerYAnchor),
+            segmentedControl.widthAnchor.constraint(equalToConstant: 200),
+            
+            segContainer.topAnchor.constraint(equalTo: card.topAnchor, constant: 16),
+            segContainer.leadingAnchor.constraint(equalTo: card.leadingAnchor),
+            segContainer.trailingAnchor.constraint(equalTo: card.trailingAnchor),
+            segContainer.heightAnchor.constraint(equalToConstant: 32),
+            
+            chartHost.view.topAnchor.constraint(equalTo: segContainer.bottomAnchor, constant: 16),
+            chartHost.view.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
+            chartHost.view.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
+            chartHost.view.heightAnchor.constraint(equalToConstant: 240),
+            chartHost.view.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -16)
+        ])
+        
+        return card
+    }
+    
+    private func setupObservationSection() -> UIView {
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        
+        let title = UILabel()
+        title.translatesAutoresizingMaskIntoConstraints = false
+        title.text = "What we observed"
+        title.font = .systemFont(ofSize: 18, weight: .semibold)
+        title.textColor = .black
+        
+        let card = UIView()
+        card.translatesAutoresizingMaskIntoConstraints = false
+        card.backgroundColor = .white
+        card.layer.cornerRadius = 16
+        
+        observedLabel.translatesAutoresizingMaskIntoConstraints = false
+        observedLabel.text = "Fetching daily insights..."
+        observedLabel.font = .systemFont(ofSize: 15)
+        observedLabel.textColor = .black
+        observedLabel.numberOfLines = 0
+        
+        observationLoadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        observationLoadingIndicator.hidesWhenStopped = true
+        
+        card.addSubview(observedLabel)
+        card.addSubview(observationLoadingIndicator)
+        container.addSubview(title)
+        container.addSubview(card)
+        
+        NSLayoutConstraint.activate([
+            title.topAnchor.constraint(equalTo: container.topAnchor),
+            title.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 24),
+            title.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -24),
+            
+            card.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 12),
+            card.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 24),
+            card.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -24),
+            card.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            
+            observedLabel.topAnchor.constraint(equalTo: card.topAnchor, constant: 20),
+            observedLabel.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 20),
+            observedLabel.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -20),
+            observedLabel.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -20),
+            
+            observationLoadingIndicator.centerXAnchor.constraint(equalTo: card.centerXAnchor),
+            observationLoadingIndicator.centerYAnchor.constraint(equalTo: card.centerYAnchor)
+        ])
+        
+        return container
+    }
+    
+    private func setupImportanceSection() -> UIView {
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        
+        let title = UILabel()
+        title.translatesAutoresizingMaskIntoConstraints = false
+        title.text = "Why Sleep Is Important For PCOS"
+        title.font = .systemFont(ofSize: 18, weight: .semibold)
+        title.textColor = .black
+        
+        let card = UIView()
+        card.translatesAutoresizingMaskIntoConstraints = false
+        card.backgroundColor = .white
+        card.layer.cornerRadius = 16
+        
+        let bodyLbl = UILabel()
+        bodyLbl.translatesAutoresizingMaskIntoConstraints = false
+        bodyLbl.text = "Sleep matters for hormone balance as sleep supports insulin stability. Less sleep can increase cravings and raise cortisol levels, worsening fatigue."
+        bodyLbl.font = .systemFont(ofSize: 15)
+        bodyLbl.textColor = .black
+        bodyLbl.numberOfLines = 0
+        
+        let linkLbl = UILabel()
+        linkLbl.translatesAutoresizingMaskIntoConstraints = false
+        linkLbl.text = "National Library of Medicine"
+        linkLbl.font = .systemFont(ofSize: 15)
+        linkLbl.textColor = UIColor(hex: "#00A1F1")
+        
+        card.addSubview(bodyLbl)
+        card.addSubview(linkLbl)
+        
+        container.addSubview(title)
+        container.addSubview(card)
+        
+        NSLayoutConstraint.activate([
+            title.topAnchor.constraint(equalTo: container.topAnchor),
+            title.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 24),
+            title.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -24),
+            
+            card.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 12),
+            card.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 24),
+            card.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -24),
+            card.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            
+            bodyLbl.topAnchor.constraint(equalTo: card.topAnchor, constant: 20),
+            bodyLbl.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 20),
+            bodyLbl.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -20),
+            
+            linkLbl.topAnchor.constraint(equalTo: bodyLbl.bottomAnchor, constant: 16),
+            linkLbl.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 20),
+            linkLbl.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -20),
+            linkLbl.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -20)
+        ])
+        
+        return container
+    }
+    
+    private func updateChart() {
+        nativeChartHostingController?.rootView = SleepChartView(dataPoints: dataPoints, timeRange: currentTimeRange)
+    }
+
+    @objc private func segmentChanged(_ sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+        case 0: currentTimeRange = .week
+        case 1: currentTimeRange = .month
+        case 2: currentTimeRange = .year
+        default: currentTimeRange = .week
+        }
+        loadData(for: currentTimeRange)
+    }
+    
+    @objc private func backTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+
+    @objc private func presentSleepLogger() {
         guard let loggerVC = storyboard?.instantiateViewController(withIdentifier: "SleepLoggerViewController") as? SleepLoggerViewController else { return }
 
-        loggerVC.isNotNowMode = true          // reuse the flag so we can override labels
-        loggerVC.customTitle    = "Welcome"
-        loggerVC.customSubtitle = "lets log your sleep"
-
+        loggerVC.isNotNowMode = true
         loggerVC.modalPresentationStyle = .pageSheet
         if let sheet = loggerVC.sheetPresentationController {
             sheet.detents = [.medium(), .large()]
@@ -63,346 +363,152 @@ class SleepReportViewController: UIViewController {
 
         loggerVC.onSleepSaved = { [weak self] in
             guard let self = self else { return }
-            // Reload chart now that a log exists
             self.loadData(for: self.currentTimeRange)
         }
 
         present(loggerVC, animated: true)
     }
-
-    private func setupStyling() {
-        view.backgroundColor = UIColor(hex: "#FCEEED")
-        
-        sleepInfoCard.layer.cornerRadius = 20
-        observationCard.layer.cornerRadius = 20
-        observationCard.backgroundColor = .white
-        
-        suggestionCard.layer.cornerRadius = 20
-        suggestionCard.backgroundColor = .white
-        
-        chartContainerView.layer.cornerRadius = 16
-        chartContainerView.backgroundColor = .white
-        chartContainerView.layer.shadowColor = UIColor.black.cgColor
-        chartContainerView.layer.shadowOpacity = 0.08
-        chartContainerView.layer.shadowOffset = CGSize(width: 0, height: 2)
-        chartContainerView.layer.shadowRadius = 8
-        
-        setupSuggestionCard()
-    }
-    
-    private func setupSuggestionCard() {
-        // Clear existing subviews
-        suggestionCard.subviews.forEach { $0.removeFromSuperview() }
-    
-        
-        // Stack view for recommendations
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.spacing = 10
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        suggestionCard.addSubview(stackView)
-        
-       
-        let dietRow = makeSuggestionRow(
-            imageName: "🥗",
-            boldText: "Try a protein-rich dinner",
-            regularText: " to reduce night cravings",
-            
-        )
-        
-        
-        let workoutRow = makeSuggestionRow(
-            imageName: "🚶‍♀️",
-            boldText: "Try a 10-min evening walk",
-            regularText: " can improve sleep quality",
-            
-        )
-        
-        let miscRow = makeSuggestionRow(
-            imageName: "🪔",
-            boldText: "Keep lights dim",
-            regularText: " 1 hour before bed",
-            
-        )
-        
-        stackView.addArrangedSubview(dietRow)
-        stackView.addArrangedSubview(workoutRow)
-        stackView.addArrangedSubview(miscRow)
-        
-        
-        // Constraints
-        NSLayoutConstraint.activate([
-            
-            stackView.topAnchor.constraint(equalTo: suggestionCard.topAnchor, constant: 16),
-            stackView.leadingAnchor.constraint(equalTo: suggestionCard.leadingAnchor, constant: 12),
-            stackView.trailingAnchor.constraint(equalTo: suggestionCard.trailingAnchor, constant: -12),
-            
-        ])
-    }
-
-    private func makeSuggestionRow(imageName: String, boldText: String, regularText: String) -> UIView {
-        let container = UIView()
-        container.backgroundColor = UIColor(hex: "#FCEEED").withAlphaComponent(0.5)
-        container.layer.cornerRadius = 12
-        container.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Emoji label as image
-        let emojiLabel = UILabel()
-        emojiLabel.text = imageName
-        emojiLabel.font = UIFont.systemFont(ofSize: 32)
-        emojiLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Emoji background circle
-        let emojiContainer = UIView()
-        emojiContainer.translatesAutoresizingMaskIntoConstraints = false
-        emojiContainer.layer.cornerRadius = 24
-        emojiContainer.backgroundColor = .white
-        emojiContainer.addSubview(emojiLabel)
-        
-        // Attributed text label
-        let textLabel = UILabel()
-        textLabel.numberOfLines = 0
-        let attributed = NSMutableAttributedString(
-            string: boldText,
-            attributes: [.font: UIFont.systemFont(ofSize: 14, weight: .semibold),
-                         .foregroundColor: UIColor.black]
-        )
-        attributed.append(NSAttributedString(
-            string: regularText,
-            attributes: [.font: UIFont.systemFont(ofSize: 14, weight: .regular),
-                         .foregroundColor: UIColor.darkGray]
-        ))
-        textLabel.attributedText = attributed
-        textLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        
-        let rightStack = UIStackView()
-        rightStack.axis = .vertical
-        rightStack.spacing = 6
-        rightStack.translatesAutoresizingMaskIntoConstraints = false
-        rightStack.addArrangedSubview(textLabel)
-        
-      
-        
-        
-        container.addSubview(emojiContainer)
-        container.addSubview(rightStack)
-        
-        NSLayoutConstraint.activate([
-            emojiContainer.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 10),
-            emojiContainer.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-            emojiContainer.widthAnchor.constraint(equalToConstant: 48),
-            emojiContainer.heightAnchor.constraint(equalToConstant: 48),
-            emojiContainer.topAnchor.constraint(greaterThanOrEqualTo: container.topAnchor, constant: 10),
-            emojiContainer.bottomAnchor.constraint(lessThanOrEqualTo: container.bottomAnchor, constant: -10),
-            
-            emojiLabel.centerXAnchor.constraint(equalTo: emojiContainer.centerXAnchor),
-            emojiLabel.centerYAnchor.constraint(equalTo: emojiContainer.centerYAnchor),
-            
-            rightStack.leadingAnchor.constraint(equalTo: emojiContainer.trailingAnchor, constant: 10),
-            rightStack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -10),
-            rightStack.topAnchor.constraint(equalTo: container.topAnchor, constant: 10),
-            rightStack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -10),
-        ])
-        
-        return container
-    }
-
-    private func makeTag(text: String) -> UIView {
-        let tag = UIView()
-        tag.backgroundColor = UIColor(hex: "#FCEEED")
-        tag.layer.cornerRadius = 10
-        tag.layer.borderWidth = 1
-        tag.layer.borderColor = UIColor(hex: "#FE7A96").withAlphaComponent(0.3).cgColor
-        
-        let label = UILabel()
-        label.text = text
-        label.font = UIFont.systemFont(ofSize: 11, weight: .regular)
-        label.textColor = UIColor.darkGray
-        label.translatesAutoresizingMaskIntoConstraints = false
-        tag.addSubview(label)
-        tag.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: tag.topAnchor, constant: 4),
-            label.bottomAnchor.constraint(equalTo: tag.bottomAnchor, constant: -4),
-            label.leadingAnchor.constraint(equalTo: tag.leadingAnchor, constant: 8),
-            label.trailingAnchor.constraint(equalTo: tag.trailingAnchor, constant: -8),
-        ])
-        
-        return tag
-    }
-
-    
-    
-    
-    @IBAction func timeSegmentChanged(_ sender: UISegmentedControl) {
-        print("Segment changed to index: \(sender.selectedSegmentIndex)")
-        
-        switch sender.selectedSegmentIndex {
-        case 0:
-            currentTimeRange = .week
-        case 1:
-            currentTimeRange = .month
-        case 2:
-            currentTimeRange = .year
-        default:
-            currentTimeRange = .week
-        }
-        
-        print("Loading data for: \(currentTimeRange.title)")
-        loadData(for: currentTimeRange)
-    }
-    
     
     private func loadData(for range: SleepChartTimeRange) {
-        currentTimeRange = range
+        let newRange = range
         let calendar = Calendar.current
         let now = Date()
-        var newData: [SleepChartDataModel] = []
         
-        print("Loading data for range: \(range.title)")
-        
+        // Define lookback period depending on range to fetch from HealthKit efficiently
+        let startDate: Date
         switch range {
-        case .week:
-            // Last 7 days
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "EEE"
+        case .week: startDate = calendar.date(byAdding: .day, value: -8, to: now)!
+        case .month: startDate = calendar.date(byAdding: .day, value: -35, to: now)!
+        case .year: startDate = calendar.date(byAdding: .month, value: -13, to: now)!
+        }
+        
+        HealthKitManager.shared.fetchDailySleep(from: startDate, to: now) { [weak self] hkSleepByDay in
+            guard let self = self else { return }
             
-            for dayOffset in (0..<7).reversed() {
-                if let date = calendar.date(byAdding: .day, value: -dayOffset, to: now) {
-                    let hours = getDailySleep(on: date)
-                    newData.append(SleepChartDataModel(
-                        date: date,
-                        hours: hours,
-                        label: dateFormatter.string(from: date)
-                    ))
+            var newData: [SleepChartDataModel] = []
+            
+            // Helper to determine single day hours: Manual inputs take priority
+            let getHoursForDate: (Date) -> Double = { queryDate in
+                let startOfDay = calendar.startOfDay(for: queryDate)
+                
+                // 1. Manual User Log (from Sleep Logger)
+                if let manualLog = SleepDataStore.shared.loadSleepLog(for: queryDate) {
+                    let interval = manualLog.wakeTime.timeIntervalSince(manualLog.sleepTime)
+                    return max(0, interval / 3600.0) // hours
+                }
+                
+                // 2. HealthKit Default
+                return hkSleepByDay[startOfDay] ?? 0.0
+            }
+            
+            switch range {
+            case .week:
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "EEE"
+                for dayOffset in (0..<7).reversed() { // 7 days ending today
+                    if let date = calendar.date(byAdding: .day, value: -dayOffset, to: now) {
+                        let hours = getHoursForDate(date)
+                        newData.append(SleepChartDataModel(
+                            date: date,
+                            hours: hours,
+                            label: dateFormatter.string(from: date)
+                        ))
+                    }
+                }
+                
+            case .month:
+                // 4 weeks average
+                for weekOffset in (0..<4).reversed() {
+                    if let weekStart = calendar.date(byAdding: .weekOfYear, value: -weekOffset, to: now) {
+                        var totalHours = 0.0
+                        var daysWithData = 0
+                        
+                        for i in 0..<7 {
+                            if let dayDate = calendar.date(byAdding: .day, value: i, to: weekStart) {
+                                let h = getHoursForDate(dayDate)
+                                if h > 0 {
+                                    totalHours += h
+                                    daysWithData += 1
+                                }
+                            }
+                        }
+                        
+                        let avg = daysWithData > 0 ? (totalHours / Double(daysWithData)) : 0
+                        newData.append(SleepChartDataModel(
+                            date: weekStart,
+                            hours: avg,
+                            label: "W\(4 - weekOffset)"
+                        ))
+                    }
+                }
+                
+            case .year:
+                // 12 months average
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "MMM"
+                
+                for monthOffset in (0..<12).reversed() {
+                    if let date = calendar.date(byAdding: .month, value: -monthOffset, to: now) {
+                        let components = calendar.dateComponents([.year, .month], from: date)
+                        guard let startOfMonth = calendar.date(from: components),
+                              let endOfMonth = calendar.date(byAdding: DateComponents(month: 1), to: startOfMonth) else {
+                            continue
+                        }
+                        
+                        let daysInMonth = calendar.dateComponents([.day], from: startOfMonth, to: endOfMonth).day ?? 30
+                        var totalHours = 0.0
+                        var daysWithData = 0
+                        
+                        for i in 0..<daysInMonth {
+                            if let dayDate = calendar.date(byAdding: .day, value: i, to: startOfMonth) {
+                                let h = getHoursForDate(dayDate)
+                                if h > 0 {
+                                    totalHours += h
+                                    daysWithData += 1
+                                }
+                            }
+                        }
+                        
+                        let avg = daysWithData > 0 ? (totalHours / Double(daysWithData)) : 0
+                        newData.append(SleepChartDataModel(
+                            date: date,
+                            hours: avg,
+                            label: dateFormatter.string(from: date)
+                        ))
+                    }
                 }
             }
             
-        case .month:
-            // Last 4 weeks average
-            for weekOffset in (0..<4).reversed() {
-                if let weekStart = calendar.date(byAdding: .weekOfYear, value: -weekOffset, to: now) {
-                    let hours = getWeeklyAverage(startingFrom: weekStart)
-                    newData.append(SleepChartDataModel(
-                        date: weekStart,
-                        hours: hours,
-                        label: "W\(4 - weekOffset)"
-                    ))
-                }
-            }
+            let sortedData = newData.sorted { $0.date < $1.date }
             
-        case .year:
-            // Last 12 months average
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "MMM"
-            
-            for monthOffset in (0..<12).reversed() {
-                if let date = calendar.date(byAdding: .month, value: -monthOffset, to: now) {
-                    let hours = getMonthlyAverage(in: date)
-                    newData.append(SleepChartDataModel(
-                        date: date,
-                        hours: hours,
-                        label: dateFormatter.string(from: date)
-                    ))
-                }
+            // Dispatch UI updates to main thread
+            DispatchQueue.main.async {
+                self.currentTimeRange = newRange
+                self.dataPoints = sortedData
+                print("Loaded \(sortedData.count) chart points from HealthKit and CoreData.")
+                self.fetchAIInsights(for: sortedData)
             }
         }
-        
-        self.dataPoints = newData.sorted { $0.date < $1.date }
-        
-        print("Loaded \(dataPoints.count) data points")
-        updateChart()
     }
     
-    // MARK: - Data Calculation Helpers
-    private func getDailySleep(on date: Date) -> Double {
-        let calendar = Calendar.current
-        let startOfDay = calendar.startOfDay(for: date)
-        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+    private func fetchAIInsights(for chartData: [SleepChartDataModel]) {
+        observedLabel.text = ""
+        observationLoadingIndicator.startAnimating()
         
-        if let entry = SleepDataSource.sleepEntries.first(where: {
-            $0.date >= startOfDay && $0.date < endOfDay
-        }) {
-            return entry.sleepHours
+        Task {
+            do {
+                let insight = try await SleepObservationsModel.shared.fetchSleepInsight(chartData: chartData)
+                await MainActor.run {
+                    self.observationLoadingIndicator.stopAnimating()
+                    self.observedLabel.text = insight
+                }
+            } catch {
+                await MainActor.run {
+                    self.observationLoadingIndicator.stopAnimating()
+                    self.observedLabel.text = "Keep logging your sleep to track your energy trends."
+                }
+            }
         }
-        
-        return 0
-    }
-    
-    private func getWeeklyAverage(startingFrom date: Date) -> Double {
-        let calendar = Calendar.current
-        let endOfWeek = calendar.date(byAdding: .day, value: 7, to: date)!
-        
-        let weekEntries = SleepDataSource.sleepEntries.filter {
-            $0.date >= date && $0.date < endOfWeek
-        }
-        
-        let total = weekEntries.reduce(0.0) { $0 + $1.sleepHours }
-        return weekEntries.isEmpty ? 0 : total / Double(weekEntries.count)
-    }
-    
-    private func getMonthlyAverage(in date: Date) -> Double {
-        let calendar = Calendar.current
-        let components = calendar.dateComponents([.year, .month], from: date)
-        guard let startOfMonth = calendar.date(from: components),
-              let endOfMonth = calendar.date(byAdding: DateComponents(month: 1), to: startOfMonth) else {
-            return 0
-        }
-        
-        let monthEntries = SleepDataSource.sleepEntries.filter {
-            $0.date >= startOfMonth && $0.date < endOfMonth
-        }
-        
-        let total = monthEntries.reduce(0.0) { $0 + $1.sleepHours }
-        let daysInMonth = calendar.dateComponents([.day], from: startOfMonth, to: endOfMonth).day ?? 30
-        return daysInMonth > 0 ? total / Double(daysInMonth) : 0
-    }
-    
-    private func setupChart() {
-        guard let chartContainerView = chartContainerView else {
-            print("chartContainerView outlet is nil!")
-            return
-        }
-        
-        let swiftUIView = SleepChartView(
-            dataPoints: dataPoints,
-            timeRange: currentTimeRange
-        )
-        .padding(.top, 56)
-        
-        let hosting = UIHostingController(rootView: AnyView(swiftUIView))
-        
-        addChild(hosting)
-        hosting.view.translatesAutoresizingMaskIntoConstraints = false
-        hosting.view.backgroundColor = .clear
-        
-        chartContainerView.addSubview(hosting.view)
-        
-        chartContainerView.sendSubviewToBack(hosting.view)
-    
-        NSLayoutConstraint.activate([
-            hosting.view.topAnchor.constraint(equalTo: chartContainerView.topAnchor),
-            hosting.view.leadingAnchor.constraint(equalTo: chartContainerView.leadingAnchor),
-            hosting.view.trailingAnchor.constraint(equalTo: chartContainerView.trailingAnchor),
-            hosting.view.bottomAnchor.constraint(equalTo: chartContainerView.bottomAnchor)
-        ])
-        
-        hosting.didMove(toParent: self)
-        self.hostingController = hosting
-    }
-
-    private func updateChart() {
-        print("Updating chart with \(dataPoints.count) points for range: \(currentTimeRange.title)")
-        
-        let swiftUIView = SleepChartView(
-            dataPoints: dataPoints,
-            timeRange: currentTimeRange
-        )
-        .padding(.top, 56)
-        
-        hostingController?.rootView = AnyView(swiftUIView)
     }
 }
 

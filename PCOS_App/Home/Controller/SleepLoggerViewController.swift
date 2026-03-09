@@ -9,7 +9,7 @@ import UIKit
 
 class SleepLoggerViewController: UIViewController {
     
-    // MARK: - Outlets
+    // MARK: - Outlets (Kept to prevent storyboard crash)
     @IBOutlet weak var containerView: UIView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var subtitleLabel: UILabel!
@@ -28,220 +28,430 @@ class SleepLoggerViewController: UIViewController {
     @IBOutlet weak var ratingLabel: UILabel!
     @IBOutlet weak var ratingSlider: UISlider!
     
-    @IBOutlet weak var saveButton: UIButton!
+    @IBOutlet weak var saveButton: UIButton! // Exact IBoutlet name
     @IBOutlet weak var notTodayButton: UIButton!
     
     // MARK: - Properties
-    private let sleepTimePicker = UIDatePicker()
-    private let wakeTimePicker = UIDatePicker()
     
     /// When true, shows alternate title/subtitle instead of default storyboard strings.
     var isNotNowMode: Bool = false
-
-    /// Optional override for the title label (takes precedence over isNotNowMode defaults).
     var customTitle: String? = nil
-
-    /// Optional override for the subtitle label (takes precedence over isNotNowMode defaults).
     var customSubtitle: String? = nil
-    
-    /// Called after the user successfully saves their sleep log.
     var onSleepSaved: (() -> Void)?
-
-    /// Called when the user taps "Not Now" — lets the caller know to show the pink log button.
     var onDismissedWithoutSaving: (() -> Void)?
+    
+    // MARK: - UI Components
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
+    
+    private let dismissButton = UIButton(type: .system)
+    private let customSaveButton = UIButton(type: .system)
+    
+    private let bedIconCircle = UIView()
+    private let bedIconImageView = UIImageView()
+    private let customTitleLabel = UILabel()
+    
+    private let ratingsContainer = UIView()
+    private var ratingRowViews: [UIView] = []
+    
+    private let pickersContainer = UIView()
+    private let startsLabel = UILabel()
+    private let startsPicker = UIDatePicker()
+    private let endsLabel = UILabel()
+    private let endsPicker = UIDatePicker()
+    
+    private let durationContainer = UIView()
+    private let durationLabel = UILabel()
+    private let durationValueLabel = UILabel()
+    
+    private var selectedRating: SleepRating = .normal
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
-        setupCloseButton()
-        setupPickers()
-        updateTotalSleep()
-        applyModeLabels()
-        // Detect swipe-to-dismiss
+        setupProgrammaticUI()
+        setupDefaultTimes()
+        updateRatingUI()
         presentationController?.delegate = self
     }
     
-    // MARK: - Setup UI
-    private func setupUI() {
-        // The sheet controller provides its own dimmed backdrop – no need for a custom one
-        view.backgroundColor = .systemBackground
+    // MARK: - Setup Logic
+    private func setupDefaultTimes() {
+        let cal = Calendar.current
+        var sleepD = cal.date(bySettingHour: 23, minute: 45, second: 0, of: Date()) ?? Date()
+        var wakeD = cal.date(bySettingHour: 7, minute: 5, second: 0, of: Date()) ?? Date()
         
-        // Container
-        containerView.layer.cornerRadius = 24
-        containerView.backgroundColor = .white
+        if wakeD < sleepD {
+            wakeD = cal.date(byAdding: .day, value: 1, to: wakeD) ?? wakeD
+        }
         
-        // Chevrons
-        sleepTimeChevron.tintColor = UIColor(hex: "#FE7A96")
-        wakeTimeChevron.tintColor = UIColor(hex: "#FE7A96")
-        
-        // Save button
-        saveButton.backgroundColor = UIColor(hex: "#FE7A96")
-        saveButton.setTitleColor(.white, for: .normal)
-        saveButton.layer.cornerRadius = 25
-        saveButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
-        // Wire programmatically (storyboard IBAction connections are absent)
-        saveButton.addTarget(self, action: #selector(saveTapped(_:)), for: .touchUpInside)
-        
-        // Not today button
-        notTodayButton.setTitleColor(.gray, for: .normal)
-        notTodayButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        // Wire programmatically
-        notTodayButton.addTarget(self, action: #selector(notTodayTapped(_:)), for: .touchUpInside)
-        
-        // Rating slider
-        ratingSlider.minimumValue = 1.0
-        ratingSlider.maximumValue = 5.0
-        ratingSlider.value = 3.5
-        ratingSlider.minimumTrackTintColor = UIColor(hex: "#FE7A96")
-        ratingSlider.maximumTrackTintColor = UIColor(hex: "#FE7A96").withAlphaComponent(0.2)
-        // Wire programmatically
-        ratingSlider.addTarget(self, action: #selector(ratingSliderChanged(_:)), for: .valueChanged)
+        startsPicker.date = sleepD
+        endsPicker.date = wakeD
     }
-
-    private func setupCloseButton() {
-        let closeImage = UIImage(systemName: "xmark.circle.fill",
-                                withConfiguration: UIImage.SymbolConfiguration(pointSize: 26, weight: .regular))
+    
+    private func setupProgrammaticUI() {
+        // Hide all original storyboard outlets via subviews iteration if they exist
+        view.subviews.forEach { $0.isHidden = true }
         
-        let closeButton = UIButton(type: .system)
-        closeButton.setImage(closeImage, for: .normal)
-        closeButton.tintColor = UIColor.systemGray3
-        closeButton.translatesAutoresizingMaskIntoConstraints = false
-        closeButton.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
+        view.backgroundColor = .white
         
-        view.addSubview(closeButton)
+        // 1. Scroll View Setup
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        scrollView.isHidden = false
+        
         NSLayoutConstraint.activate([
-            closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
-            closeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor)
+        ])
+        
+        // 2. Top Nav
+        setupTopNav()
+        
+        // 3. Bed Header
+        setupBedHeader()
+        
+        // 4. Time Pickers
+        setupTimePickersContainer()
+        
+        // 5. Duration
+        setupDurationContainer()
+        
+        // 6. Ratings
+        setupRatingsContainer()
+        
+        // Bottom pinning
+        NSLayoutConstraint.activate([
+            ratingsContainer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -40)
         ])
     }
     
-    /// Applies title/subtitle overrides — customTitle/customSubtitle take priority, then isNotNowMode defaults.
-    private func applyModeLabels() {
-        if let title = customTitle {
-            titleLabel.text = title
-        } else if isNotNowMode {
-            titleLabel.text = "Welcome Back!"
-        }
-
-        if let subtitle = customSubtitle {
-            subtitleLabel.text = subtitle
-        } else if isNotNowMode {
-            subtitleLabel.text = "Log your sleep today"
-        }
-        // else: keep whatever text is set in the XIB/Storyboard
+    private func setupTopNav() {
+        // Dismiss Button
+        dismissButton.translatesAutoresizingMaskIntoConstraints = false
+        dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+        dismissButton.tintColor = .black
+        dismissButton.layer.cornerRadius = 22
+        dismissButton.layer.borderWidth = 1
+        dismissButton.layer.borderColor = UIColor.systemGray4.cgColor
+        dismissButton.addTarget(self, action: #selector(dismissTapped), for: .touchUpInside)
+        contentView.addSubview(dismissButton)
+        
+        // Save Button
+        customSaveButton.translatesAutoresizingMaskIntoConstraints = false
+        customSaveButton.setImage(UIImage(systemName: "checkmark"), for: .normal)
+        customSaveButton.tintColor = .black
+        customSaveButton.backgroundColor = .white
+        customSaveButton.layer.cornerRadius = 22
+        customSaveButton.layer.borderWidth = 1
+        customSaveButton.layer.borderColor = UIColor.systemGray4.cgColor
+        customSaveButton.addTarget(self, action: #selector(saveTapped), for: .touchUpInside)
+        
+        let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .bold)
+        customSaveButton.setPreferredSymbolConfiguration(config, forImageIn: .normal)
+        contentView.addSubview(customSaveButton)
+        
+        NSLayoutConstraint.activate([
+            dismissButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
+            dismissButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
+            dismissButton.widthAnchor.constraint(equalToConstant: 44),
+            dismissButton.heightAnchor.constraint(equalToConstant: 44),
+            
+            customSaveButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24),
+            customSaveButton.centerYAnchor.constraint(equalTo: dismissButton.centerYAnchor),
+            customSaveButton.widthAnchor.constraint(equalToConstant: 44),
+            customSaveButton.heightAnchor.constraint(equalToConstant: 44)
+        ])
     }
     
-    private func setupPickers() {
-        // Sleep time picker
-        sleepTimePicker.datePickerMode = .time
-        sleepTimePicker.preferredDatePickerStyle = .wheels
-        sleepTimePicker.addTarget(self, action: #selector(sleepTimeChanged), for: .valueChanged)
+    private func setupBedHeader() {
+        bedIconCircle.translatesAutoresizingMaskIntoConstraints = false
+        bedIconCircle.backgroundColor = .clear
+        contentView.addSubview(bedIconCircle)
         
-        // Set default to 11:45 PM
-        let calendar = Calendar.current
-        if let sleepTime = calendar.date(bySettingHour: 23, minute: 45, second: 0, of: Date()) {
-            sleepTimePicker.date = sleepTime
+        bedIconImageView.translatesAutoresizingMaskIntoConstraints = false
+        bedIconImageView.image = UIImage(named: "sleep_illustration")
+        bedIconImageView.contentMode = .scaleAspectFit
+        bedIconImageView.clipsToBounds = true
+        bedIconCircle.addSubview(bedIconImageView)
+        
+        customTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        customTitleLabel.text = "Sleep Logger"
+        customTitleLabel.font = .systemFont(ofSize: 28, weight: .bold)
+        customTitleLabel.textColor = .black
+        customTitleLabel.textAlignment = .center
+        customTitleLabel.isHidden = true // The uploaded design has no text below the illustration, only on the nav bar. Let's hide it from the body.
+        contentView.addSubview(customTitleLabel)
+        
+        NSLayoutConstraint.activate([
+            bedIconCircle.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            bedIconCircle.topAnchor.constraint(equalTo: dismissButton.bottomAnchor, constant: 16),
+            bedIconCircle.widthAnchor.constraint(equalToConstant: 240),
+            bedIconCircle.heightAnchor.constraint(equalToConstant: 200),
+            
+            bedIconImageView.leadingAnchor.constraint(equalTo: bedIconCircle.leadingAnchor),
+            bedIconImageView.trailingAnchor.constraint(equalTo: bedIconCircle.trailingAnchor),
+            bedIconImageView.topAnchor.constraint(equalTo: bedIconCircle.topAnchor),
+            bedIconImageView.bottomAnchor.constraint(equalTo: bedIconCircle.bottomAnchor),
+            
+            customTitleLabel.topAnchor.constraint(equalTo: bedIconCircle.bottomAnchor, constant: 0),
+            customTitleLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            customTitleLabel.heightAnchor.constraint(equalToConstant: 0) // Collapse space
+        ])
+    }
+    
+    private func setupRatingsContainer() {
+        ratingsContainer.translatesAutoresizingMaskIntoConstraints = false
+        ratingsContainer.backgroundColor = .white
+        ratingsContainer.layer.cornerRadius = 16
+        ratingsContainer.layer.borderWidth = 1
+        ratingsContainer.layer.borderColor = UIColor.systemGray4.cgColor
+        contentView.addSubview(ratingsContainer)
+        
+        NSLayoutConstraint.activate([
+            ratingsContainer.topAnchor.constraint(equalTo: durationContainer.bottomAnchor, constant: 16),
+            ratingsContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
+            ratingsContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24)
+        ])
+        
+        var previousRowBottom: NSLayoutYAxisAnchor = ratingsContainer.topAnchor
+        
+        for (index, rating) in SleepRating.allCases.enumerated() {
+            let rowView = UIView()
+            rowView.translatesAutoresizingMaskIntoConstraints = false
+            rowView.tag = rating.rawValue
+            
+            let tap = UITapGestureRecognizer(target: self, action: #selector(ratingTapped(_:)))
+            rowView.addGestureRecognizer(tap)
+            
+            let label = UILabel()
+            label.translatesAutoresizingMaskIntoConstraints = false
+            label.text = rating.title
+            label.font = .systemFont(ofSize: 16, weight: .medium)
+            label.textColor = .gray
+            label.tag = 101
+            rowView.addSubview(label)
+            
+            let checkmark = UIImageView(image: UIImage(systemName: "checkmark"))
+            checkmark.translatesAutoresizingMaskIntoConstraints = false
+            let checkConfig = UIImage.SymbolConfiguration(pointSize: 16, weight: .bold)
+            checkmark.preferredSymbolConfiguration = checkConfig
+            checkmark.tintColor = UIColor(hex: "#007AFF")
+            checkmark.isHidden = true
+            checkmark.tag = 102
+            rowView.addSubview(checkmark)
+            
+            ratingsContainer.addSubview(rowView)
+            ratingRowViews.append(rowView)
+            
+            NSLayoutConstraint.activate([
+                rowView.topAnchor.constraint(equalTo: previousRowBottom),
+                rowView.leadingAnchor.constraint(equalTo: ratingsContainer.leadingAnchor),
+                rowView.trailingAnchor.constraint(equalTo: ratingsContainer.trailingAnchor),
+                rowView.heightAnchor.constraint(equalToConstant: 48),
+                
+                label.leadingAnchor.constraint(equalTo: rowView.leadingAnchor, constant: 16),
+                label.centerYAnchor.constraint(equalTo: rowView.centerYAnchor),
+                
+                checkmark.trailingAnchor.constraint(equalTo: rowView.trailingAnchor, constant: -16),
+                checkmark.centerYAnchor.constraint(equalTo: rowView.centerYAnchor)
+            ])
+            
+            previousRowBottom = rowView.bottomAnchor
+            
+            if index < SleepRating.allCases.count - 1 {
+                let divider = UIView()
+                divider.translatesAutoresizingMaskIntoConstraints = false
+                divider.backgroundColor = UIColor.systemGray5
+                ratingsContainer.addSubview(divider)
+                
+                NSLayoutConstraint.activate([
+                    divider.topAnchor.constraint(equalTo: rowView.bottomAnchor),
+                    divider.leadingAnchor.constraint(equalTo: ratingsContainer.leadingAnchor, constant: 16),
+                    divider.trailingAnchor.constraint(equalTo: ratingsContainer.trailingAnchor, constant: -16),
+                    divider.heightAnchor.constraint(equalToConstant: 1)
+                ])
+                previousRowBottom = divider.bottomAnchor
+            }
         }
         
-        sleepTimeTextField.inputView = sleepTimePicker
-        sleepTimeTextField.text = formatTime(sleepTimePicker.date)
+        ratingsContainer.bottomAnchor.constraint(equalTo: previousRowBottom, constant: 8).isActive = true
+    }
+    
+    private func setupTimePickersContainer() {
+        pickersContainer.translatesAutoresizingMaskIntoConstraints = false
+        pickersContainer.backgroundColor = .white
+        pickersContainer.layer.cornerRadius = 16
+        pickersContainer.layer.borderWidth = 1
+        pickersContainer.layer.borderColor = UIColor.systemGray4.cgColor
+        contentView.addSubview(pickersContainer)
         
-        // Wake time picker
-        wakeTimePicker.datePickerMode = .time
-        wakeTimePicker.preferredDatePickerStyle = .wheels
-        wakeTimePicker.addTarget(self, action: #selector(wakeTimeChanged), for: .valueChanged)
+        NSLayoutConstraint.activate([
+            pickersContainer.topAnchor.constraint(equalTo: customTitleLabel.bottomAnchor, constant: 32),
+            pickersContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
+            pickersContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24)
+        ])
         
-        // Set default to 7:05 AM
-        if let wakeTime = calendar.date(bySettingHour: 7, minute: 5, second: 0, of: Date()) {
-            wakeTimePicker.date = wakeTime
-        }
+        // Starts
+        startsLabel.translatesAutoresizingMaskIntoConstraints = false
+        startsLabel.text = "Starts"
+        startsLabel.font = .systemFont(ofSize: 16)
+        startsLabel.textColor = .gray
+        pickersContainer.addSubview(startsLabel)
         
-        wakeTimeTextField.inputView = wakeTimePicker
-        wakeTimeTextField.text = formatTime(wakeTimePicker.date)
+        startsPicker.translatesAutoresizingMaskIntoConstraints = false
+        startsPicker.datePickerMode = .dateAndTime
+        startsPicker.preferredDatePickerStyle = .compact
+        startsPicker.tintColor = UIColor(hex: "#007AFF")
+        startsPicker.addTarget(self, action: #selector(timeChanged), for: .valueChanged)
+        pickersContainer.addSubview(startsPicker)
         
-        // Toolbar for pickers
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(donePickerTapped))
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        toolbar.setItems([flexSpace, doneButton], animated: false)
+        let divider = UIView()
+        divider.translatesAutoresizingMaskIntoConstraints = false
+        divider.backgroundColor = UIColor.systemGray5
+        pickersContainer.addSubview(divider)
         
-        sleepTimeTextField.inputAccessoryView = toolbar
-        wakeTimeTextField.inputAccessoryView = toolbar
+        // Ends
+        endsLabel.translatesAutoresizingMaskIntoConstraints = false
+        endsLabel.text = "Ends"
+        endsLabel.font = .systemFont(ofSize: 16)
+        endsLabel.textColor = .gray
+        pickersContainer.addSubview(endsLabel)
+        
+        endsPicker.translatesAutoresizingMaskIntoConstraints = false
+        endsPicker.datePickerMode = .dateAndTime
+        endsPicker.preferredDatePickerStyle = .compact
+        endsPicker.tintColor = UIColor(hex: "#007AFF")
+        endsPicker.addTarget(self, action: #selector(timeChanged), for: .valueChanged)
+        pickersContainer.addSubview(endsPicker)
+        
+        NSLayoutConstraint.activate([
+            startsLabel.leadingAnchor.constraint(equalTo: pickersContainer.leadingAnchor, constant: 16),
+            startsLabel.topAnchor.constraint(equalTo: pickersContainer.topAnchor, constant: 16),
+            
+            startsPicker.trailingAnchor.constraint(equalTo: pickersContainer.trailingAnchor, constant: -16),
+            startsPicker.centerYAnchor.constraint(equalTo: startsLabel.centerYAnchor),
+            
+            divider.topAnchor.constraint(equalTo: startsLabel.bottomAnchor, constant: 16),
+            divider.leadingAnchor.constraint(equalTo: pickersContainer.leadingAnchor, constant: 16),
+            divider.trailingAnchor.constraint(equalTo: pickersContainer.trailingAnchor, constant: -16),
+            divider.heightAnchor.constraint(equalToConstant: 1),
+            
+            endsLabel.leadingAnchor.constraint(equalTo: pickersContainer.leadingAnchor, constant: 16),
+            endsLabel.topAnchor.constraint(equalTo: divider.bottomAnchor, constant: 16),
+            endsLabel.bottomAnchor.constraint(equalTo: pickersContainer.bottomAnchor, constant: -16),
+            
+            endsPicker.trailingAnchor.constraint(equalTo: pickersContainer.trailingAnchor, constant: -16),
+            endsPicker.centerYAnchor.constraint(equalTo: endsLabel.centerYAnchor)
+        ])
+    }
+    
+    private func setupDurationContainer() {
+        durationContainer.translatesAutoresizingMaskIntoConstraints = false
+        durationContainer.backgroundColor = .white
+        durationContainer.layer.cornerRadius = 16
+        durationContainer.layer.borderWidth = 1
+        durationContainer.layer.borderColor = UIColor.systemGray4.cgColor
+        contentView.addSubview(durationContainer)
+        
+        NSLayoutConstraint.activate([
+            durationContainer.topAnchor.constraint(equalTo: pickersContainer.bottomAnchor, constant: 16),
+            durationContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
+            durationContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24)
+        ])
+        
+        durationLabel.translatesAutoresizingMaskIntoConstraints = false
+        durationLabel.text = "You slept for"
+        durationLabel.font = .systemFont(ofSize: 16)
+        durationLabel.textColor = .gray
+        durationContainer.addSubview(durationLabel)
+        
+        durationValueLabel.translatesAutoresizingMaskIntoConstraints = false
+        durationValueLabel.font = .systemFont(ofSize: 16, weight: .semibold)
+        durationValueLabel.textColor = .black
+        durationContainer.addSubview(durationValueLabel)
+        
+        NSLayoutConstraint.activate([
+            durationLabel.leadingAnchor.constraint(equalTo: durationContainer.leadingAnchor, constant: 16),
+            durationLabel.topAnchor.constraint(equalTo: durationContainer.topAnchor, constant: 20),
+            durationLabel.bottomAnchor.constraint(equalTo: durationContainer.bottomAnchor, constant: -20),
+            
+            durationValueLabel.trailingAnchor.constraint(equalTo: durationContainer.trailingAnchor, constant: -16),
+            durationValueLabel.centerYAnchor.constraint(equalTo: durationLabel.centerYAnchor)
+        ])
+        
+        updateDurationLabel()
     }
     
     // MARK: - Actions
-    @objc private func closeTapped() {
+    
+    @objc private func ratingTapped(_ sender: UITapGestureRecognizer) {
+        guard let view = sender.view, let rating = SleepRating(rawValue: view.tag) else { return }
+        selectedRating = rating
+        updateRatingUI()
+    }
+    
+    private func updateRatingUI() {
+        for row in ratingRowViews {
+            let label = row.viewWithTag(101) as? UILabel
+            let checkmark = row.viewWithTag(102) as? UIImageView
+            
+            if row.tag == selectedRating.rawValue {
+                label?.textColor = .black
+                checkmark?.isHidden = false
+            } else {
+                label?.textColor = .gray
+                checkmark?.isHidden = true
+            }
+        }
+    }
+    
+    @objc private func timeChanged() {
+        var sleepTime = startsPicker.date
+        var wakeTime = endsPicker.date
+        
+        // Auto-adjust wake day logic 
+        if wakeTime < sleepTime {
+            wakeTime = Calendar.current.date(byAdding: .day, value: 1, to: wakeTime) ?? wakeTime
+            endsPicker.date = wakeTime
+        }
+        
+        updateDurationLabel()
+    }
+    
+    private func updateDurationLabel() {
+        let tempLog = SleepLog(sleepTime: startsPicker.date, wakeTime: endsPicker.date, rating: selectedRating)
+        durationValueLabel.text = tempLog.displayString
+    }
+    
+    @objc private func dismissTapped() {
         dismiss(animated: true) { [weak self] in
             self?.onDismissedWithoutSaving?()
         }
     }
-
-    @objc private func sleepTimeChanged() {
-        sleepTimeTextField.text = formatTime(sleepTimePicker.date)
-        updateTotalSleep()
-    }
     
-    @objc private func wakeTimeChanged() {
-        wakeTimeTextField.text = formatTime(wakeTimePicker.date)
-        updateTotalSleep()
-    }
-    
-    @objc private func donePickerTapped() {
-        view.endEditing(true)
-    }
-    
-    @objc func ratingSliderChanged(_ sender: UISlider) {
-        // Slider value stored on save; no live label needed right now
-    }
-    
-    @objc func saveTapped(_ sender: UIButton) {
-        let sleepLog = SleepLog(
-            sleepTime: sleepTimePicker.date,
-            wakeTime: wakeTimePicker.date,
-            rating: Double(ratingSlider.value)
-        )
+    @objc private func saveTapped() {
+        let sleepLog = SleepLog(sleepTime: startsPicker.date, wakeTime: endsPicker.date, rating: selectedRating)
         SleepDataStore.shared.saveSleepLog(sleepLog)
         
         dismiss(animated: true) { [weak self] in
             self?.onSleepSaved?()
         }
     }
-
-    @objc func notTodayTapped(_ sender: UIButton) {
-        dismiss(animated: true) { [weak self] in
-            self?.onDismissedWithoutSaving?()
-        }
-    }
-
-    // MARK: - Helpers
-    private func formatTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
-        return formatter.string(from: date)
-    }
-    
-    private func updateTotalSleep() {
-        var sleepTime = sleepTimePicker.date
-        var wakeTime = wakeTimePicker.date
-        
-        // If wake time is earlier than sleep time, assume wake time is next day
-        if wakeTime < sleepTime {
-            wakeTime = Calendar.current.date(byAdding: .day, value: 1, to: wakeTime) ?? wakeTime
-        }
-        
-        let duration = wakeTime.timeIntervalSince(sleepTime)
-        let hours = Int(duration / 3600)
-        let minutes = Int((duration.truncatingRemainder(dividingBy: 3600)) / 60)
-        
-        totalSleepValueLabel.text = "\(hours) hours \(minutes) mins"
-    }
 }
 
 // MARK: - Swipe-to-dismiss detection
 extension SleepLoggerViewController: UIAdaptivePresentationControllerDelegate {
-    /// Called when the user swipes the sheet down to dismiss it
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         onDismissedWithoutSaving?()
     }

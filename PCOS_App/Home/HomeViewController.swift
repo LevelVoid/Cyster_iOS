@@ -431,7 +431,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         )
         // Centers a single card in the frame; pages center-to-center with multiple cards
         section.orthogonalScrollingBehavior = .groupPagingCentered
-        addHeader(to: section)
+        addHeader(to: section, leadingInset: 16, trailingInset: 16)
         return section
     }
     
@@ -459,7 +459,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         return section
     }
     
-    func addHeader(to section: NSCollectionLayoutSection) {
+    func addHeader(to section: NSCollectionLayoutSection, leadingInset: CGFloat = 0, trailingInset: CGFloat = 0) {
         let headerSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
             heightDimension: .absolute(40)
@@ -469,6 +469,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             elementKind: "header",
             alignment: .top
         )
+        headerItem.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: leadingInset, bottom: 0, trailing: trailingInset)
         section.boundarySupplementaryItems = [headerItem]
     }
     

@@ -299,6 +299,50 @@ final class HealthKitManager {
     }
 
     // MARK: - Helpers
+    
+    /// Fetches per-day sleep durations from HealthKit over a date range.
+    func fetchDailySleep(from startDate: Date, to endDate: Date, completion: @escaping ([Date: Double]) -> Void) {
+        guard let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) else {
+            completion([:])
+            return
+        }
+
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
+        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: true)
+
+        let query = HKSampleQuery(sampleType: sleepType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { _, samples, _ in
+            guard let sleepSamples = samples as? [HKCategorySample] else {
+                DispatchQueue.main.async { completion([:]) }
+                return
+            }
+
+            var dailySleep: [Date: Double] = [:]
+            let calendar = Calendar.current
+            
+            let asleepValues: Set<Int> = [
+                HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue,
+                HKCategoryValueSleepAnalysis.asleepCore.rawValue,
+                HKCategoryValueSleepAnalysis.asleepDeep.rawValue,
+                HKCategoryValueSleepAnalysis.asleepREM.rawValue
+            ]
+
+            for sample in sleepSamples {
+                if asleepValues.contains(sample.value) {
+                    let duration = sample.endDate.timeIntervalSince(sample.startDate)
+                    let hours = duration / 3600.0
+                    
+                    // Group by start of day of the sample's end date (wake up day)
+                    let dayDate = calendar.startOfDay(for: sample.endDate)
+                    dailySleep[dayDate, default: 0.0] += hours
+                }
+            }
+
+            DispatchQueue.main.async {
+                completion(dailySleep)
+            }
+        }
+        store.execute(query)
+    }
 
     private func todayPredicate() -> NSPredicate {
         let calendar = Calendar.current

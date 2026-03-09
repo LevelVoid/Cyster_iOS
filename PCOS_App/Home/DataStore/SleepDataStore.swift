@@ -26,7 +26,7 @@ class SleepDataStore {
     // MARK: - Save
     func saveSleepLog(_ log: SleepLog) {
         if let encoded = try? JSONEncoder().encode(log) {
-            UserDefaults.standard.set(encoded, forKey: todayKey)
+            UserDefaults.standard.set(encoded, forKey: key(for: log.wakeTime))
         }
     }
 
