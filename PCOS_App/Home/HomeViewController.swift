@@ -688,12 +688,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
             let currentPhase = CycleDataStore.shared.currentPhaseInfo().phase
             let recommended = RoutineDataStore.shared.recommendedRoutine(for: currentPhase)
 
-            cell.configure(
-                steps: steps,
-                calories: totalCals,
-                duration: todayDuration,
-                recommendedRoutineName: recommended.name
-            )
+            cell.configure()
             return cell
             
         case 3:
