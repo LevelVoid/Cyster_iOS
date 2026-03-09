@@ -66,3 +66,4 @@ Library/Developer/CoreSimulator
 ### Environment ###
 .env
 
+build_log.txt
