@@ -160,6 +160,48 @@ struct DebugInspector {
                 print("║    (empty)")
             }
         }
+        
+        // CDRoutine
+        let routineRequest: NSFetchRequest<CDRoutine> = CDRoutine.fetchRequest()
+        routineRequest.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
+        if let routines = try? context.fetch(routineRequest) {
+            print("║                                                              ║")
+            print("║  📋 CDRoutine (\(routines.count) records)                      ║")
+            for (i, r) in routines.enumerated() {
+                let name = r.name ?? "?"
+                let exCount = (r.exercises as? Set<CDRoutineExercise>)?.count ?? 0
+                let phase = r.phase ?? "none"
+                let type = r.routineType ?? "none"
+                let formatter = DateFormatter()
+                formatter.dateFormat = "dd MMM yyyy"
+                let created = r.createdAt != nil ? formatter.string(from: r.createdAt!) : "nil"
+                let lastUsed = r.lastUsedAt != nil ? formatter.string(from: r.lastUsedAt!) : "never"
+                print("║    [\(i)] \"\(name)\" | \(exCount) exercises | phase: \(phase) | type: \(type)")
+                print("║         created: \(created) | lastUsed: \(lastUsed)")
+                
+                // Print each exercise in this routine
+                if let exercises = (r.exercises as? Set<CDRoutineExercise>)?.sorted(by: { $0.sortOrder < $1.sortOrder }) {
+                    for (j, ex) in exercises.enumerated() {
+                        let exName = ex.exerciseName ?? "?"
+                        if ex.durationSecs > 0 {
+                            print("║           [\(j)] \(exName) — \(ex.durationSecs)s (cardio)")
+                        } else {
+                            print("║           [\(j)] \(exName) — \(ex.targetSets)×\(ex.targetReps) @ \(ex.targetWeight)kg rest:\(ex.restSecs)s")
+                        }
+                        // Verify exerciseData decodes properly
+                        if let decoded = ex.exercise {
+                            print("║               ✅ exerciseData decoded: \(decoded.name) (\(decoded.muscleGroup.displayName))")
+                        } else {
+                            print("║               ❌ exerciseData FAILED to decode!")
+                        }
+                    }
+                }
+            }
+            if routines.isEmpty {
+                print("║    (empty — no user-created routines yet)")
+            }
+        }
+
 
 
         

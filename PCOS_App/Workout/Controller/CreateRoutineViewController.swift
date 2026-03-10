@@ -179,7 +179,7 @@ class CreateRoutineViewController: UIViewController {
             )
 
             // 4. Save to manager (FIXED: now uses addRoutine)
-            WorkoutSessionManager.shared.addRoutine(routine)
+            UserRoutineDataStore.shared.save(routine)
             
             // 5. Show success message
             let alert = UIAlertController(

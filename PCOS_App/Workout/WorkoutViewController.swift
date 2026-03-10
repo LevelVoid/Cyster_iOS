@@ -200,7 +200,7 @@ extension WorkoutViewController: UICollectionViewDataSource, UICollectionViewDel
         if section == 0 {
             return cards.count
         } else if section == 1 {
-            let count = WorkoutSessionManager.shared.savedRoutines.count
+            let count = UserRoutineDataStore.shared.loadAll().count
             
             // If empty → show ONE placeholder cell
             return count == 0 ? 1 : count + 1
@@ -219,7 +219,7 @@ extension WorkoutViewController: UICollectionViewDataSource, UICollectionViewDel
             
         } else if indexPath.section == 1 {
             //NEW
-            let routines = WorkoutSessionManager.shared.savedRoutines
+            let routines = UserRoutineDataStore.shared.loadAll()
             
             // EMPTY STATE
             if routines.isEmpty {
@@ -232,7 +232,7 @@ extension WorkoutViewController: UICollectionViewDataSource, UICollectionViewDel
             } else {
                 if indexPath.item != routines.count {
                     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "my_routines_cell", for: indexPath) as! MyRoutinesCollectionViewCell
-                    let routine = WorkoutSessionManager.shared.savedRoutines[indexPath.row]
+                    let routine = routines[indexPath.row]
                     cell.configureCell(with: routine)
                     
                     return cell
@@ -286,7 +286,7 @@ extension WorkoutViewController: UICollectionViewDataSource, UICollectionViewDel
                 navigateToMetrics(for: selectedCard)
                 
         case 1:
-            let routines = WorkoutSessionManager.shared.savedRoutines
+            let routines = UserRoutineDataStore.shared.loadAll()
             //guard !routines.isEmpty else { return }
             if routines.isEmpty {
                 if indexPath.item == 0 {
@@ -351,7 +351,7 @@ extension WorkoutViewController: UICollectionViewDataSource, UICollectionViewDel
         // Only allow delete in "My Routines" section
         guard indexPath.section == 1 else { return }
 
-        let routines = WorkoutSessionManager.shared.savedRoutines
+        let routines = UserRoutineDataStore.shared.loadAll()
 
         // Ignore empty/add cell
         guard !routines.isEmpty, indexPath.item < routines.count else {
@@ -373,7 +373,7 @@ extension WorkoutViewController: UICollectionViewDataSource, UICollectionViewDel
         )
 
         let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { _ in
-            WorkoutSessionManager.shared.savedRoutines.remove(at: indexPath.item)
+            let routines = UserRoutineDataStore.shared.loadAll(); if indexPath.item < routines.count { UserRoutineDataStore.shared.delete(routines[indexPath.item]) }
             self.collectionView.reloadSections(IndexSet(integer: 1))
         }
 
@@ -402,7 +402,7 @@ extension WorkoutViewController {
         recommendedRoutineId = RoutineDataStore.shared.recommendedRoutine(for: currentPhase).id
 
         // Duration card: total in-app workout seconds today
-        cards[2].done = Double(WorkoutSessionManager.shared.getTime())
+        cards[2].done = Double(CompletedWorkoutsDataStore.shared.loadAll().filter { Calendar.current.isDate($0.date, inSameDayAs: Date()) }.reduce(0) { $0 + $1.durationSeconds })
 
         // Cals card: start from today's real session calories (persisted on disk)
         // HealthKit will add background calories on top once the async fetch returns
@@ -423,7 +423,7 @@ extension WorkoutViewController {
     
     // NEW METHOD: Sync all completed workouts to activity store
     private func syncWorkoutsToActivityStore() {
-        let completedWorkouts = WorkoutSessionManager.shared.completedWorkouts
+        let completedWorkouts = CompletedWorkoutsDataStore.shared.loadAll().filter { Calendar.current.isDate($0.date, inSameDayAs: Date()) }
         
         print("Syncing \(completedWorkouts.count) workouts to activity store...")
         

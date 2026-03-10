@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24512" systemVersion="25C56" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24512" systemVersion="25D2128" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="CDCompletedWorkout" representedClassName="CDCompletedWorkout" syncable="YES" codeGenerationType="category">
         <attribute name="caloriesBurned" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
@@ -22,6 +22,8 @@
         <attribute name="activeDurationSeconds" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="caloriesBurned" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="cortisolEst" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="cycleDay" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="cyclePhase" optional="YES" attributeType="String"/>
         <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="energyLevel" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="healthKitCalories" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
@@ -50,7 +52,7 @@
         <attribute name="timeStamp" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="weight" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
     </entity>
-    <entity name="CDRoutine" representedClassName="CDRoutine" syncable="YES" codeGenerationType="class">
+    <entity name="CDRoutine" representedClassName="CDRoutine" syncable="YES" codeGenerationType="category">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="descriptionText" optional="YES" attributeType="String"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
@@ -61,8 +63,9 @@
         <attribute name="routineType" optional="YES" attributeType="String"/>
         <attribute name="tagline" optional="YES" attributeType="String"/>
         <attribute name="thumbnailImage" optional="YES" attributeType="String"/>
+        <relationship name="exercises" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDRoutineExercise" inverseName="routine" inverseEntity="CDRoutineExercise"/>
     </entity>
-    <entity name="CDRoutineExercise" representedClassName="CDRoutineExercise" syncable="YES" codeGenerationType="class">
+    <entity name="CDRoutineExercise" representedClassName="CDRoutineExercise" syncable="YES" codeGenerationType="category">
         <attribute name="durationSecs" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="exerciseData" attributeType="Binary"/>
         <attribute name="exerciseName" attributeType="String"/>
@@ -73,6 +76,7 @@
         <attribute name="targetReps" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="targetSets" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="targetWeight" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="routine" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDRoutine" inverseName="exercises" inverseEntity="CDRoutine"/>
     </entity>
     <entity name="CDSymptomLog" representedClassName="CDSymptomLog" syncable="YES" codeGenerationType="category">
         <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>

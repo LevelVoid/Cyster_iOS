@@ -64,7 +64,7 @@ class PredefinedRoutinesViewController: UIViewController,UITableViewDelegate, UI
         
         // MARK: - Save Routine
         @IBAction func saveRoutineTapped(_ sender: UIButton) {
-            WorkoutSessionManager.shared.addRoutine(routine)
+            UserRoutineDataStore.shared.save(routine)
             
             navigationController?.popViewController(animated: true)
         }

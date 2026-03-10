@@ -687,7 +687,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
             let totalCals = Int(hkCalories + sessionCals)
 
             // Duration: total workout seconds today
-            let todayDuration = WorkoutSessionManager.shared.getTime()
+            let todayDuration = CompletedWorkoutsDataStore.shared.loadAll().filter { calendar.isDate($0.date, inSameDayAs: today) }.reduce(0) { $0 + $1.durationSeconds }
 
             // Get recommended routine name for the workout card
             let currentPhase = CycleDataStore.shared.currentPhaseInfo().phase

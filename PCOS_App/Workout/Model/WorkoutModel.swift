@@ -328,47 +328,9 @@ struct CompletedWorkout: Codable {
 class WorkoutSessionManager {
     static let shared = WorkoutSessionManager()
     private init() {}
-    
-    // Array of saved routine templates
-    var savedRoutines: [Routine] = []
-    
-    // Active workout session
     var activeWorkout: ActiveWorkout?
-    
-    /// Past completed workouts
-    var completedWorkouts: [CompletedWorkout] = []
-    
-    // Helper method to add a routine
-    func addRoutine(_ routine: Routine) {
-        savedRoutines.append(routine)
-    }
-    
-    // Helper method to get a specific routine
-    func getRoutine(at index: Int) -> Routine? {
-        guard index >= 0 && index < savedRoutines.count else { return nil }
-        return savedRoutines[index]
-    }
-    
-    func getTime()->Int{
-        var sum = 0
-        for i in completedWorkouts{
-            sum += i.durationSeconds
-        }
-        return sum
-    }
-    
-    // Helper method to delete a routine
-    func deleteRoutine(at index: Int) {
-        guard index >= 0 && index < savedRoutines.count else { return }
-        savedRoutines.remove(at: index)
-    }
-    func lastCompletedWorkout(for routine: Routine) -> CompletedWorkout? {
-            completedWorkouts.last {
-                $0.routineName == routine.name
-            }
-        }
-    
 }
+
 struct RoutineImageProvider {
     static let images = [
         "routine_1",
@@ -437,20 +399,6 @@ extension CompletedWorkout {
     }
 }
 
-extension WorkoutSessionManager {
-
-    func completedWorkout(on date: Date) -> CompletedWorkout? {
-        let calendar = Calendar.current
-        return completedWorkouts.first {
-            calendar.isDate($0.date, inSameDayAs: date)
-        }
-    }
-
-    func hasCompletedWorkout(on date: Date) -> Bool {
-        guard let workout = completedWorkout(on: date) else { return false }
-        return workout.isFullyCompleted
-    }
-}
 
 
 

@@ -164,10 +164,8 @@ class SummaryViewController: UIViewController {
         // Update the in-memory CompletedWorkout so WorkoutSessionManager has the value
         completedWorkout.caloriesBurned = calories
 
-        // Also update the CompletedWorkout stored in WorkoutSessionManager
-        if let idx = WorkoutSessionManager.shared.completedWorkouts.firstIndex(where: { $0.id == completedWorkout.id }) {
-            WorkoutSessionManager.shared.completedWorkouts[idx].caloriesBurned = calories
-        }
+        // Update the persisted Core Data record with final calories
+        CompletedWorkoutsDataStore.shared.save(completedWorkout)
 
         // Sync to DailyActivityDataStore so MetricsViewController graph shows session calories
         DailyActivityDataStore.shared.syncWorkout(completedWorkout)
