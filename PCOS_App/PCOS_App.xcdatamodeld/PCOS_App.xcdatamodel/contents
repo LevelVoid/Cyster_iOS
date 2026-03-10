@@ -8,6 +8,8 @@
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="routineName" attributeType="String"/>
         <attribute name="startTime" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="dailyContext" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDDailyContext" inverseName="completedWorkouts" inverseEntity="CDDailyContext"/>
+        <relationship name="workoutExercises" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDWorkoutExercise" inverseName="completedWorkout" inverseEntity="CDWorkoutExercise"/>
     </entity>
     <entity name="CDCycleData" representedClassName="CDCycleData" syncable="YES" codeGenerationType="category">
         <attribute name="cycleLength" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
@@ -35,6 +37,9 @@
         <attribute name="stressLevel" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="wakeTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="waterL" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="completedWorkouts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDCompletedWorkout" inverseName="dailyContext" inverseEntity="CDCompletedWorkout"/>
+        <relationship name="foodLogs" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDFoodLog" inverseName="dailyContext" inverseEntity="CDFoodLog"/>
+        <relationship name="symptomLogs" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDSymptomLog" inverseName="dailyContext" inverseEntity="CDSymptomLog"/>
     </entity>
     <entity name="CDFoodLog" representedClassName="CDFoodLog" syncable="YES" codeGenerationType="category">
         <attribute name="carbsContent" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
@@ -51,6 +56,7 @@
         <attribute name="tagsData" optional="YES" attributeType="Binary"/>
         <attribute name="timeStamp" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="weight" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="dailyContext" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDDailyContext" inverseName="foodLogs" inverseEntity="CDDailyContext"/>
     </entity>
     <entity name="CDRoutine" representedClassName="CDRoutine" syncable="YES" codeGenerationType="category">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
@@ -84,6 +90,7 @@
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="symptomCategory" attributeType="String"/>
         <attribute name="symptomName" attributeType="String"/>
+        <relationship name="dailyContext" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDDailyContext" inverseName="symptomLogs" inverseEntity="CDDailyContext"/>
     </entity>
     <entity name="CDUser" representedClassName="CDUser" syncable="YES" codeGenerationType="category">
         <attribute name="activityLevel" attributeType="String"/>
@@ -96,5 +103,14 @@
         <attribute name="primaryFocus" optional="YES" attributeType="String"/>
         <attribute name="weightKg" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="cycles" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDCycleData" inverseName="user" inverseEntity="CDCycleData"/>
+    </entity>
+    <entity name="CDWorkoutExercise" representedClassName="CDWorkoutExercise" syncable="YES" codeGenerationType="category">
+        <attribute name="exerciseData" optional="YES" attributeType="Binary"/>
+        <attribute name="exerciseName" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="setsData" attributeType="Binary"/>
+        <attribute name="sortOrder" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="completedWorkout" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDCompletedWorkout" inverseName="workoutExercises" inverseEntity="CDCompletedWorkout"/>
     </entity>
 </model>

@@ -48,10 +48,15 @@ struct FoodLogDataSource {
     // MARK: - Add
     
     static func addFoodBarCode(_ food: Food) {
-        let _ = CDFoodLog.from(food, context: context)
-        saveContext()
-        print("✅ CDFoodLog saved: \(food.name)")
-    }
+            let cdFood = CDFoodLog.from(food, context: context)
+            
+            // Link to CDDailyContext so this food log appears under the correct day
+            let dailyContext = DailyActivityDataStore.shared.getOrCreateContext(for: food.timeStamp)
+            cdFood.dailyContext = dailyContext
+            
+            saveContext()
+            print("✅ CDFoodLog saved: \(food.name)")
+        }
     
     // MARK: - Remove
     

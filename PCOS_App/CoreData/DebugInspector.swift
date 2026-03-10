@@ -101,23 +101,24 @@ struct DebugInspector {
             }
         }
         
-        // CDDailyContext
-        let contextRequest: NSFetchRequest<CDDailyContext> = CDDailyContext.fetchRequest()
-        contextRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
-        contextRequest.fetchLimit = 7
-        if let dailyContexts = try? context.fetch(contextRequest) {
+        // CDDailyContext with relationships
+        let contextRequest2: NSFetchRequest<CDDailyContext> = CDDailyContext.fetchRequest()
+        contextRequest2.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        contextRequest2.fetchLimit = 3
+        if let dailyContexts = try? context.fetch(contextRequest2) {
             print("║                                                              ║")
-            print("║  📅 CDDailyContext (\(dailyContexts.count) shown, limit 7)   ║")
+            print("║  🔗 CDDailyContext Relationships (\(dailyContexts.count) shown) ║")
             let formatter = DateFormatter()
             formatter.dateFormat = "dd MMM yyyy"
             for c in dailyContexts {
                 let d = c.date != nil ? formatter.string(from: c.date!) : "nil"
-                print("║    [\(d)] Steps: \(c.steps)  |  Cals: \(c.totalCalories)  |  Active: \(c.activeDurationSeconds)s")
-            }
-            if dailyContexts.isEmpty {
-                print("║    (empty)")
+                let foodCount = (c.foodLogs as? Set<CDFoodLog>)?.count ?? 0
+                let symptomCount = (c.symptomLogs as? Set<CDSymptomLog>)?.count ?? 0
+                let workoutCount = (c.completedWorkouts as? Set<CDCompletedWorkout>)?.count ?? 0
+                print("║    [\(d)] 🍽️\(foodCount) foods | 🩺\(symptomCount) symptoms | 🏋️\(workoutCount) workouts")
             }
         }
+
 
         // CDCompletedWorkout
         let workoutRequest: NSFetchRequest<CDCompletedWorkout> = CDCompletedWorkout.fetchRequest()
@@ -133,11 +134,24 @@ struct DebugInspector {
                 let name = w.routineName ?? "Unknown"
                 let exCount = w.exercises.count
                 print("║    [\(d)] \(name) | \(Int(w.durationSeconds/60))m | \(exCount) exercises")
+                // CDWorkoutExercise relationship check
+                if let wExercises = (w.workoutExercises as? Set<CDWorkoutExercise>)?.sorted(by: { $0.sortOrder < $1.sortOrder }) {
+                    for (j, ex) in wExercises.enumerated() {
+                        let setsCount = ex.sets.count
+                        let completedSets = ex.sets.filter { $0.completionState == .completed }.count
+                        print("║         [\(j)] \(ex.exerciseName ?? "?") — \(completedSets)/\(setsCount) sets ✅")
+                    }
+                    if wExercises.isEmpty {
+                        print("║         (no CDWorkoutExercise rows)")
+                    }
+                }
+
             }
             if workouts.isEmpty {
                 print("║    (empty)")
             }
         }
+        
         
         // CDFoodLog
         let foodRequest: NSFetchRequest<CDFoodLog> = CDFoodLog.fetchRequest()

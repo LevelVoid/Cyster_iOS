@@ -73,14 +73,16 @@ class SymptomDataStore {
 
         
         // 2. Insert new symptoms
-        for symptom in symptoms {
-            let log = CDSymptomLog(context: context)
-            log.id = UUID()
-            log.date = symptom.date ?? startOfDay
-            log.symptomName = symptom.name
-            log.symptomCategory = symptom.category
-            log.iconName = symptom.icon
-        }
+        let dailyContext = DailyActivityDataStore.shared.getOrCreateContext(for: startOfDay)
+                for symptom in symptoms {
+                    let log = CDSymptomLog(context: context)
+                    log.id = UUID()
+                    log.date = symptom.date ?? startOfDay
+                    log.symptomName = symptom.name
+                    log.symptomCategory = symptom.category
+                    log.iconName = symptom.icon
+                    log.dailyContext = dailyContext
+                }
         
         // 3. Save
         if context.hasChanges {

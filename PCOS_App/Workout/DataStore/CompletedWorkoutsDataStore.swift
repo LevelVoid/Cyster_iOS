@@ -19,18 +19,24 @@ final class CompletedWorkoutsDataStore {
 
     // MARK: - Save
     func save(_ workout: CompletedWorkout) {
-        let ctx = Self.context
-        
-        let cdWorkout = CDCompletedWorkout(context: ctx)
-        cdWorkout.id = workout.id
-        cdWorkout.routineName = workout.routineName
-        cdWorkout.date = workout.date
-        cdWorkout.startTime = workout.startTime
-        cdWorkout.durationSeconds = Int32(workout.durationSeconds)
-        cdWorkout.caloriesBurned = workout.caloriesBurned
-        
-        // This triggers the setter we wrote in Step 2, encoding the array to Data automatically
-        cdWorkout.exercises = workout.exercises
+            let ctx = Self.context
+            
+            let cdWorkout = CDCompletedWorkout(context: ctx)
+            cdWorkout.id = workout.id
+            cdWorkout.routineName = workout.routineName
+            cdWorkout.date = workout.date
+            cdWorkout.startTime = workout.startTime
+            cdWorkout.durationSeconds = Int32(workout.durationSeconds)
+            cdWorkout.caloriesBurned = workout.caloriesBurned
+            cdWorkout.exercises = workout.exercises
+            // Also save as individual CDWorkoutExercise rows for per-exercise queries
+            for (index, we) in workout.exercises.enumerated() {
+                   let cdExercise = CDWorkoutExercise.from(we, index: index, context: ctx)
+                   cdExercise.completedWorkout = cdWorkout
+               }
+            // Link to CDDailyContext for relational queries
+            let dailyContext = DailyActivityDataStore.shared.getOrCreateContext(for: workout.date)
+            cdWorkout.dailyContext = dailyContext
         
         if ctx.hasChanges {
             do {
@@ -131,9 +137,6 @@ final class CompletedWorkoutsDataStore {
             WorkoutExercise(id: UUID(), exercise: squat, sets: squatSets, notes: nil),
             WorkoutExercise(id: UUID(), exercise: pushUps, sets: pushUpSets, notes: nil)
         ]
-
-        // MARK: - Completed Workout
-        let workoutStart = calendar.date(byAdding: .minute, value: -30, to: Date()) ?? today
         
         // Let's seed 15 days of dummy historical workouts so your calendar looks great
         for dayOffset in 0..<15 {
