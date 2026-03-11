@@ -435,7 +435,11 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         )
         // Centers a single card in the frame; pages center-to-center with multiple cards
         section.orthogonalScrollingBehavior = .groupPagingCentered
-        addHeader(to: section, leadingInset: 16, trailingInset: 16)
+        
+        // Only add header if there are symptoms to display
+        if allSymptoms.count > 0 {
+            addHeader(to: section, leadingInset: 16, trailingInset: 16)
+        }
         return section
     }
     

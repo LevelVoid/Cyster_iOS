@@ -67,38 +67,38 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="/ 90 g" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="m2y-fh-Ims">
-                                        <rect key="frame" x="86.333333333333329" y="61.666666666666664" width="33" height="14.333333333333336"/>
+                                        <rect key="frame" x="83" y="61.666666666666664" width="33" height="14.333333333333336"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                         <color key="textColor" systemColor="systemGrayColor"/>
                                         <color key="highlightedColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="70" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dTN-JF-Sii">
-                                        <rect key="frame" x="56.999999999999993" y="98" width="22.666666666666664" height="24"/>
-                                        <fontDescription key="fontDescription" style="UICTFontTextStyleTitle3"/>
+                                        <rect key="frame" x="57.000000000000007" y="99.666666666666671" width="19.333333333333336" height="20.333333333333329"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="/ 180 g" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mo3-xl-2LH">
-                                        <rect key="frame" x="86.333333333333329" y="102.66666666666667" width="38.666666666666671" height="14.333333333333329"/>
+                                        <rect key="frame" x="83" y="102.66666666666667" width="38.666666666666657" height="14.333333333333329"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                         <color key="textColor" systemColor="systemGrayColor"/>
                                         <color key="highlightedColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="60" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U4r-W8-B4R">
-                                        <rect key="frame" x="57.000000000000007" y="139" width="24.333333333333336" height="24"/>
-                                        <fontDescription key="fontDescription" style="UICTFontTextStyleTitle3"/>
+                                        <rect key="frame" x="57" y="140.66666666666666" width="21" height="20.333333333333343"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="/ 60 g" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nV8-fa-cc2">
-                                        <rect key="frame" x="86.333333333333329" y="143.33333333333334" width="33" height="15"/>
+                                        <rect key="frame" x="83" y="143.33333333333334" width="33" height="15"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                         <color key="textColor" systemColor="systemGrayColor"/>
                                         <color key="highlightedColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="60" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p9J-s8-ome">
-                                        <rect key="frame" x="57.000000000000007" y="57" width="24.333333333333336" height="24"/>
-                                        <fontDescription key="fontDescription" style="UICTFontTextStyleTitle3"/>
+                                        <rect key="frame" x="57" y="58.666666666666664" width="21" height="20.333333333333336"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
@@ -139,41 +139,41 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="flame.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="Gfh-H1-XSh">
-                                        <rect key="frame" x="20" y="56" width="25" height="24.666666666666657"/>
-                                        <color key="tintColor" red="1" green="0.92156862745098034" blue="0.40784313725490196" alpha="0.80000000000000004" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="clock.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="Gfh-H1-XSh">
+                                        <rect key="frame" x="20" y="56.999999999999993" width="25" height="23.666666666666664"/>
+                                        <color key="tintColor" red="0.0" green="0.83137254901960778" blue="0.78431372549019607" alpha="0.80000000000000004" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="25" id="8n4-bH-O3F"/>
                                             <constraint firstAttribute="width" constant="25" id="JgB-LP-eMw"/>
                                         </constraints>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="120" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kEw-ht-cYw">
-                                        <rect key="frame" x="57" y="57" width="33" height="24"/>
-                                        <fontDescription key="fontDescription" style="UICTFontTextStyleTitle3"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="25" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kEw-ht-cYw">
+                                        <rect key="frame" x="57" y="58.333333333333343" width="20" height="21"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="/ 300 cal" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YIz-cC-33i">
-                                        <rect key="frame" x="95" y="61.333333333333343" width="50" height="15"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="/ 40 min" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YIz-cC-33i">
+                                        <rect key="frame" x="82" y="61.333333333333343" width="47" height="15"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                         <color key="textColor" systemColor="systemGrayColor"/>
                                         <color key="highlightedColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="8500" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="g1U-zr-LgJ">
-                                        <rect key="frame" x="57" y="98" width="48" height="24"/>
-                                        <fontDescription key="fontDescription" style="UICTFontTextStyleTitle3"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="g1U-zr-LgJ">
+                                        <rect key="frame" x="57" y="99.333333333333329" width="10" height="21"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="/ 9500" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lo6-e6-wHO">
-                                        <rect key="frame" x="112.99999999999999" y="102.33333333333333" width="37.333333333333329" height="15"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="/ 300 kcal" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lo6-e6-wHO">
+                                        <rect key="frame" x="75" y="102.33333333333333" width="56" height="15"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                         <color key="textColor" systemColor="systemGrayColor"/>
                                         <color key="highlightedColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </label>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="shoeprints.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="FXQ-2f-Agg">
-                                        <rect key="frame" x="20" y="96.666666666666657" width="25" height="26.333333333333343"/>
-                                        <color key="tintColor" red="0.5490196078431373" green="0.396078431372549" blue="0.396078431372549" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="flame.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="FXQ-2f-Agg">
+                                        <rect key="frame" x="20" y="97" width="25" height="24.666666666666657"/>
+                                        <color key="tintColor" red="1" green="0.36078431372549019" blue="0.36078431372549019" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="25" id="9jn-ca-Fx1"/>
                                             <constraint firstAttribute="height" constant="25" id="BL7-s9-ySy"/>
@@ -192,21 +192,21 @@
                                             <action selector="startWorkout:" destination="gTV-IL-0wX" eventType="touchUpInside" id="bef-W2-K2o"/>
                                         </connections>
                                     </button>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="25" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jlm-7I-kBd">
-                                        <rect key="frame" x="57" y="139" width="24" height="24"/>
-                                        <fontDescription key="fontDescription" style="UICTFontTextStyleTitle3"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="7500" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jlm-7I-kBd">
+                                        <rect key="frame" x="57" y="140.33333333333334" width="40" height="21"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="/ 40 mins" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qIF-B4-b5X">
-                                        <rect key="frame" x="89" y="143.33333333333334" width="52.666666666666657" height="15"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="/ 9000" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qIF-B4-b5X">
+                                        <rect key="frame" x="105" y="143.33333333333334" width="37.666666666666657" height="15"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                         <color key="textColor" systemColor="systemGrayColor"/>
                                         <color key="highlightedColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </label>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="clock.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="aCh-oj-1ZY">
-                                        <rect key="frame" x="20" y="139" width="25" height="23.666666666666657"/>
-                                        <color key="tintColor" red="0.59999999999999998" green="0.83529411764705885" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="shoeprints.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="aCh-oj-1ZY">
+                                        <rect key="frame" x="20" y="137.66666666666669" width="25" height="26.333333333333343"/>
+                                        <color key="tintColor" red="0.23921568627450979" green="0.54509803921568623" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="25" id="NPS-5z-Ev2"/>
                                             <constraint firstAttribute="height" constant="25" id="gds-n4-NnV"/>
@@ -267,18 +267,18 @@
                 <outlet property="carbsCompleted" destination="dTN-JF-Sii" id="Dwe-B3-bxC"/>
                 <outlet property="carbsGoal" destination="mo3-xl-2LH" id="rUS-uX-ewT"/>
                 <outlet property="dietActionCard" destination="TI1-bD-SHd" id="gRi-pM-SM3"/>
-                <outlet property="durationCompleted" destination="g1U-zr-LgJ" id="VGr-fz-xJ9"/>
-                <outlet property="durationGoal" destination="lo6-e6-wHO" id="q78-Mp-WSj"/>
+                <outlet property="durationCompleted" destination="kEw-ht-cYw" id="4jY-Bm-1Jw"/>
+                <outlet property="durationGoal" destination="YIz-cC-33i" id="baA-1F-pzB"/>
                 <outlet property="fatsCompleted" destination="U4r-W8-B4R" id="Cgm-X4-tlB"/>
                 <outlet property="fatsGoal" destination="nV8-fa-cc2" id="xc7-YE-nJQ"/>
                 <outlet property="proteinCompleted" destination="p9J-s8-ome" id="ScA-Qw-hy0"/>
                 <outlet property="proteinGoal" destination="m2y-fh-Ims" id="4Us-D7-ENz"/>
-                <outlet property="stepsCompleted" destination="kEw-ht-cYw" id="8dV-v9-Sxx"/>
-                <outlet property="stepsGoal" destination="YIz-cC-33i" id="YRo-12-Nrc"/>
+                <outlet property="stepsCompleted" destination="Jlm-7I-kBd" id="eq6-Yq-t4c"/>
+                <outlet property="stepsGoal" destination="qIF-B4-b5X" id="0KD-e5-YxI"/>
                 <outlet property="workoutActionCard" destination="Irb-4y-UuQ" id="1lm-f8-50o"/>
                 <outlet property="workoutButton" destination="98C-iJ-TCX" id="wkb-QA-out"/>
-                <outlet property="workoutDurationCompleted" destination="Jlm-7I-kBd" id="abc-12-345"/>
-                <outlet property="workoutDurationGoal" destination="qIF-B4-b5X" id="def-67-890"/>
+                <outlet property="workoutDurationCompleted" destination="g1U-zr-LgJ" id="wMx-he-JdL"/>
+                <outlet property="workoutDurationGoal" destination="lo6-e6-wHO" id="y7W-Lm-Dng"/>
             </connections>
             <point key="canvasLocation" x="2.2900763358778624" y="130.63380281690141"/>
         </collectionViewCell>

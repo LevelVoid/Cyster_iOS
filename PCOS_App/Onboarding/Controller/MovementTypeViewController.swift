@@ -18,6 +18,9 @@ class MovementTypeViewController: UIViewController {
     private var selectedView: UIView?
     private var selectedMovementType: String?
     
+    // Store original background colors
+    private var originalBackgroundColors: [Int: UIColor] = [:]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -27,12 +30,19 @@ class MovementTypeViewController: UIViewController {
         regularMovementsView.layer.cornerRadius = 20
         veryActiveView.layer.cornerRadius = 20
         
-        // Add tap gestures to each view
+        // Add tap gestures to each view (this assigns tags)
         addTapGesture(to: sedentaryView, movementType: "Sedentary Type")
         addTapGesture(to: lightMovementsView, movementType: "Light Movements")
         addTapGesture(to: regularMovementsView, movementType: "Regular Movements")
         addTapGesture(to: veryActiveView, movementType: "Very active on most days")
-       
+        
+        // Store original background colors AFTER tags are assigned
+        let allViews = [sedentaryView, lightMovementsView, regularMovementsView, veryActiveView]
+        for view in allViews {
+            if let view = view {
+                originalBackgroundColors[view.tag] = view.backgroundColor
+            }
+        }
     }
     
     private func addTapGesture(to view: UIView, movementType: String) {
@@ -63,10 +73,10 @@ class MovementTypeViewController: UIViewController {
     @objc private func viewTapped(_ gesture: UITapGestureRecognizer) {
             guard let tappedView = gesture.view else { return }
             
-            // Deselect previous view
+            // Deselect previous view - restore original background color
             if let previousView = selectedView {
                 previousView.layer.borderWidth = 0
-                previousView.backgroundColor = UIColor(red: 0.95, green: 0.85, blue: 0.90, alpha: 1.0)
+                previousView.backgroundColor = originalBackgroundColors[previousView.tag] ?? UIColor(red: 0.95, green: 0.85, blue: 0.90, alpha: 1.0)
             }
             
             // Select new view

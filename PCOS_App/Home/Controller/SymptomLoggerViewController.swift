@@ -149,14 +149,38 @@ extension SymptomLoggerViewController: UICollectionViewDataSource {
 extension SymptomLoggerViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
+        let selectedCategory = categories[indexPath.section].title
+        
+        // Handle deselection
         if selectedSymptoms.contains(indexPath) {
             selectedSymptoms.remove(indexPath)
-        } else {
-            selectedSymptoms.insert(indexPath)
+            collectionView.reloadItems(at: [indexPath])
+            return
         }
         
-        // Only reload the affected cell instead of entire collection view
-        collectionView.reloadItems(at: [indexPath])
+        // Handle mutually exclusive categories (Flow and Discharge)
+        if selectedCategory == "Flow" || selectedCategory == "Discharge" {
+            // Find and remove any previously selected symptom from the same category
+            let previouslySelected = selectedSymptoms.filter { previousIndexPath in
+                categories[previousIndexPath.section].title == selectedCategory
+            }
+            
+            var cellsToReload = [indexPath]
+            for previousIndexPath in previouslySelected {
+                selectedSymptoms.remove(previousIndexPath)
+                cellsToReload.append(previousIndexPath)
+            }
+            
+            // Select the new symptom
+            selectedSymptoms.insert(indexPath)
+            
+            // Reload all affected cells
+            collectionView.reloadItems(at: cellsToReload)
+        } else {
+            // Normal multi-select for other categories
+            selectedSymptoms.insert(indexPath)
+            collectionView.reloadItems(at: [indexPath])
+        }
     }
     
     private func createCompositionalLayout() -> UICollectionViewLayout {

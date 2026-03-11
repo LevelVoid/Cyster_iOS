@@ -10,14 +10,14 @@ let brownSpottingPCOSSignal = PCOSSignal(
     symptomName: "Brown",
     signalTitle: "Understanding Brown Spotting",
     signalIllustration: "spotting",
-
+    
     // Screen 1
     infoHeading: "PCOS and Hormonal Patterns",
     scientificReasons: [
         "In PCOS, irregular ovulation can lead to unstable shedding of the uterine lining. Brown spotting usually represents older blood leaving the uterus more slowly.",
         "Irregular cycles in PCOS may expose the endometrium to prolonged estrogen stimulation, increasing abnormal bleeding risk."
     ],
-
+    
     // Screen 2
     appearanceHeading: "What does brown spotting mean?",
     appearanceDescriptions: [
@@ -26,31 +26,31 @@ let brownSpottingPCOSSignal = PCOSSignal(
         "May occur before or after a period",
         "Can appear after prolonged missed cycles"
     ],
-
+    
     doctorDisclaimer: "Consult a healthcare professional if spotting becomes persistent, heavy, or occurs alongside prolonged missed periods.",
-
+    
     // Screen 3
     supportHeading: "Support your body today",
     supportActions: [
-
+        
         // MARK: Monitoring
         SupportAction(
             category: .miscellaneous,
             text: "Monitor how often spotting occurs and whether it follows missed or irregular cycles"
         ),
-
+        
         // MARK: Medical Awareness
         SupportAction(
             category: .miscellaneous,
             text: "Persistent spotting in PCOS should be evaluated due to potential endometrial changes"
         ),
-
+        
         // MARK: Nutrition
         SupportAction(
             category: .dietNutrition,
             text: "If bleeding is frequent, ensure sufficient dietary iron intake to reduce anemia risk"
         ),
-
+        
         // MARK: Emergency Guidance
         SupportAction(
             category: .miscellaneous,
@@ -65,14 +65,14 @@ let redSpottingPCOSSignal = PCOSSignal(
     symptomName: "Red",
     signalTitle: "Understanding Red Spotting",
     signalIllustration: "spotting",
-
+    
     // Screen 1
     infoHeading: "PCOS and Irregular Bleeding",
     scientificReasons: [
         "In PCOS, irregular or absent ovulation (anovulation) can lead to unstable hormone patterns. This hormonal imbalance may cause abnormal uterine bleeding, including spotting outside of expected cycle patterns",
         "Red spotting typically represents fresh bleeding from the uterine lining"
     ],
-
+    
     // Screen 2
     appearanceHeading: "What does red spotting mean?",
     appearanceDescriptions: [
@@ -81,31 +81,31 @@ let redSpottingPCOSSignal = PCOSSignal(
         "Can appear after missed periods",
         "Not a defining PCOS symptom, but irregular bleeding patterns are common in PCOS"
     ],
-
+    
     doctorDisclaimer: "Seek medical evaluation if spotting is persistent, heavy, occurs after sex, happens between every cycle, or if you experience prolonged missed periods.",
-
+    
     // Screen 3
     supportHeading: "Support your body today",
     supportActions: [
-
+        
         // MARK: Monitoring
         SupportAction(
             category: .miscellaneous,
             text: "Track the timing, color, and frequency of spotting in your cycle log"
         ),
-
+        
         // MARK: Nutrition
         SupportAction(
             category: .dietNutrition,
             text: "If bleeding is frequent or heavier than usual, ensure adequate iron intake through diet"
         ),
-
+        
         // MARK: Medical Awareness
         SupportAction(
             category: .miscellaneous,
             text: "Do not ignore persistent spotting, especially if you have prolonged gaps between periods"
         ),
-
+        
         // MARK: Emergency Guidance
         SupportAction(
             category: .miscellaneous,
@@ -185,14 +185,14 @@ let acnePCOSSignal = PCOSSignal(
 let hirsutismPCOSSignal = PCOSSignal(
     symptomName: "Hirsutism",
     signalTitle: "Managing Excess Hair Growth",
-    signalIllustration: "Acne",
-
+    signalIllustration: "hirsutism",
+    
     infoHeading: "PCOS and Hirsutism",
     scientificReasons: [
         "Hirsutism refers to thick, dark hair growth in areas where women typically have minimal hair",
         "In PCOS, hormonal imbalances cause the ovaries to produce higher levels of androgens. Excess androgens stimulate hair follicles, leading to increased coarse hair growth"
     ],
-
+    
     appearanceHeading: "Where can excess hair appear?",
     appearanceDescriptions: [
         "Face (upper lip, chin, jawline)",
@@ -203,20 +203,20 @@ let hirsutismPCOSSignal = PCOSSignal(
         "Inner thighs",
         "Buttocks"
     ],
-
-//    // Screen 3 – Emotional Impact (Still Yellow informational)
-//    additionalInfoHeading: "How it may affect you",
-//    additionalInfoDescriptions: [
-//        "Hirsutism does not harm your physical health.",
-//        "However, it can impact self-esteem, confidence, and emotional well-being.",
-//        "Some individuals may experience stress, anxiety, or depression related to unwanted hair growth."
-//    ],
-
+    
+    //    // Screen 3 – Emotional Impact (Still Yellow informational)
+    //    additionalInfoHeading: "How it may affect you",
+    //    additionalInfoDescriptions: [
+    //        "Hirsutism does not harm your physical health.",
+    //        "However, it can impact self-esteem, confidence, and emotional well-being.",
+    //        "Some individuals may experience stress, anxiety, or depression related to unwanted hair growth."
+    //    ],
+    
     doctorDisclaimer: "If you notice sudden, rapidly increasing hair growth, irregular periods, or significant emotional distress, consult a healthcare professional.",
-
+    
     supportHeading: "Support your body today",
     supportActions: [
-
+        
         // MARK: Diet / Nutrition
         SupportAction(
             category: .dietNutrition,
@@ -226,7 +226,7 @@ let hirsutismPCOSSignal = PCOSSignal(
             category: .dietNutrition,
             text: "Limit processed foods and sugary beverages to support hormonal balance"
         ),
-
+        
         // MARK: Physical Care / Hair Management
         SupportAction(
             category: .physicalCare,
@@ -240,7 +240,7 @@ let hirsutismPCOSSignal = PCOSSignal(
             category: .physicalCare,
             text: "Prescription treatments such as oral contraceptives or anti-androgen medications may help reduce hair growth when recommended by a healthcare provider"
         ),
-
+        
         // MARK: Miscellaneous (Lifestyle / Emotional Support)
         SupportAction(
             category: .miscellaneous,
@@ -263,13 +263,13 @@ let skinDarkeningPCOSSignal = PCOSSignal(
     symptomName: "Skin Darkening",
     signalTitle: "Understanding Skin Darkening",
     signalIllustration: "skin_darkening",
-
+    
     infoHeading: "PCOS and Skin Darkening",
     scientificReasons: [
         "Skin darkening in PCOS is often linked to insulin resistance and hormonal imbalance. High insulin levels can stimulate skin cells to grow and produce more pigment",
         "Elevated androgen levels may also contribute to hyperpigmentation. A common form of PCOS-related skin darkening is called acanthosis nigricans"
     ],
-
+    
     appearanceHeading: "What does it look like?",
     appearanceDescriptions: [
         "Dark, velvety patches of skin",
@@ -277,12 +277,12 @@ let skinDarkeningPCOSSignal = PCOSSignal(
         "Skin may feel thicker or slightly raised",
         "Usually develops gradually over time"
     ],
-
+    
     doctorDisclaimer: "If skin darkening appears suddenly, spreads rapidly, or is accompanied by other concerning symptoms, consult a healthcare professional for proper evaluation",
-
+    
     supportHeading: "Support your body today",
     supportActions: [
-
+        
         // MARK: Metabolic Support
         SupportAction(
             category: .dietNutrition,
@@ -296,7 +296,7 @@ let skinDarkeningPCOSSignal = PCOSSignal(
             category: .dietNutrition,
             text: "Maintain a healthy weight when possible to reduce insulin resistance"
         ),
-
+        
         // MARK: Skincare
         SupportAction(
             category: .physicalCare,
@@ -310,7 +310,7 @@ let skinDarkeningPCOSSignal = PCOSSignal(
             category: .physicalCare,
             text: "Consult a dermatologist about topical treatments such as retinoids or pigment-lightening agents if needed"
         ),
-
+        
         // MARK: Medical Support
         SupportAction(
             category: .miscellaneous,
@@ -327,14 +327,14 @@ let hairLossPCOSSignal = PCOSSignal(
     symptomName: "Hair Loss",
     signalTitle: "Addressing Hair Thinning",
     signalIllustration: "hairloss_illustration",
-
+    
     // Screen 1
     infoHeading: "How PCOS Can Affect Hair Growth",
     scientificReasons: [
         "PCOS often involves elevated androgen levels. These hormones, especially DHT (dihydrotestosterone), can shrink hair follicles and shorten the hair growth cycle. Insulin resistance may increase androgen production and contribute to inflammation, which can further disrupt normal hair growth.",
         "Chronic low-grade inflammation can push more hair follicles into the resting (telogen) phase, leading to increased shedding."
     ],
-
+    
     // Screen 2
     appearanceHeading: "What does PCOS-related hair loss look like?",
     appearanceDescriptions: [
@@ -344,13 +344,13 @@ let hairLossPCOSSignal = PCOSSignal(
         "Thinner or more brittle hair strands",
         "Slower hair regrowth over time"
     ],
-
+    
     doctorDisclaimer: "Consult a healthcare professional if hair loss is sudden, severe, rapidly worsening, or associated with other symptoms such as irregular periods, fatigue, or signs of thyroid imbalance",
-
+    
     // Screen 3
     supportHeading: "Support your hair and hormonal health",
     supportActions: [
-
+        
         // MARK: Medical Options
         SupportAction(
             category: .physicalCare,
@@ -360,7 +360,7 @@ let hairLossPCOSSignal = PCOSSignal(
             category: .miscellaneous,
             text: "Hormonal treatments or anti-androgen medications may be considered under medical supervision"
         ),
-
+        
         // MARK: Nutrition
         SupportAction(
             category: .dietNutrition,
@@ -370,7 +370,7 @@ let hairLossPCOSSignal = PCOSSignal(
             category: .dietNutrition,
             text: "If hair shedding is significant, consider evaluation for iron deficiency, thyroid imbalance, or other nutrient deficiencies"
         ),
-
+        
         // MARK: Lifestyle
         SupportAction(
             category: .physicalCare,
@@ -380,7 +380,7 @@ let hairLossPCOSSignal = PCOSSignal(
             category: .miscellaneous,
             text: "Manage stress through mindfulness, yoga, or relaxation techniques, as chronic stress can worsen shedding"
         ),
-
+        
         // MARK: Hair Care
         SupportAction(
             category: .physicalCare,
@@ -393,19 +393,366 @@ let hairLossPCOSSignal = PCOSSignal(
     ]
 )
 
+let fatiguePCOSSignal = PCOSSignal(
+    symptomName: "Fatigue",
+    signalTitle: "PCOS and Low Energy",
+    signalIllustration: "fatigue",
+    
+    infoHeading: "Why fatigue can occur in PCOS",
+    scientificReasons: [
+        "Insulin resistance common in PCOS can lead to unstable blood sugar levels, which may contribute to fatigue and energy crashes.",
+        "Hormonal imbalance and sleep disturbances such as poor sleep quality or sleep apnea may also contribute to persistent tiredness."
+    ],
+    
+    appearanceHeading: "How PCOS fatigue may feel",
+    appearanceDescriptions: [
+        "Feeling tired even after adequate sleep",
+        "Low stamina during daily activities",
+        "Difficulty concentrating or brain fog",
+        "Energy crashes after meals"
+    ],
+    
+    doctorDisclaimer: "Consult a healthcare professional if fatigue is severe, persistent, or associated with dizziness, fainting, or unexplained weight changes.",
+    
+    supportHeading: "Ways to Support Energy Levels",
+    
+    supportActions: [
+        
+        SupportAction(category: .dietNutrition, text: "Eat balanced meals containing protein, healthy fats, and complex carbohydrates such as eggs with whole grain toast or lentils with brown rice to stabilize blood sugar."),
+        
+        SupportAction(category: .dietNutrition, text: "Include iron-rich foods such as spinach, lentils, tofu, pumpkin seeds, and chickpeas to support energy levels."),
+        
+        SupportAction(category: .dietNutrition, text: "Add magnesium-rich foods such as almonds, cashews, avocado, and dark leafy greens which support energy metabolism."),
+        
+        SupportAction(category: .dietNutrition, text: "Avoid high-sugar foods like pastries, sugary drinks, and refined snacks that can cause rapid blood sugar spikes and crashes."),
+        
+        SupportAction(category: .physicalCare, text: "Perform 30 minutes of brisk walking daily at a pace where talking is possible but slightly challenging to improve metabolic health."),
+        
+        SupportAction(category: .physicalCare, text: "Strength train 2–3 times per week using exercises such as squats, glute bridges, and resistance band rows to improve insulin sensitivity."),
+        
+        SupportAction(category: .miscellaneous, text: "Expose yourself to morning sunlight for 15–20 minutes to help regulate circadian rhythm and improve daytime energy."),
+        
+        SupportAction(category: .miscellaneous, text: "Maintain consistent sleep timing and aim for 7–9 hours of sleep each night."),
+        SupportAction(
+            category: .dietNutrition,
+            text: "Include protein sources such as eggs, Greek yogurt, tofu, or lentils in each meal to prevent rapid energy crashes."
+        ),
+        
+        SupportAction(
+            category: .dietNutrition,
+            text: "Consume vitamin B12 rich foods such as dairy, eggs, or fortified cereals which support red blood cell production and energy metabolism."
+        ),
+        
+        SupportAction(
+            category: .physicalCare,
+            text: "Perform light stretching routines such as Cat-Cow, Forward Fold, and gentle spinal twists to reduce physical fatigue and stiffness."
+        ),
+        
+        SupportAction(
+            category: .physicalCare,
+            text: "Use resistance training exercises such as lunges, push-ups, and resistance band rows to build muscle and improve metabolic health."
+        ),
+        
+        SupportAction(
+            category: .miscellaneous,
+            text: "Break long sedentary periods by standing or walking for a few minutes every hour to improve circulation and alertness."
+        )
+    ]
+)
+
+let moodSwingsPCOSSignal = PCOSSignal(
+    symptomName: "Mood Swings",
+    signalTitle: "Hormones and Mood Changes",
+    signalIllustration: "mood_swings",
+    
+    infoHeading: "Why mood swings can occur in PCOS",
+    scientificReasons: [
+        "Fluctuations in estrogen, progesterone, and androgens can influence neurotransmitters such as serotonin and dopamine that regulate mood.",
+        "Blood sugar instability caused by insulin resistance may also contribute to irritability and mood changes."
+    ],
+    
+    appearanceHeading: "What mood swings may feel like",
+    appearanceDescriptions: [
+        "Sudden emotional changes throughout the day",
+        "Irritability or frustration",
+        "Feeling unusually sensitive or overwhelmed",
+        "Periods of low motivation"
+    ],
+    
+    doctorDisclaimer: "Seek professional help if mood changes become persistent or interfere with daily functioning.",
+    
+    supportHeading: "Ways to Support Emotional Balance",
+    
+    supportActions: [
+        
+        SupportAction(category: .dietNutrition, text: "Include omega-3 rich foods such as salmon, sardines, walnuts, or chia seeds which support brain health and mood regulation."),
+        
+        SupportAction(category: .dietNutrition, text: "Consume complex carbohydrates such as oats, quinoa, and sweet potatoes to support stable serotonin production."),
+        
+        SupportAction(category: .dietNutrition, text: "Avoid high-sugar desserts and ultra-processed snacks which can worsen blood sugar fluctuations."),
+        
+        SupportAction(category: .physicalCare, text: "Engage in moderate aerobic exercise such as jogging, cycling, or brisk walking for 30 minutes to improve mood-related neurotransmitters."),
+        
+        SupportAction(category: .physicalCare, text: "Practice yoga poses such as Bridge Pose, Warrior II, and Tree Pose which may help regulate stress responses."),
+        
+        SupportAction(category: .miscellaneous, text: "Track mood changes alongside menstrual cycle patterns to identify hormonal triggers."),
+        SupportAction(
+            category: .dietNutrition,
+            text: "Include foods rich in magnesium such as pumpkin seeds, almonds, and spinach which may help regulate mood and reduce irritability."
+        ),
+
+        SupportAction(
+            category: .dietNutrition,
+            text: "Eat regular meals every 3–4 hours to avoid blood sugar drops that can worsen irritability and mood changes."
+        ),
+
+        SupportAction(
+            category: .physicalCare,
+            text: "Engage in rhythmic aerobic activities such as swimming or cycling which can support endorphin release."
+        ),
+
+        SupportAction(
+            category: .miscellaneous,
+            text: "Practice mindfulness meditation for 10–15 minutes daily to improve emotional regulation."
+        )
+    ]
+)
+
+let depressionPCOSSignal = PCOSSignal(
+    symptomName: "Depressed",
+    signalTitle: "PCOS and Depressive Symptoms",
+    signalIllustration: "depressed",
+
+    infoHeading: "Why depression risk may be higher in PCOS",
+    scientificReasons: [
+        "Hormonal imbalance in PCOS can influence neurotransmitters such as serotonin and dopamine that regulate mood.",
+        "Insulin resistance and chronic inflammation associated with PCOS may also affect brain chemistry and increase the risk of depressive symptoms."
+    ],
+
+    appearanceHeading: "Common depressive symptoms",
+    appearanceDescriptions: [
+        "Persistent sadness or low mood",
+        "Loss of interest in activities once enjoyed",
+        "Low energy, fatigue, or difficulty concentrating",
+        "Changes in sleep or appetite"
+    ],
+
+    doctorDisclaimer: "Seek professional support if depressive symptoms persist, worsen, interfere with daily life, or include thoughts of self-harm.",
+
+    supportHeading: "Ways to Support Mental Health",
+
+    supportActions: [
+
+        // MARK: Mood-supportive nutrition
+        SupportAction(
+            category: .dietNutrition,
+            text: "Include tryptophan-rich foods such as eggs, pumpkin seeds, oats, tofu, and turkey which support serotonin production."
+        ),
+
+        SupportAction(
+            category: .dietNutrition,
+            text: "Consume omega-3 fatty acid sources such as salmon, sardines, walnuts, and chia seeds which may support brain health and mood regulation."
+        ),
+
+        SupportAction(
+            category: .dietNutrition,
+            text: "Add fermented foods such as yogurt, kefir, kimchi, or sauerkraut which support gut microbiome health linked to mood regulation."
+        ),
+
+        SupportAction(
+            category: .dietNutrition,
+            text: "Avoid frequent consumption of highly processed foods and excessive sugar which may worsen inflammation and mood fluctuations."
+        ),
+
+        // MARK: Physical activity
+        SupportAction(
+            category: .physicalCare,
+            text: "Engage in 30–45 minutes of moderate aerobic exercise such as brisk walking, cycling, or swimming most days of the week to support endorphin release."
+        ),
+
+        SupportAction(
+            category: .physicalCare,
+            text: "Perform strength training exercises such as squats, lunges, and resistance band rows two to three times per week which may support mood and metabolic health."
+        ),
+
+        // MARK: Nervous system regulation
+        SupportAction(
+            category: .physicalCare,
+            text: "Practice yoga poses such as Child’s Pose, Bridge Pose, and Forward Fold which may help reduce stress and promote relaxation."
+        ),
+
+        // MARK: Lifestyle support
+        SupportAction(
+            category: .miscellaneous,
+            text: "Spend 15–20 minutes outdoors in daylight daily to support circadian rhythm and vitamin D levels."
+        ),
+
+        SupportAction(
+            category: .miscellaneous,
+            text: "Maintain consistent sleep and wake times to support hormonal balance and mental well-being."
+        ),
+
+        SupportAction(
+            category: .miscellaneous,
+            text: "Reach out to a trusted friend, family member, or mental health professional for support if mood symptoms persist."
+        ),
+
+        SupportAction(
+            category: .miscellaneous,
+            text: "Track mood changes alongside sleep, stress levels, and menstrual cycle patterns to identify potential triggers."
+        )
+    ]
+)
+
+let anxietyPCOSSignal = PCOSSignal(
+    symptomName: "Anxiety",
+    signalTitle: "PCOS and Anxiety",
+    signalIllustration: "anxiety",
+    
+    infoHeading: "Why anxiety can occur in PCOS",
+    scientificReasons: [
+        "Hormonal imbalance in PCOS can influence neurotransmitters such as serotonin and GABA that regulate mood and stress responses.",
+        "Insulin resistance and chronic inflammation associated with PCOS may increase cortisol levels, which can worsen anxiety and nervous system hyperarousal."
+    ],
+    
+    appearanceHeading: "Common anxiety experiences",
+    appearanceDescriptions: [
+        "Persistent worry or racing thoughts",
+        "Difficulty relaxing or feeling constantly on edge",
+        "Sleep disturbances or trouble falling asleep",
+        "Physical symptoms such as muscle tension, rapid heartbeat, or restlessness"
+    ],
+    
+    doctorDisclaimer: "Seek professional medical care if anxiety becomes severe, causes panic attacks, interferes with daily functioning, or is associated with thoughts of self-harm.",
+    
+    supportHeading: "Ways to Support Mental Well-being",
+    
+    supportActions: [
+        
+        // MARK: Nervous System Regulation Exercises
+        SupportAction(
+            category: .physicalCare,
+            text: "Practice diaphragmatic breathing: inhale slowly through the nose for 4 seconds, allow the belly to expand, then exhale through the mouth for 6 seconds. Repeat for 5 minutes to activate the parasympathetic nervous system."
+        ),
+        SupportAction(
+            category: .physicalCare,
+            text: "Try box breathing: inhale for 4 seconds, hold for 4 seconds, exhale for 4 seconds, hold for 4 seconds. Repeat for 3–5 minutes to help calm acute anxiety."
+        ),
+        
+        // MARK: Yoga Poses for Anxiety
+        SupportAction(
+            category: .physicalCare,
+            text: "Practice Child’s Pose (Balasana) for 3–5 minutes to promote relaxation and reduce nervous system activation."
+        ),
+        SupportAction(
+            category: .physicalCare,
+            text: "Legs Up the Wall Pose (Viparita Karani) for 5–10 minutes may help lower stress and improve circulation."
+        ),
+        SupportAction(
+            category: .physicalCare,
+            text: "Cat-Cow spinal flow for 10–15 slow repetitions may reduce tension and improve breathing patterns."
+        ),
+        
+        // MARK: Cardio for Stress Reduction
+        SupportAction(
+            category: .physicalCare,
+            text: "Perform brisk walking for 30 minutes at a pace where talking is possible but slightly challenging. This supports cortisol regulation and reduces anxiety symptoms."
+        ),
+        SupportAction(
+            category: .physicalCare,
+            text: "Moderate cycling or swimming for 25–40 minutes may help regulate stress hormones and improve mood."
+        ),
+        
+        // MARK: Foods That Support Calm Mood
+        SupportAction(
+            category: .dietNutrition,
+            text: "Include magnesium-rich foods such as pumpkin seeds, almonds, spinach, and dark chocolate (70% or higher cacao), which support nervous system relaxation."
+        ),
+        SupportAction(
+            category: .dietNutrition,
+            text: "Eat omega-3 fatty acid sources such as salmon, sardines, walnuts, or chia seeds, which may help reduce inflammation and support brain health."
+        ),
+        SupportAction(
+            category: .dietNutrition,
+            text: "Include fermented foods like yogurt, kefir, kimchi, or sauerkraut to support gut microbiome health, which plays a role in mood regulation."
+        ),
+        SupportAction(
+            category: .dietNutrition,
+            text: "Consume complex carbohydrates such as oats, quinoa, and sweet potatoes to support stable blood sugar and serotonin production."
+        ),
+        
+        // MARK: Things to Limit
+        SupportAction(
+            category: .dietNutrition,
+            text: "Limit excessive caffeine intake, especially from coffee, energy drinks, or pre-workout supplements, as high caffeine can increase anxiety symptoms."
+        ),
+        SupportAction(
+            category: .dietNutrition,
+            text: "Reduce highly refined sugars such as sugary drinks, candies, and pastries, which can cause blood sugar spikes and worsen anxiety."
+        ),
+        
+        // MARK: Sleep and Stress Management
+        SupportAction(
+            category: .miscellaneous,
+            text: "Maintain a consistent sleep schedule and aim for 7–9 hours of sleep to support hormone regulation and nervous system recovery."
+        ),
+        SupportAction(
+            category: .miscellaneous,
+            text: "Spend 15–20 minutes outdoors in morning sunlight daily to support circadian rhythm and cortisol balance."
+        ),
+        SupportAction(
+            category: .miscellaneous,
+            text: "Track anxiety episodes along with sleep, caffeine intake, and menstrual cycle patterns to identify potential triggers."
+        ),
+        SupportAction(
+            category: .physicalCare,
+            text: "Practice progressive muscle relaxation by tensing and slowly releasing muscle groups from feet to head for 10–15 minutes to reduce physical tension linked to anxiety."
+        ),
+
+        SupportAction(
+            category: .physicalCare,
+            text: "Perform a 20–30 minute yoga session including Child’s Pose, Forward Fold, and Legs Up the Wall to activate the parasympathetic nervous system."
+        ),
+
+        SupportAction(
+            category: .dietNutrition,
+            text: "Include foods rich in vitamin B6 such as bananas, chickpeas, and potatoes which support neurotransmitter production involved in mood regulation."
+        ),
+
+        SupportAction(
+            category: .dietNutrition,
+            text: "Consume chamomile or lemon balm tea in the evening which may support relaxation and sleep quality."
+        ),
+
+        SupportAction(
+            category: .dietNutrition,
+            text: "Limit ultra-processed snacks and highly refined carbohydrates which can contribute to rapid blood sugar fluctuations."
+        ),
+
+        SupportAction(
+            category: .miscellaneous,
+            text: "Reduce late-night screen exposure and blue light to support melatonin production and better sleep quality."
+        ),
+
+        SupportAction(
+            category: .miscellaneous,
+            text: "Keep a short daily journal to track anxiety triggers, sleep, caffeine intake, and menstrual cycle patterns."
+        )
+    ]
+)
 
 
 let crampsPCOSSignal = PCOSSignal(
     symptomName: "Cramps",
     signalTitle: "Managing Menstrual Cramps",
-    signalIllustration: "Cramps",
-
+    signalIllustration: "cramps",
+    
     infoHeading: "PCOS and Period Pain",
     scientificReasons: [
         "In PCOS, irregular ovulation can cause the uterine lining to become thicker before shedding. A thicker lining may result in heavier bleeding and stronger uterine contractions",
         "Hormonal imbalances, such as higher estrogen and lower progesterone, can intensify cramping. Inflammation, which is common in PCOS, may increase pain sensitivity during menstruation"
     ],
-
+    
     appearanceHeading: "Why do cramps feel stronger?",
     appearanceDescriptions: [
         "Uterine contractions are triggered by prostaglandins, chemicals involved in inflammation",
@@ -413,24 +760,24 @@ let crampsPCOSSignal = PCOSSignal(
         "Pain may be felt in the lower abdomen, lower back, or thighs",
         "Symptoms may include nausea, fatigue, or headaches alongside cramping"
     ],
-
+    
     doctorDisclaimer: "If your period pain is severe, worsening, interfering with daily life, or not improving with basic care, consult a healthcare professional for evaluation",
-
+    
     supportHeading: "Support your body today",
     supportActions: [
-
+        
         // MARK: Medication Support
-//        SupportAction(
-//            category: .miscellaneous,
-//            text: "Over-the-counter pain relievers such as ibuprofen or aspirin may help reduce cramps by lowering prostaglandins when taken at the first sign of discomfort"
-//        ),
-
+        //        SupportAction(
+        //            category: .miscellaneous,
+        //            text: "Over-the-counter pain relievers such as ibuprofen or aspirin may help reduce cramps by lowering prostaglandins when taken at the first sign of discomfort"
+        //        ),
+        
         // MARK: Heat Therapy
         SupportAction(
             category: .physicalCare,
             text: "Apply heat using a hot water bottle, heating pad, or warm bath to relax uterine muscles and improve blood flow"
         ),
-
+        
         // MARK: Diet / Nutrition
         SupportAction(
             category: .dietNutrition,
@@ -440,7 +787,7 @@ let crampsPCOSSignal = PCOSSignal(
             category: .dietNutrition,
             text: "Limit highly processed foods and sugary drinks to help reduce inflammation over time"
         ),
-
+        
         // MARK: Movement / Yoga
         SupportAction(
             category: .physicalCare,
@@ -450,7 +797,7 @@ let crampsPCOSSignal = PCOSSignal(
             category: .physicalCare,
             text: "Light stretching, walking, or low-impact movement can support circulation and reduce stiffness"
         ),
-
+        
         // MARK: Self-Care
         SupportAction(
             category: .miscellaneous,
@@ -460,12 +807,12 @@ let crampsPCOSSignal = PCOSSignal(
             category: .miscellaneous,
             text: "Practice stress management techniques such as deep breathing or meditation, as stress can heighten pain sensitivity"
         ),
-
+        
         // MARK: Supplements
-//        SupportAction(
-//            category: .dietNutrition,
-//            text: "Certain supplements such as myo-inositol may support hormonal balance but consult a healthcare professional before starting any supplement"
-//        )
+        //        SupportAction(
+        //            category: .dietNutrition,
+        //            text: "Certain supplements such as myo-inositol may support hormonal balance but consult a healthcare professional before starting any supplement"
+        //        )
     ]
 )
 
@@ -474,14 +821,14 @@ let lowerBackPCOSSignal = PCOSSignal(
     symptomName: "Lower Back",
     signalTitle: "Lower Back Pain During Periods",
     signalIllustration: "lower_back",
-
+    
     // Screen 1
     infoHeading: "Why menstrual pain can affect your lower back",
     scientificReasons: [
         "Low back pain is a common symptom of dysmenorrhea (painful periods). Uterine muscle contractions during menstruation can cause pain that radiates to the lower back.",
         "Pelvic muscle tension and inflammation may increase discomfort, which can feel more noticeable in individuals with irregular or painful cycles."
     ],
-
+    
     // Screen 2
     appearanceHeading: "What does menstrual-related back pain feel like?",
     appearanceDescriptions: [
@@ -490,19 +837,19 @@ let lowerBackPCOSSignal = PCOSSignal(
         "Increased discomfort during heavy or painful cycles",
         "Muscle tightness in the lower back or pelvic area"
     ],
-
+    
     doctorDisclaimer: "Seek medical evaluation urgently if back pain is accompanied by fever, numbness, weakness, loss of bladder or bowel control, or severe worsening pain.",
-
+    
     // Screen 3
     supportHeading: "Support your body today",
     supportActions: [
-
+        
         // MARK: Heat Therapy
         SupportAction(
             category: .physicalCare,
             text: "Apply a warm heat wrap or heating pad to the lower back to help relax muscles and reduce discomfort."
         ),
-
+        
         // MARK: Movement / Yoga
         SupportAction(
             category: .physicalCare,
@@ -512,13 +859,13 @@ let lowerBackPCOSSignal = PCOSSignal(
             category: .physicalCare,
             text: "Light walking or low-impact movement can support circulation and reduce stiffness."
         ),
-
+        
         // MARK: Nutrition
         SupportAction(
             category: .dietNutrition,
             text: "Include anti-inflammatory foods such as berries, leafy greens, turmeric, ginger, and omega-3-rich foods."
         ),
-
+        
         // MARK: Monitoring
         SupportAction(
             category: .miscellaneous,
@@ -532,14 +879,14 @@ let tenderBreastsPCOSSignal = PCOSSignal(
     symptomName: "Tender Breasts",
     signalTitle: "Cyclic Breast Tenderness",
     signalIllustration: "tender_breasts",
-
+    
     // Screen 1
     infoHeading: "Why breast tenderness happens",
     scientificReasons: [
         "Cyclic breast pain (mastalgia) is commonly linked to hormonal changes during the menstrual cycle. Fluctuations in estrogen and progesterone can cause breast tissue swelling, fullness, and tenderness.",
         "Breast discomfort is often more noticeable in the days leading up to a period."
     ],
-
+    
     // Screen 2
     appearanceHeading: "What does cyclic breast pain feel like?",
     appearanceDescriptions: [
@@ -548,25 +895,25 @@ let tenderBreastsPCOSSignal = PCOSSignal(
         "Generalized soreness rather than sharp, localized pain",
         "Symptoms that improve after the period begins"
     ],
-
+    
     doctorDisclaimer: "Seek medical evaluation if breast pain is persistent, occurs in only one area, is accompanied by a lump, nipple discharge, skin changes, or does not follow a menstrual pattern.",
-
+    
     // Screen 3
     supportHeading: "Support your body today",
     supportActions: [
-
+        
         // MARK: Support Garments
         SupportAction(
             category: .physicalCare,
             text: "Wear a well-fitted, supportive bra, especially during high-sensitivity days."
         ),
-
+        
         // MARK: Gentle Movement
         SupportAction(
             category: .physicalCare,
             text: "Light movement and gentle upper-body stretching may help reduce muscle tension."
         ),
-
+        
         // MARK: Nutrition
         SupportAction(
             category: .dietNutrition,
@@ -576,7 +923,7 @@ let tenderBreastsPCOSSignal = PCOSSignal(
             category: .dietNutrition,
             text: "Vitamin E has been studied for cyclic mastalgia, but evidence is mixed. Consult a healthcare professional before starting supplements."
         ),
-
+        
         // MARK: Monitoring
         SupportAction(
             category: .miscellaneous,
@@ -590,14 +937,14 @@ let headachePCOSSignal = PCOSSignal(
     symptomName: "Headache",
     signalTitle: "Hormonal Headaches",
     signalIllustration: "headache",
-
+    
     // Screen 1
     infoHeading: "How hormones can trigger headaches",
     scientificReasons: [
         "Estrogen fluctuations across the menstrual cycle, especially estrogen withdrawal before menstruation, are linked to menstrual migraine.",
         "Hormonal imbalance may influence headache frequency and severity. Some studies suggest migraine prevalence may be higher in individuals with PCOS due to hormonal interplay."
     ],
-
+    
     // Screen 2
     appearanceHeading: "What does a hormonal headache feel like?",
     appearanceDescriptions: [
@@ -606,14 +953,14 @@ let headachePCOSSignal = PCOSSignal(
         "Sensitivity to light or sound",
         "Nausea or visual disturbances in migraine cases"
     ],
-
+    
     doctorDisclaimer: "Seek urgent medical care for sudden severe headache, headache with fever, stiff neck, confusion, weakness, vision loss, or the worst headache of your life.",
-
+    
     // Screen 3
     supportHeading: "Ways to Manage Headaches",
-
+    
     supportActions: [
-
+        
         // MARK: Hydration & Nutrition
         SupportAction(
             category: .dietNutrition,
@@ -635,7 +982,7 @@ let headachePCOSSignal = PCOSSignal(
             category: .dietNutrition,
             text: "Limit excessive caffeine, as both overuse and withdrawal can trigger headaches."
         ),
-
+        
         // MARK: Movement
         SupportAction(
             category: .physicalCare,
@@ -649,13 +996,13 @@ let headachePCOSSignal = PCOSSignal(
             category: .physicalCare,
             text: "Neck and shoulder stretches may relieve muscle tension linked to tension-type headaches."
         ),
-
+        
         // MARK: Sleep
         SupportAction(
             category: .miscellaneous,
             text: "Maintain a consistent sleep schedule, as irregular sleep patterns can trigger migraines."
         ),
-
+        
         // MARK: Stress Management
         SupportAction(
             category: .miscellaneous,
@@ -665,19 +1012,19 @@ let headachePCOSSignal = PCOSSignal(
             category: .miscellaneous,
             text: "Consider mindfulness-based practices to reduce stress-related headache triggers."
         ),
-
+        
         // MARK: Environmental Triggers
         SupportAction(
             category: .miscellaneous,
             text: "Identify and minimize triggers such as bright lights, strong odors, or prolonged screen time."
         ),
-
+        
         // MARK: Tracking
         SupportAction(
             category: .miscellaneous,
             text: "Track headache timing and symptoms to identify menstrual or hormonal patterns."
         ),
-
+        
         // MARK: Acute Relief
         SupportAction(
             category: .physicalCare,
@@ -686,6 +1033,284 @@ let headachePCOSSignal = PCOSSignal(
         SupportAction(
             category: .physicalCare,
             text: "Apply a cold compress to the forehead or neck during migraine attacks."
+        )
+    ]
+)
+
+let vulvarPainPCOSSignal = PCOSSignal(
+    symptomName: "Vulvar Pain",
+    signalTitle: "Vulvar Discomfort",
+    signalIllustration: "vulvar_pain",
+    
+    infoHeading: "Why vulvar pain may occur",
+    scientificReasons: [
+        "Hormonal fluctuations can influence vaginal tissue health and lubrication levels.",
+        "Irritation, infections, or inflammation may contribute to vulvar discomfort."
+    ],
+    
+    appearanceHeading: "What vulvar pain may feel like",
+    appearanceDescriptions: [
+        "Burning or stinging sensation",
+        "Tenderness or soreness",
+        "Pain during sitting or sexual activity"
+    ],
+    
+    doctorDisclaimer: "Seek medical evaluation if vulvar pain is persistent, severe, or associated with unusual discharge, swelling, or fever.",
+    
+    supportHeading: "Ways to Support Vulvar Comfort",
+    
+    supportActions: [
+        
+        SupportAction(category: .dietNutrition, text: "Stay well hydrated to support mucosal tissue health."),
+        
+        SupportAction(category: .physicalCare, text: "Perform pelvic floor relaxation exercises such as diaphragmatic breathing combined with gentle pelvic floor release."),
+        
+        SupportAction(category: .miscellaneous, text: "Avoid scented soaps, harsh cleansers, or fragranced hygiene products that may irritate vulvar skin."),
+        
+        SupportAction(category: .miscellaneous, text: "Wear breathable cotton underwear and avoid prolonged moisture exposure.")
+    ]
+)
+
+let bloatingPCOSSignal = PCOSSignal(
+    symptomName: "Bloating",
+    signalTitle: "Hormones and Digestive Bloating",
+    signalIllustration: "bloating",
+    
+    infoHeading: "Why bloating can occur",
+    scientificReasons: [
+        "Hormonal fluctuations can influence digestion and water retention, contributing to abdominal bloating.",
+        "Changes in gut microbiome and insulin resistance may also affect digestion and gas production."
+    ],
+    
+    appearanceHeading: "What bloating may feel like",
+    appearanceDescriptions: [
+        "Abdominal fullness or tightness",
+        "Visible stomach swelling",
+        "Pressure or discomfort after meals"
+    ],
+    
+    doctorDisclaimer: "Seek medical advice if bloating is severe, persistent, or associated with vomiting, fever, or unexplained weight loss.",
+    
+    supportHeading: "Ways to Support Digestive Comfort",
+    
+    supportActions: [
+        
+        SupportAction(category: .dietNutrition, text: "Eat slowly and chew food thoroughly to reduce swallowed air and digestive stress."),
+        
+        SupportAction(category: .dietNutrition, text: "Include probiotic foods such as yogurt, kefir, or fermented vegetables to support gut microbiome balance."),
+        
+        SupportAction(category: .dietNutrition, text: "Limit carbonated beverages, chewing gum, and highly processed foods that may worsen bloating."),
+        
+        SupportAction(category: .physicalCare, text: "Take a 10–15 minute walk after meals to stimulate digestion and reduce bloating."),
+        
+        SupportAction(category: .physicalCare, text: "Practice yoga poses such as Wind-Relieving Pose (Pavanamuktasana) and Supine Twist to support digestive movement."),
+        SupportAction(
+            category: .dietNutrition,
+            text: "Reduce large high-fat meals which may slow stomach emptying and worsen bloating."
+        ),
+
+        SupportAction(
+            category: .dietNutrition,
+            text: "Use digestive spices such as ginger or peppermint which may help reduce gastrointestinal discomfort."
+        ),
+
+        SupportAction(
+            category: .physicalCare,
+            text: "Perform gentle abdominal massage in clockwise circular motions to stimulate bowel movement."
+        ),
+
+        SupportAction(
+            category: .physicalCare,
+            text: "Try the yoga pose Apanasana (Knees-to-Chest Pose) for several slow breaths to help release trapped gas."
+        )
+    ]
+)
+
+
+let constipationPCOSSignal = PCOSSignal(
+    symptomName: "Constipated",
+    signalTitle: "Hormones and Slow Digestion",
+    signalIllustration: "constipated",
+    
+    infoHeading: "Why constipation may occur",
+    scientificReasons: [
+        "Hormonal fluctuations can influence gastrointestinal motility and slow bowel movements.",
+        "Low fiber intake, dehydration, or reduced physical activity may worsen constipation."
+    ],
+    
+    appearanceHeading: "Signs of constipation",
+    appearanceDescriptions: [
+        "Infrequent bowel movements",
+        "Hard or difficult-to-pass stools",
+        "Abdominal discomfort or straining"
+    ],
+    
+    doctorDisclaimer: "Seek medical advice if constipation is persistent, severe, or accompanied by blood in stool or unexplained weight loss.",
+    
+    supportHeading: "Ways to Support Regular Digestion",
+    
+    supportActions: [
+        
+        SupportAction(category: .dietNutrition, text: "Increase fiber intake with foods such as oats, chia seeds, flaxseeds, lentils, and vegetables."),
+        
+        SupportAction(category: .dietNutrition, text: "Drink sufficient water throughout the day to support fiber digestion."),
+        
+        SupportAction(category: .dietNutrition, text: "Limit excessive processed foods and refined flour products that contain little fiber."),
+        
+        SupportAction(category: .physicalCare, text: "Perform 20–30 minutes of brisk walking daily to stimulate intestinal movement."),
+        
+        SupportAction(category: .physicalCare, text: "Yoga poses such as Malasana (Yogic Squat) and Knees-to-Chest Pose may help stimulate bowel movements."),
+        SupportAction(
+            category: .dietNutrition,
+            text: "Include ground flaxseed or chia seeds in oatmeal or yogurt to increase dietary fiber intake."
+        ),
+
+        SupportAction(
+            category: .dietNutrition,
+            text: "Consume prunes or kiwi fruit which may help stimulate bowel movements."
+        ),
+
+        SupportAction(
+            category: .physicalCare,
+            text: "Practice Malasana (Yogic Squat) which may help align the rectum and facilitate easier bowel movements."
+        ),
+
+        SupportAction(
+            category: .miscellaneous,
+            text: "Establish a consistent bathroom routine, such as attempting bowel movements after breakfast when the gastrocolic reflex is strongest."
+        )
+    ]
+)
+
+let diarrheaPCOSSignal = PCOSSignal(
+    symptomName: "Diarrhea",
+    signalTitle: "Hormones and Digestive Upset",
+    signalIllustration: "constipated",
+    
+    infoHeading: "Why diarrhea can occur in PCOS",
+    scientificReasons: [
+        "Hormonal fluctuations across the menstrual cycle can influence gastrointestinal motility, sometimes causing faster intestinal movement and loose stools.",
+        "Insulin resistance and gut microbiome imbalance associated with PCOS may affect digestion and increase sensitivity to certain foods."
+    ],
+    
+    appearanceHeading: "What diarrhea may feel like",
+    appearanceDescriptions: [
+        "Frequent loose or watery stools",
+        "Urgent need to use the bathroom",
+        "Abdominal cramping or discomfort",
+        "Possible dehydration or fatigue if episodes persist"
+    ],
+    
+    doctorDisclaimer: "Seek medical care if diarrhea lasts longer than several days, causes dehydration, includes blood in stool, or is accompanied by fever or severe abdominal pain.",
+    
+    supportHeading: "Ways to Support Digestive Recovery",
+    
+    supportActions: [
+        
+        // Hydration
+        SupportAction(
+            category: .dietNutrition,
+            text: "Drink oral rehydration solutions or electrolyte fluids such as coconut water or oral rehydration salts to replace lost fluids and electrolytes."
+        ),
+        
+        SupportAction(
+            category: .dietNutrition,
+            text: "Consume easily digestible foods such as bananas, white rice, applesauce, and toast which may help firm stools during digestive upset."
+        ),
+        
+        // Gut-soothing foods
+        SupportAction(
+            category: .dietNutrition,
+            text: "Include probiotic foods such as yogurt with live cultures or kefir which may help restore beneficial gut bacteria."
+        ),
+        
+        SupportAction(
+            category: .dietNutrition,
+            text: "Consume soluble fiber foods such as oats or psyllium husk which may help absorb excess water in the intestines."
+        ),
+        
+        // Foods to limit
+        SupportAction(
+            category: .dietNutrition,
+            text: "Avoid fatty or fried foods which can worsen intestinal irritation and increase bowel movements."
+        ),
+        
+        SupportAction(
+            category: .dietNutrition,
+            text: "Limit caffeine, alcohol, and very spicy foods which may stimulate bowel motility."
+        ),
+        
+        SupportAction(
+            category: .dietNutrition,
+            text: "Avoid large amounts of dairy if lactose intolerance symptoms worsen diarrhea."
+        ),
+        
+        // Movement
+        SupportAction(
+            category: .physicalCare,
+            text: "Engage in light walking for 10–15 minutes after meals which may support gentle digestion without stressing the gut."
+        ),
+        
+        // Stress management
+        SupportAction(
+            category: .miscellaneous,
+            text: "Practice relaxation techniques such as slow breathing or meditation since stress can influence the gut–brain axis and worsen digestive symptoms."
+        ),
+        
+        // Tracking
+        SupportAction(
+            category: .miscellaneous,
+            text: "Track foods, stress levels, and menstrual cycle timing to identify potential triggers for digestive flare-ups."
+        )
+    ]
+)
+
+let gasPCOSSignal = PCOSSignal(
+    symptomName: "Gas",
+    signalTitle: "Digestive Gas and PCOS",
+    signalIllustration: "gas",
+    
+    infoHeading: "Why gas may occur",
+    scientificReasons: [
+        "Gut microbiome imbalance and fermentation of certain foods in the intestines can lead to gas production.",
+        "Hormonal changes may influence digestive motility and gas buildup."
+    ],
+    
+    appearanceHeading: "Common gas symptoms",
+    appearanceDescriptions: [
+        "Passing gas frequently",
+        "Abdominal pressure or fullness",
+        "Bloating or discomfort"
+    ],
+    
+    doctorDisclaimer: "Seek medical advice if gas is severe, persistent, or accompanied by weight loss, vomiting, or severe abdominal pain.",
+    
+    supportHeading: "Ways to Support Digestive Health",
+    
+    supportActions: [
+        
+        SupportAction(category: .dietNutrition, text: "Eat smaller meals and chew food thoroughly to support proper digestion."),
+        
+        SupportAction(category: .dietNutrition, text: "Limit gas-producing foods such as excessive carbonated drinks or large quantities of fried foods."),
+        
+        SupportAction(category: .dietNutrition, text: "Include digestive herbs such as ginger or fennel seeds which may help reduce gas."),
+        
+        SupportAction(category: .physicalCare, text: "Take a gentle walk after meals to support intestinal movement and gas release."),
+        
+        SupportAction(category: .physicalCare, text: "Practice yoga poses such as Wind-Relieving Pose and Happy Baby Pose which may help relieve gas buildup."),
+        SupportAction(
+            category: .dietNutrition,
+            text: "Reduce rapid eating and avoid drinking through straws which may increase swallowed air."
+        ),
+
+        SupportAction(
+            category: .dietNutrition,
+            text: "Use fennel seeds or ginger tea after meals which may help reduce digestive gas."
+        ),
+
+        SupportAction(
+            category: .physicalCare,
+            text: "Perform gentle torso twists such as Supine Twist to encourage movement of intestinal gas."
         )
     ]
 )

@@ -18,6 +18,9 @@ class UserGoalViewController: UIViewController {
     private var selectedView: UIView?
     private var selectedGoalType: String?
     
+    // Store original background colors
+    private var originalBackgroundColors: [Int: UIColor] = [:]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -27,10 +30,19 @@ class UserGoalViewController: UIViewController {
         acneHairCard.layer.cornerRadius = 20
         energyLevelCard.layer.cornerRadius = 20
         
+        // Add tap gestures to each view (this assigns tags)
         addTapGesture(to: cycleRegularityCard, goalType: "Improve cycle regularity")
         addTapGesture(to: weightManagementCard, goalType: "Manage weight comfortably")
         addTapGesture(to: acneHairCard, goalType: "Reduce acne/hair concerns")
         addTapGesture(to: energyLevelCard, goalType: "Boost daily energy levels")
+        
+        // Store original background colors AFTER tags are assigned
+        let allViews = [cycleRegularityCard, weightManagementCard, acneHairCard, energyLevelCard]
+        for view in allViews {
+            if let view = view {
+                originalBackgroundColors[view.tag] = view.backgroundColor
+            }
+        }
     }
     
     private func addTapGesture(to view: UIView, goalType: String) {
@@ -63,10 +75,10 @@ class UserGoalViewController: UIViewController {
     @objc private func viewTapped(_ gesture: UITapGestureRecognizer) {
         guard let tappedView = gesture.view else { return }
         
-        // Deselect previous view
+        // Deselect previous view - restore original background color
         if let previousView = selectedView {
             previousView.layer.borderWidth = 0
-            previousView.backgroundColor = UIColor(red: 0.95, green: 0.85, blue: 0.90, alpha: 1.0)
+            previousView.backgroundColor = originalBackgroundColors[previousView.tag] ?? UIColor(red: 0.95, green: 0.85, blue: 0.90, alpha: 1.0)
         }
         
         // Select new view

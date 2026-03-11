@@ -19,7 +19,16 @@ struct PCOSSignalStore {
         crampsPCOSSignal,
         lowerBackPCOSSignal,
         tenderBreastsPCOSSignal,
-        headachePCOSSignal
+        headachePCOSSignal,
+        vulvarPainPCOSSignal,
+        fatiguePCOSSignal,
+        moodSwingsPCOSSignal,
+        depressionPCOSSignal,
+        anxietyPCOSSignal,
+        bloatingPCOSSignal,
+        constipationPCOSSignal,
+        diarrheaPCOSSignal,
+        gasPCOSSignal
     ]
 
     static func signal(for symptomName: String) -> PCOSSignal? {

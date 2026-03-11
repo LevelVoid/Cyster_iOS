@@ -30,7 +30,7 @@ struct SymptomCategory {
         ]),
         SymptomCategory(title: "Lifestyle", items: [
             SymptomItem(name: "Fatigue", icon: "FatigueIcon",category: "Lifestyle"),
-            SymptomItem(name: "Insomnia", icon: "InsomniaIcon",category: "Lifestyle"),
+            //SymptomItem(name: "Insomnia", icon: "InsomniaIcon",category: "Lifestyle"),
             SymptomItem(name: "Mood Swings", icon: "MoodSwingIcon",category: "Lifestyle"),
             SymptomItem(name: "Depressed", icon: "DepressedIcon",category: "Lifestyle"),
             SymptomItem(name: "Anxiety", icon: "AnxietyIcon",category: "Lifestyle")
