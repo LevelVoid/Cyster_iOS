@@ -175,7 +175,7 @@ class SummaryViewController: UIViewController {
 
     
     func applyCardStyling() {
-        let cards = [caloriesCard, exercisesCard, durationCard]
+        let cards = [durationCard, caloriesCard, exercisesCard]
         cards.forEach { card in
             card?.layer.cornerRadius = 20
             card?.backgroundColor = .systemBackground
