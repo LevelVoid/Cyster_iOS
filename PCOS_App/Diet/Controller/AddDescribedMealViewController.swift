@@ -221,33 +221,43 @@ class AddDescribedMealViewController: UIViewController {
     // MARK: - Actions
     
     @IBAction func saveButtonTapped(_ sender: Any) {
-        guard let finalFood = createFinalFoodObject() else {
-            print("ERROR: Could not create final food object")
-            showAlert(message: "Failed to create meal. Please try again.")
-            return
-        }
         
-        print("DEBUG: Final food created: \(finalFood.name)")
-        print("DEBUG: Delegate is: \(delegate != nil ? "set" : "nil")")
-        
-        // ← KEY FIX: call delegate first (saves to FoodLogDataSource via DietVC)
-        delegate?.didConfirmMeal(finalFood)
-        
-        // ← KEY FIX: correct dismiss/pop logic for both sheet-presented and pushed scenarios
-        if presentingViewController != nil {
-            // We're inside a presented sheet (e.g. from Describe/table row flow)
-            dismiss(animated: true) { [weak self] in
-                // Also dismiss the parent sheet (AddMealVC sheet or DescribeFoodVC sheet)
-                self?.presentingViewController?.dismiss(animated: false)
+            guard let finalFood = createFinalFoodObject() else {
+                print("ERROR: Could not create final food object")
+                showAlert(message: "Failed to create meal. Please try again.")
+                return
             }
-        } else {
-            // We're pushed on a navigation stack — pop back to root (DietVC)
-            navigationController?.popToRootViewController(animated: true)
+            
+            print("DEBUG: Final food created: \(finalFood.name)")
+            print("DEBUG: Protein: \(finalFood.proteinContent)g, Carbs: \(finalFood.carbsContent)g, Fats: \(finalFood.fatsContent)g")
+            print("DEBUG: Delegate is: \(delegate != nil ? "set" : "nil")")
+            
+            // Call delegate to save the food
+            delegate?.didConfirmMeal(finalFood)
+            print("DEBUG: Delegate called - meal should be saved now")
+            
+            // Dismiss logic - handle both navigation and presentation cases
+            if let nav = navigationController {
+                // We're in a navigation stack
+                if let presentingVC = nav.presentingViewController {
+                    // The nav controller is presented as a sheet - dismiss it
+                    presentingVC.dismiss(animated: true) {
+                        print("DEBUG: Navigation controller dismissed")
+                    }
+                } else {
+                    // We're pushed - pop to root
+                    nav.popToRootViewController(animated: true)
+                    print("DEBUG: Popped to root")
+                }
+            } else if presentingViewController != nil {
+                // We're directly presented - dismiss
+                dismiss(animated: true) {
+                    print("DEBUG: View controller dismissed")
+                }
+            }
+            
+            print("DEBUG: Save button completed")
         }
-        
-        print("Meal confirmed and dismissing")
-    }
-    
     private func createFinalFoodObject() -> Food? {
         var totalProtein: Double = 0
         var totalCarbs: Double = 0

@@ -17,272 +17,282 @@ class AddMealViewController: UIViewController {
     @IBOutlet weak var optionsStackView: UIStackView!
     
     weak var delegate: AddMealDelegate?
-    weak var dietDelegate: AddDescribedMealDelegate?
-    
-    private var foodItems: [FoodItem] = []
-    private var filteredFoodItems: [FoodItem] = []
-    private var recentMeals: [Food] = []
-    private var filteredRecentMeals: [Food] = []
-    private var isShowingRecent: Bool = true
-    
+       weak var dietDelegate: AddDescribedMealDelegate?
+       
+       private var foodItems: [FoodItem] = []
+       private var filteredFoodItems: [FoodItem] = []
+       private var recentMeals: [Food] = []
+       private var filteredRecentMeals: [Food] = []
+       private var isShowingRecent: Bool = true
+       
     private let scanBarcodeButton: UIButton = {
-        let button = createOptionButton(
-            imageName: "barcode.viewfinder",
-            title: "Scan Barcode"
-        )
-        button.tag = 1
-        return button
-    }()
-    
-    private let scanWithAIButton: UIButton = {
-        let button = createOptionButton(
-            imageName: "camera",
-            title: "Scan with AI"
-        )
-        button.tag = 2
-        return button
-    }()
-    
-    private let describeMealButton: UIButton = {
-        let button = createOptionButton(
-            imageName: "text.bubble",
-            title: "Describe"
-        )
-        button.tag = 3
-        return button
-    }()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-//        view.backgroundColor = UIColor(hex: "#FCEEED")
-        navigationController?.navigationBar.prefersLargeTitles = false
-        title = "Add Meal"
-        
-        setupOptionsStackView()
-        setupSearchBar()
-        setupSegmentedControl()
-        setupActions()
-        setupTableView()
-        loadInitialData()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        loadInitialData()
-    }
-    
-    // MARK: - Setup Methods
-    
-    private func setupOptionsStackView() {
-        optionsStackView.addArrangedSubview(scanBarcodeButton)
-        optionsStackView.addArrangedSubview(scanWithAIButton)
-        optionsStackView.addArrangedSubview(describeMealButton)
-        optionsStackView.axis = .horizontal
-        optionsStackView.distribution = .fillEqually
-        optionsStackView.spacing = 12
-        optionsStackView.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    private func setupSearchBar() {
-        searchTextField.placeholder = "Search for a meal"
-        searchTextField.delegate = self
-        
-        // Remove the default background
-        searchTextField.backgroundImage = UIImage()
-        searchTextField.backgroundColor = .clear
-        
-        // Style the inner text field as capsule
-        if let searchField = searchTextField.value(forKey: "searchField") as? UITextField {
-            searchField.backgroundColor = .white
-            searchField.layer.cornerRadius = 18
-            searchField.layer.masksToBounds = true
-            searchField.layer.borderWidth = 1
-            searchField.layer.borderColor = UIColor.systemGray5.cgColor
-        }
-    }
-    
-    private func setupSegmentedControl() {
-        segmentedControl.selectedSegmentIndex = 0
-        segmentedControl.addTarget(self, action: #selector(segmentChanged(_:)), for: .valueChanged)
-    }
-    
-    private func setupActions() {
-        scanBarcodeButton.addTarget(self, action: #selector(optionButtonTapped(_:)), for: .touchUpInside)
-        scanWithAIButton.addTarget(self, action: #selector(optionButtonTapped(_:)), for: .touchUpInside)
-        describeMealButton.addTarget(self, action: #selector(optionButtonTapped(_:)), for: .touchUpInside)
-    }
-    
-    private func setupTableView() {
-        guard let tableView = foodTableView else {
-            assertionFailure("foodTableView outlet is not connected.")
-            return
-        }
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.rowHeight = 60
-        tableView.sectionHeaderTopPadding = 0
-        tableView.sectionHeaderHeight = 0
-        tableView.sectionFooterHeight = 0
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "FoodItemCell")
-
-    }
-    
-    // MARK: - Data Loading
-    
-    private func loadInitialData() {
-        foodItems = FoodListdataStore.shared.loadFoodItems()
-        loadRecentMeals()
-        updateDisplayedData()
-    }
-    
-    private func loadRecentMeals() {
-        let allMeals = FoodLogDataStore.sampleFoods
-        recentMeals = Array(allMeals
-            .sorted { $0.timeStamp > $1.timeStamp }
-            .prefix(5))
-        filteredRecentMeals = recentMeals
-        print("DEBUG: Loaded \(recentMeals.count) recent meals")
-    }
-    
-    private func updateDisplayedData() {
-        if isShowingRecent {
-            filteredRecentMeals = recentMeals
-            filteredFoodItems = []
-        } else {
-            filteredFoodItems = foodItems
-            filteredRecentMeals = []
-        }
-        foodTableView.reloadData()
-    }
-    
-    // MARK: - Helper Methods
-    
-    private static func createOptionButton(imageName: String, title: String) -> UIButton {
-        let button = UIButton(type: .system)
-        button.backgroundColor = .white
-        button.layer.cornerRadius = 12
-        button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor.systemGray5.cgColor
-        button.translatesAutoresizingMaskIntoConstraints = false
-        
-        let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .regular)
-        let image = UIImage(systemName: imageName, withConfiguration: config)
-        
-        let imageView = UIImageView(image: image)
-        imageView.tintColor = .black
-        imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        
-        let label = UILabel()
-        label.text = title
-        label.font = UIFont.systemFont(ofSize: 14, weight: .medium)
-        label.textAlignment = .center
-        label.numberOfLines = 2
-        label.translatesAutoresizingMaskIntoConstraints = false
-        
-        button.addSubview(imageView)
-        button.addSubview(label)
-        
-        NSLayoutConstraint.activate([
-            imageView.centerXAnchor.constraint(equalTo: button.centerXAnchor),
-            imageView.topAnchor.constraint(equalTo: button.topAnchor, constant: 20),
-            imageView.widthAnchor.constraint(equalToConstant: 40),
-            imageView.heightAnchor.constraint(equalToConstant: 40),
-            
-            label.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8),
-            label.leadingAnchor.constraint(equalTo: button.leadingAnchor, constant: 8),
-            label.widthAnchor.constraint(equalToConstant: 10),
-            label.trailingAnchor.constraint(equalTo: button.trailingAnchor, constant: -8)
-        ])
-        
-        return button
-    }
-    
-    // MARK: - Actions
-    
-    @objc private func segmentChanged(_ sender: UISegmentedControl) {
-        isShowingRecent = (sender.selectedSegmentIndex == 0)
-        searchTextField.text = ""
-        updateDisplayedData()
-        print("DEBUG: Switched to \(isShowingRecent ? "Recent" : "All meals")")
-    }
-    
-    @objc private func optionButtonTapped(_ sender: UIButton) {
-        switch sender.tag {
-        case 1:
-            print("Scan Barcode tapped")
-            let vc = BarcodeScannerViewController()
-            vc.delegate = self
-            present(vc, animated: true)
-        case 2:
-            print("Scan with AI tapped")
-            let vc = BarcodeScannerViewController()
-            vc.delegate = self
-            present(vc, animated: true)
-        case 3:
-            print("Describe Meal tapped")
-            describeMealTapped()
-        default:
-            break
-        }
-    }
-    
-    // MARK: - Describe Meal Navigation
-    
-    private func describeMealTapped() {
-        let storyboard = UIStoryboard(name: "Diet", bundle: nil)
-        guard let vc = storyboard.instantiateViewController(
-            withIdentifier: "DescribeFoodViewController"
-        ) as? DescribeFoodViewController else {
-            print("Error: Could not instantiate DescribeFoodViewController")
-            return
-        }
-        
-        // ← KEY FIX: pass dietDelegate down the chain so DietVC gets the callback
-        vc.dietDelegate = self.dietDelegate
-        
-        let navController = UINavigationController(rootViewController: vc)
-        navController.modalPresentationStyle = .pageSheet
-        
-        if let sheet = navController.sheetPresentationController {
-            if #available(iOS 16.0, *) {
-                sheet.detents = [.large()]
-                sheet.prefersGrabberVisible = true
-                sheet.selectedDetentIdentifier = .medium
-            }
-        }
-        
-        present(navController, animated: true)
-    }
-    
-    // MARK: - Navigation to AddDescribedMealVC
-    
-    private func navigateToAddDescribedMeal(with food: Food) {
-        let storyboard = UIStoryboard(name: "Diet", bundle: nil)
-        guard let confirmVC = storyboard.instantiateViewController(
-            withIdentifier: "AddDescribedMealViewController"
-        ) as? AddDescribedMealViewController else {
-            print("Error: Could not instantiate AddDescribedMealViewController")
-            return
-        }
-        
-        confirmVC.food = food
-        // ← KEY FIX: pass dietDelegate so DietVC gets the callback
-        confirmVC.delegate = dietDelegate
-        
-        let navController = UINavigationController(rootViewController: confirmVC)
-        navController.modalPresentationStyle = .pageSheet
-        
-        if let sheet = navController.sheetPresentationController {
-            if #available(iOS 16.0, *) {
-                sheet.detents = [.large()]
-                sheet.prefersGrabberVisible = true
-                sheet.selectedDetentIdentifier = .large
-            }
-        }
-        
-        present(navController, animated: true)
-    }
+           let button = createOptionButton(
+               imageName: "barcode.viewfinder",
+               title: "Scan Barcode"
+           )
+           button.tag = 1
+           return button
+       }()
+       
+       private let scanWithAIButton: UIButton = {
+           let button = createOptionButton(
+               imageName: "camera",
+               title: "Scan with AI"
+           )
+           button.tag = 2
+           return button
+       }()
+       
+       private let describeMealButton: UIButton = {
+           let button = createOptionButton(
+               imageName: "text.bubble",
+               title: "Describe"
+           )
+           button.tag = 3
+           return button
+       }()
+       
+       override func viewDidLoad() {
+           super.viewDidLoad()
+           navigationController?.navigationBar.prefersLargeTitles = false
+           title = "Add Meal"
+           
+           setupOptionsStackView()
+           setupSearchBar()
+           setupSegmentedControl()
+           setupActions()
+           setupTableView()
+           loadInitialData()
+       }
+       
+       override func viewWillAppear(_ animated: Bool) {
+           super.viewWillAppear(animated)
+           loadInitialData()
+       }
+       
+       // MARK: - Setup Methods
+       
+       private func setupOptionsStackView() {
+           optionsStackView.addArrangedSubview(scanBarcodeButton)
+           optionsStackView.addArrangedSubview(scanWithAIButton)
+           optionsStackView.addArrangedSubview(describeMealButton)
+           optionsStackView.axis = .horizontal
+           optionsStackView.distribution = .fillEqually
+           optionsStackView.spacing = 12
+           optionsStackView.translatesAutoresizingMaskIntoConstraints = false
+       }
+       
+       private func setupSearchBar() {
+           searchTextField.placeholder = "Search for a meal"
+           searchTextField.delegate = self
+           
+           // Remove the default background
+           searchTextField.backgroundImage = UIImage()
+           searchTextField.backgroundColor = .clear
+           
+           // Style the inner text field as capsule
+           if let searchField = searchTextField.value(forKey: "searchField") as? UITextField {
+               searchField.backgroundColor = .white
+               searchField.layer.cornerRadius = 18
+               searchField.layer.masksToBounds = true
+               searchField.layer.borderWidth = 1
+               searchField.layer.borderColor = UIColor.systemGray5.cgColor
+           }
+       }
+       
+       private func setupSegmentedControl() {
+           segmentedControl.selectedSegmentIndex = 0
+           segmentedControl.addTarget(self, action: #selector(segmentChanged(_:)), for: .valueChanged)
+       }
+       
+       private func setupActions() {
+           scanBarcodeButton.addTarget(self, action: #selector(optionButtonTapped(_:)), for: .touchUpInside)
+           scanWithAIButton.addTarget(self, action: #selector(optionButtonTapped(_:)), for: .touchUpInside)
+           describeMealButton.addTarget(self, action: #selector(optionButtonTapped(_:)), for: .touchUpInside)
+       }
+       
+       private func setupTableView() {
+           guard let tableView = foodTableView else {
+               assertionFailure("foodTableView outlet is not connected.")
+               return
+           }
+           tableView.delegate = self
+           tableView.dataSource = self
+           tableView.rowHeight = 60
+           tableView.sectionHeaderTopPadding = 0
+           tableView.sectionHeaderHeight = 0
+           tableView.sectionFooterHeight = 0
+           tableView.register(UITableViewCell.self, forCellReuseIdentifier: "FoodItemCell")
+       }
+       
+       // MARK: - Data Loading
+       
+       private func loadInitialData() {
+           foodItems = FoodListdataStore.shared.loadFoodItems()
+           loadRecentMeals()
+           updateDisplayedData()
+       }
+       
+       private func loadRecentMeals() {
+           let allMeals = FoodLogDataStore.sampleFoods
+           recentMeals = Array(allMeals
+               .sorted { $0.timeStamp > $1.timeStamp }
+               .prefix(5))
+           filteredRecentMeals = recentMeals
+           print("DEBUG: Loaded \(recentMeals.count) recent meals")
+       }
+       
+       private func updateDisplayedData() {
+           if isShowingRecent {
+               filteredRecentMeals = recentMeals
+               filteredFoodItems = []
+           } else {
+               filteredFoodItems = foodItems
+               filteredRecentMeals = []
+           }
+           foodTableView.reloadData()
+       }
+       
+       // MARK: - Helper Methods
+       
+       private static func createOptionButton(imageName: String, title: String) -> UIButton {
+           let button = UIButton(type: .system)
+           button.backgroundColor = .white
+           button.layer.cornerRadius = 12
+           button.layer.borderWidth = 1
+           button.layer.borderColor = UIColor.systemGray5.cgColor
+           button.translatesAutoresizingMaskIntoConstraints = false
+           
+           let config = UIImage.SymbolConfiguration(pointSize: 30, weight: .regular)
+           let image = UIImage(systemName: imageName, withConfiguration: config)
+           
+           let imageView = UIImageView(image: image)
+           imageView.tintColor = .black
+           imageView.contentMode = .scaleAspectFit
+           imageView.translatesAutoresizingMaskIntoConstraints = false
+           
+           let label = UILabel()
+           label.text = title
+           label.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+           label.textAlignment = .center
+           label.numberOfLines = 2
+           label.translatesAutoresizingMaskIntoConstraints = false
+           
+           button.addSubview(imageView)
+           button.addSubview(label)
+           
+           NSLayoutConstraint.activate([
+               imageView.centerXAnchor.constraint(equalTo: button.centerXAnchor),
+               imageView.topAnchor.constraint(equalTo: button.topAnchor, constant: 20),
+               imageView.widthAnchor.constraint(equalToConstant: 40),
+               imageView.heightAnchor.constraint(equalToConstant: 40),
+               
+               label.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8),
+               label.leadingAnchor.constraint(equalTo: button.leadingAnchor, constant: 8),
+               label.widthAnchor.constraint(equalToConstant: 10),
+               label.trailingAnchor.constraint(equalTo: button.trailingAnchor, constant: -8)
+           ])
+           
+           return button
+       }
+       
+       // MARK: - Actions
+       
+       @objc private func segmentChanged(_ sender: UISegmentedControl) {
+           isShowingRecent = (sender.selectedSegmentIndex == 0)
+           searchTextField.text = ""
+           updateDisplayedData()
+           print("DEBUG: Switched to \(isShowingRecent ? "Recent" : "All meals")")
+       }
+       
+       @objc private func optionButtonTapped(_ sender: UIButton) {
+           switch sender.tag {
+           case 1:
+               print("Scan Barcode tapped")
+               openBarcodeScanner()
+           case 2:
+               print("Scan with AI tapped")
+               openFoodScanner()
+           case 3:
+               print("Describe Meal tapped")
+               describeMealTapped()
+           default:
+               break
+           }
+       }
+       
+       // MARK: - Barcode Scanner
+       
+       private func openBarcodeScanner() {
+           let vc = BarcodeScannerViewController()
+           vc.delegate = self
+           vc.modalPresentationStyle = .fullScreen
+           present(vc, animated: true)
+       }
+       
+       // MARK: - Food Scanner (AI)
+       
+       private func openFoodScanner() {
+           let vc = FoodScannerViewController()
+           vc.dietDelegate = self.dietDelegate
+           vc.modalPresentationStyle = .fullScreen
+           present(vc, animated: true)
+       }
+       
+       // MARK: - Describe Meal Navigation
+       
+       private func describeMealTapped() {
+           let storyboard = UIStoryboard(name: "Diet", bundle: nil)
+           guard let vc = storyboard.instantiateViewController(
+               withIdentifier: "DescribeFoodViewController"
+           ) as? DescribeFoodViewController else {
+               print("Error: Could not instantiate DescribeFoodViewController")
+               return
+           }
+           
+           vc.dietDelegate = self.dietDelegate
+           
+           let navController = UINavigationController(rootViewController: vc)
+           navController.modalPresentationStyle = .pageSheet
+           
+           if let sheet = navController.sheetPresentationController {
+               if #available(iOS 16.0, *) {
+                   sheet.detents = [.large()]
+                   sheet.prefersGrabberVisible = true
+                   sheet.selectedDetentIdentifier = .medium
+               }
+           }
+           
+           present(navController, animated: true)
+       }
+       
+       // MARK: - Navigation to AddDescribedMealVC
+       
+       private func navigateToAddDescribedMeal(with food: Food) {
+           let storyboard = UIStoryboard(name: "Diet", bundle: nil)
+           guard let confirmVC = storyboard.instantiateViewController(
+               withIdentifier: "AddDescribedMealViewController"
+           ) as? AddDescribedMealViewController else {
+               print("Error: Could not instantiate AddDescribedMealViewController")
+               return
+           }
+           
+           confirmVC.food = food
+           confirmVC.delegate = dietDelegate
+           
+           let navController = UINavigationController(rootViewController: confirmVC)
+           navController.modalPresentationStyle = .pageSheet
+           
+           if let sheet = navController.sheetPresentationController {
+               if #available(iOS 16.0, *) {
+                   sheet.detents = [.large()]
+                   sheet.prefersGrabberVisible = true
+                   sheet.selectedDetentIdentifier = .large
+               }
+           }
+           
+           present(navController, animated: true)
+       }
     
     private func navigateToAddDescribedMeal(with foodItem: FoodItem) {
         let storyboard = UIStoryboard(name: "Diet", bundle: nil)
