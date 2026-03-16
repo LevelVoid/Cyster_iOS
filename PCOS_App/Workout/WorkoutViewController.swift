@@ -87,7 +87,7 @@ class WorkoutViewController: UIViewController {
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
                 
                 let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = NSDirectionalEdgeInsets(top: -10, leading: 0, bottom: 0, trailing: 0) // Negative top inset to pull it up
+                section.contentInsets = NSDirectionalEdgeInsets(top: -10, leading: 16, bottom: 0, trailing: 16) // Negative top inset to pull it up
                 section.boundarySupplementaryItems = [headerItem]
                 return section
                 
@@ -109,7 +109,7 @@ class WorkoutViewController: UIViewController {
                 let section = NSCollectionLayoutSection(group: group)
                 section.orthogonalScrollingBehavior = .groupPaging
                 section.interGroupSpacing = 12
-                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 10, trailing: 10)
+                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 10, trailing: 16)
                 section.boundarySupplementaryItems = [headerItem]
                 return section
                 
@@ -133,7 +133,7 @@ class WorkoutViewController: UIViewController {
                 )
                 
                 let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
+                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
                 section.interGroupSpacing = 0
                 section.boundarySupplementaryItems = [headerItem]
                 

@@ -32,7 +32,6 @@ class DietViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Diet"
-        navigationController?.navigationBar.prefersLargeTitles = true
         setupNavigation()
         setupTableView()
         setupAddButtonStyle()
