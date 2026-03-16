@@ -248,6 +248,9 @@
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
                 <outlet property="calToBeConsumed" destination="AmA-KX-xq9" id="BoD-jZ-eT0"/>
+                <outlet property="calculatedCarbohydrates" destination="CvV-1C-9gd" id="hSJ-g3-nSy"/>
+                <outlet property="calculatedFats" destination="Eno-Ns-XMt" id="cCc-F3-qsT"/>
+                <outlet property="calculatedProtein" destination="YpG-Gx-UYO" id="zhP-3e-jjC"/>
                 <outlet property="caloriesConsumed" destination="FRX-cF-wvZ" id="RRC-2u-c2F"/>
                 <outlet property="carbsGm" destination="zRk-Vv-awc" id="zev-j3-q2X"/>
                 <outlet property="carbsProgress" destination="pQO-SH-DZW" id="Lul-jd-KHH"/>
