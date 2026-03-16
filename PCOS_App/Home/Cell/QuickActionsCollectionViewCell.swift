@@ -36,6 +36,15 @@ class QuickActionsCollectionViewCell: UICollectionViewCell {
         workoutActionCard.layer.cornerRadius = 20
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        // Ensure buttons are always pill shaped regardless of height
+        if let btn = workoutButton {
+            btn.layer.cornerRadius = btn.bounds.height / 2
+        }
+        // If there's an addMealButton outlet added in future, apply similarly
+    }
+    
     func configure() {
         // Diet Data from Core Data
         let totals = FoodLogDataStore.todaysMeal.reduce(into: (0.0, 0.0, 0.0)) { result, food in
@@ -93,4 +102,3 @@ class QuickActionsCollectionViewCell: UICollectionViewCell {
         delegate?.quickActionsDidTapStartWorkout()
     }
 }
-

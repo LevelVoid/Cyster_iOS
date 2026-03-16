@@ -29,7 +29,7 @@ class SleepCardCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var emptyStateLabel: UILabel!
 
     // MARK: - Log Button
-    private let logSleepButton = UIButton(type: .system)
+    private let logSleepButton = PillButton(type: .system)
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -45,7 +45,7 @@ class SleepCardCollectionViewCell: UICollectionViewCell {
         logSleepButton.setTitleColor(.white, for: .normal)
         logSleepButton.backgroundColor = UIColor(hex: "#FE7A96")
         logSleepButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
-        logSleepButton.layer.cornerRadius = 20
+        // Corner radius is now handled in PillButton
         logSleepButton.translatesAutoresizingMaskIntoConstraints = false
 
         logSleepButton.addTarget(
@@ -154,5 +154,15 @@ class SleepCardCollectionViewCell: UICollectionViewCell {
         case .good: return "Great sleep! Helps hormone balance."
         case .excellent: return "Excellent sleep supports energy levels."
         }
+    }
+}
+
+// Custom button class to handle its own corner radius updates
+class PillButton: UIButton {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        // Ensure pill shape on every layout update
+        layer.cornerRadius = bounds.height / 2
+        layer.masksToBounds = true
     }
 }

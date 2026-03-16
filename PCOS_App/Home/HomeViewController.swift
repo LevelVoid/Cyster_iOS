@@ -54,6 +54,12 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         collectionView.delegate = self
         collectionView.collectionViewLayout = createCompositionalLayout()
         
+        // Fix for content appearing behind floating tab bar
+        // 1. Ensure content can be scrolled up above the tab bar
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 120, right: 0)
+        // 2. Ensure scroll indicators don't get covered either
+        collectionView.verticalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 120, right: 0)
+        
         // Scan up to ~1 year back so symptoms logged on past cycle days appear as cards
         allSymptoms = SymptomDataStore.loadAllSymptomsLastNDays(365)
         loadTodaysSymptoms()
@@ -281,7 +287,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             case 0: return self.createHomeHeaderSection()
             case 1: return self.createSignalsSection()
             case 2: return self.createQuickActionsSection()
-            case 3: return self.createRecommendationSection()
+//            case 3: return self.createRecommendationSection()
             case 4: return self.createSleepCardSection()
             case 5: return CycleDataStore.shared.hasTwoCycles ? self.createCycleSection() : nil
             case 6: return CycleDataStore.shared.hasTwoCycles ? self.createSymptomPatternsSection() : nil
@@ -631,7 +637,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         case 0: return 1
         case 1: return 1 + displaySignals.count
         case 2: return 1
-        case 3: return recommendationCards.count
+//        case 3: return recommendationCards.count
         case 4: return 1
         case 5: return CycleDataStore.shared.hasTwoCycles ? 1 : 0
         case 6: return CycleDataStore.shared.hasTwoCycles ? allSymptoms.count : 0
@@ -691,14 +697,14 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
             cell.configure()
             return cell
             
-        case 3:
-            let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: "recommendation_cell",
-                for: indexPath
-            ) as! HomeRecommendationCollectionViewCell
-            let recommendation = recommendationCards[indexPath.item]
-            cell.configure(with: recommendation)
-            return cell
+//        case 3:
+//            let cell = collectionView.dequeueReusableCell(
+//                withReuseIdentifier: "recommendation_cell",
+//                for: indexPath
+//            ) as! HomeRecommendationCollectionViewCell
+//            let recommendation = recommendationCards[indexPath.item]
+//            cell.configure(with: recommendation)
+//            return cell
             
         case 4:
             let cell = collectionView.dequeueReusableCell(
@@ -756,7 +762,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         switch indexPath.section {
         case 1: headerView.configureHeader(with: "Today's PCOS Signals")
         case 2: headerView.configureHeader(with: "Quick Actions")
-        case 3: headerView.configureHeader(with: "What May Happen Next")
+//        case 3: headerView.configureHeader(with: "What May Happen Next")
         case 4: headerView.configureHeader(with: "Sleep Patterns")
         case 5: headerView.configureHeader(with: "Cycle Trends")
         case 6: headerView.configureHeader(with: "Symptom Patterns")
@@ -802,14 +808,14 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
                 present(navController, animated: true)
             }
             
-        case 3:
-            if indexPath.item == 0 {
-                performSegue(withIdentifier: "showProtein", sender: self)
-            } else if indexPath.item == 1 {
-                performSegue(withIdentifier: "showInsulin", sender: self)
-            } else if indexPath.item == 2 {
-                performSegue(withIdentifier: "showWorkoutPush", sender: self)
-            }
+//        case 3:
+//            if indexPath.item == 0 {
+//                performSegue(withIdentifier: "showProtein", sender: self)
+//            } else if indexPath.item == 1 {
+//                performSegue(withIdentifier: "showInsulin", sender: self)
+//            } else if indexPath.item == 2 {
+//                performSegue(withIdentifier: "showWorkoutPush", sender: self)
+//            }
         case 4:
             performSegue(withIdentifier: "showSleepReport", sender: nil)
 //        case 5:

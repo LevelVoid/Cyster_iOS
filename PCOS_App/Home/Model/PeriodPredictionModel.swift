@@ -45,8 +45,9 @@ struct PeriodPrediction {
                 let overdue = abs(days)
                 return "Period is \(overdue) day\(overdue == 1 ? "" : "s") late"
             }
-            let confidenceNote = confidence == .low ? " (low confidence)" : ""
-            return "Next period in ~\(days) day\(days == 1 ? "" : "s")\(confidenceNote)"
+//            let confidenceNote = confidence == .low ? " (low confidence)" : ""
+//            return "Next period in ~\(days) day\(days == 1 ? "" : "s")\(confidenceNote)"
+            return "Next period in ~\(days) day\(days == 1 ? "" : "s")"
         }
     }
 

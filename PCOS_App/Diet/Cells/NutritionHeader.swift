@@ -86,10 +86,10 @@ class NutritionHeader: UITableViewHeaderFooterView {
 
    // ── Fills the "goal" labels from whatever the VC passed in ───────────────
    private func setGoalLabels() {
-       calToBeConsumed.text         = " /\(Int(goalCalories)) kcal"
-       calculatedProtein.text       = " /\(Int(goalProtein)) g"
-       calculatedCarbohydrates.text = " /\(Int(goalCarbs)) g"
-       calculatedFats.text          = " /\(Int(goalFats)) g"
+       calToBeConsumed.text         = " / \(Int(goalCalories)) kcal"
+       calculatedProtein.text       = " / \(Int(goalProtein)) g"
+       calculatedCarbohydrates.text = " / \(Int(goalCarbs)) g"
+       calculatedFats.text          = " / \(Int(goalFats)) g"
    }
    
    private func setupTapGestures() {

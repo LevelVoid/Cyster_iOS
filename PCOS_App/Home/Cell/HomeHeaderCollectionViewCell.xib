@@ -24,31 +24,31 @@
                         <rect key="frame" x="0.0" y="0.0" width="487" height="400"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your body may be asking for rest and gentler movement today" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZbB-xp-tyV">
-                                <rect key="frame" x="40" y="233.33333333333334" width="407" height="40.333333333333343"/>
+                                <rect key="frame" x="40" y="223.33333333333334" width="407" height="40.333333333333343"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Cycle Day 2" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lyA-zA-4dJ">
-                                <rect key="frame" x="158.33333333333337" y="140" width="170.66666666666663" height="37"/>
+                                <rect key="frame" x="158.33333333333337" y="130" width="170.66666666666663" height="37"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="31"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Menstrual Phase" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JLF-lI-kK0">
-                                <rect key="frame" x="170.66666666666666" y="193.33333333333334" width="145.99999999999997" height="24"/>
+                                <rect key="frame" x="170.66666666666666" y="183.33333333333334" width="145.99999999999997" height="24"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleTitle3"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kAS-d5-HxR">
-                                <rect key="frame" x="20" y="285.66666666666669" width="447" height="21"/>
+                                <rect key="frame" x="20" y="275.66666666666669" width="447" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xjf-z9-c6r">
-                                <rect key="frame" x="181" y="318.66666666666669" width="125" height="50"/>
+                                <rect key="frame" x="181" y="316.66666666666669" width="125" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="XuK-qi-O3S"/>
                                     <constraint firstAttribute="width" constant="125" id="lbC-aZ-el1"/>
@@ -63,9 +63,9 @@
                             <constraint firstItem="kAS-d5-HxR" firstAttribute="top" secondItem="ZbB-xp-tyV" secondAttribute="bottom" constant="12" id="4wV-l6-3nz"/>
                             <constraint firstItem="ZbB-xp-tyV" firstAttribute="leading" secondItem="aiV-Pd-smO" secondAttribute="leading" constant="40" id="5Bm-sU-HVh"/>
                             <constraint firstItem="ZbB-xp-tyV" firstAttribute="centerX" secondItem="aiV-Pd-smO" secondAttribute="centerX" id="5l9-Z1-LEp"/>
-                            <constraint firstItem="lyA-zA-4dJ" firstAttribute="top" secondItem="aiV-Pd-smO" secondAttribute="top" constant="140" id="F0X-VN-7Rt"/>
+                            <constraint firstItem="lyA-zA-4dJ" firstAttribute="top" secondItem="aiV-Pd-smO" secondAttribute="top" constant="130" id="F0X-VN-7Rt"/>
                             <constraint firstAttribute="trailing" secondItem="kAS-d5-HxR" secondAttribute="trailing" constant="20" id="HFy-kF-oAp"/>
-                            <constraint firstItem="xjf-z9-c6r" firstAttribute="top" secondItem="kAS-d5-HxR" secondAttribute="bottom" constant="12" id="IV8-zd-duR"/>
+                            <constraint firstItem="xjf-z9-c6r" firstAttribute="top" secondItem="kAS-d5-HxR" secondAttribute="bottom" constant="20" id="IV8-zd-duR"/>
                             <constraint firstItem="kAS-d5-HxR" firstAttribute="leading" secondItem="aiV-Pd-smO" secondAttribute="leading" constant="20" id="R8n-Qd-ocX"/>
                             <constraint firstItem="lyA-zA-4dJ" firstAttribute="centerX" secondItem="aiV-Pd-smO" secondAttribute="centerX" id="RYT-Y0-glj"/>
                             <constraint firstItem="JLF-lI-kK0" firstAttribute="centerX" secondItem="aiV-Pd-smO" secondAttribute="centerX" id="ayL-eO-eKr"/>

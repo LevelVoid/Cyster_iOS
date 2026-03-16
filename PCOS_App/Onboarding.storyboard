@@ -550,7 +550,7 @@ Learn, track and heal at your own pace</string>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Light Movements" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UJy-3A-EPD">
-                                                <rect key="frame" x="16" y="85" width="146" height="23"/>
+                                                <rect key="frame" x="17" y="85" width="144" height="45.666666666666657"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="19"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -562,12 +562,12 @@ Learn, track and heal at your own pace</string>
                                             <constraint firstItem="oqm-wf-miB" firstAttribute="top" secondItem="OdG-jQ-ClR" secondAttribute="top" constant="16" id="5sa-nR-qu2"/>
                                             <constraint firstItem="rkZ-TY-dNt" firstAttribute="top" secondItem="UJy-3A-EPD" secondAttribute="bottom" constant="-3.0000000000000142" id="9cA-hQ-7Yb"/>
                                             <constraint firstAttribute="trailing" secondItem="rkZ-TY-dNt" secondAttribute="trailing" constant="16" id="BbO-pJ-qv0"/>
-                                            <constraint firstAttribute="trailing" secondItem="UJy-3A-EPD" secondAttribute="trailing" constant="16" id="I5y-LB-slr"/>
+                                            <constraint firstAttribute="trailing" secondItem="UJy-3A-EPD" secondAttribute="trailing" constant="17" id="I5y-LB-slr"/>
                                             <constraint firstAttribute="bottom" secondItem="rkZ-TY-dNt" secondAttribute="bottom" constant="16" id="R2m-gv-SwQ"/>
                                             <constraint firstItem="oqm-wf-miB" firstAttribute="centerX" secondItem="OdG-jQ-ClR" secondAttribute="centerX" id="WbM-XO-Scf"/>
                                             <constraint firstItem="rkZ-TY-dNt" firstAttribute="leading" secondItem="OdG-jQ-ClR" secondAttribute="leading" constant="16" id="gzm-c3-OXc"/>
                                             <constraint firstItem="UJy-3A-EPD" firstAttribute="top" secondItem="oqm-wf-miB" secondAttribute="bottom" constant="19" id="t7E-rJ-HKQ"/>
-                                            <constraint firstItem="UJy-3A-EPD" firstAttribute="leading" secondItem="OdG-jQ-ClR" secondAttribute="leading" constant="16" id="uCO-aS-xsD"/>
+                                            <constraint firstItem="UJy-3A-EPD" firstAttribute="leading" secondItem="OdG-jQ-ClR" secondAttribute="leading" constant="17" id="uCO-aS-xsD"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -736,8 +736,8 @@ Learn, track and heal at your own pace</string>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="High androgens, ovulation issues and polycystic ovaries(most severe)" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4aU-eG-XvF">
-                                        <rect key="frame" x="16" y="88.333333333333314" width="143" height="62.333333333333343"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="High androgens, ovulation issues and polycystic ovaries" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4aU-eG-XvF">
+                                        <rect key="frame" x="16" y="88.333333333333314" width="143" height="46.666666666666657"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -847,8 +847,8 @@ Learn, track and heal at your own pace</string>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ovulation issues and cysts, but normal androgen levels(mildest)" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sC3-ob-OCP">
-                                        <rect key="frame" x="16" y="88.333333333333314" width="143" height="62.333333333333343"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ovulation issues and cysts, but normal androgen levels" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sC3-ob-OCP">
+                                        <rect key="frame" x="16" y="88.333333333333314" width="143" height="46.666666666666657"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>

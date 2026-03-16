@@ -116,7 +116,7 @@ extension Phase {
         case .follicular: return "Follicular Phase"
         case .ovulation:  return "Ovulation Phase"
         case .luteal:     return "Luteal Phase"
-        case .unknown:    return "Cycle Phase"
+        case .unknown:    return ""
         }
     }
 

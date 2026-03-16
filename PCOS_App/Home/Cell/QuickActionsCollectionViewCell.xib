@@ -24,7 +24,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="294.66666666666669" height="301"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Diet" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PI2-wn-kXx">
-                                        <rect key="frame" x="20" y="20" width="31.666666666666671" height="20.333333333333329"/>
+                                        <rect key="frame" x="20" y="20" width="31" height="20.333333333333329"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
