@@ -297,7 +297,10 @@ class FoodScannerViewController: UIViewController {
             Rules:
             - All numeric values must be doubles or integers (no strings for numbers)
             - ingredients array must have at least one item
-            - quantity is always in grams
+            - quantity is the ACTUAL weight of that ingredient used in this recipe in grams
+              (e.g. 50g for one egg, 200g of flour, 30g of onion — realistic recipe amounts, NOT 1 or 2)
+            - protein, carbs, fats, fibre in ingredients are the macros PER 100G of that ingredient
+            - calories, protein, carbs, fat at the top level are for the WHOLE recipe (1 serving)
             - Provide nutritional information for a standard serving size
             - Return ONLY the JSON, nothing else
             """

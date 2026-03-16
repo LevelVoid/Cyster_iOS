@@ -97,7 +97,7 @@ class AddDescribedMealViewController: UIViewController {
     private func setupTableView() {
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        // Removed default cell registration to allow manual .value1 style instantiation
         tableView.layer.cornerRadius = 12
         tableView.clipsToBounds = true
     }
@@ -111,8 +111,11 @@ class AddDescribedMealViewController: UIViewController {
         stepper.minimumValue = 0.5
         stepper.maximumValue = 10.0
         stepper.stepValue = 0.5
-        stepper.value = 1.0
-        servingMultiplier = 1.0
+        
+        // Initialize from existing data if available
+        let initialValue = food?.servingSize ?? foodItem?.servingSize ?? 1.0
+        stepper.value = initialValue
+        servingMultiplier = initialValue
         
         stepper.tintColor = .label
         stepper.layer.cornerRadius = 10
@@ -123,24 +126,25 @@ class AddDescribedMealViewController: UIViewController {
     
     @objc private func servingStepperChanged(_ sender: UIStepper) {
         servingMultiplier = sender.value
-        
-        let servingText: String
-        if servingMultiplier == 1.0 {
-            servingText = "1 serving"
-        } else {
-            servingText = String(format: "%.1f servings", servingMultiplier)
-        }
-        servingNumberLabel.text = servingText
-        
+        updateServingLabel()
         updateWeightLabel()
         updateHeaderWithCurrentIngredients()
+    }
+    
+    private func updateServingLabel() {
+        guard let label = servingNumberLabel else { return }
+        if servingMultiplier == 1.0 {
+            label.text = "1 serving"
+        } else {
+            label.text = servingMultiplier.truncatingRemainder(dividingBy: 1) == 0 ? String(format: "%.0f servings", servingMultiplier) : String(format: "%.1f servings", servingMultiplier)
+        }
     }
     
     private func setupServingLabel() {
         guard let label = servingNumberLabel else { return }
         label.font = .systemFont(ofSize: 18, weight: .medium)
         label.textColor = .label
-        label.text = "1 serving"
+        updateServingLabel()
     }
     
     private func setupWeightLabel() {
@@ -166,13 +170,13 @@ class AddDescribedMealViewController: UIViewController {
         guard let label = FoodWeightLabel else { return }
         
         var totalWeight: Double = 0
-        for ingredient in ingredients {
-            totalWeight += ingredient.quantity
+        if let originalWeight = food?.weight, originalWeight > 0, let originalServings = food?.servingSize, originalServings > 0 {
+            totalWeight = (originalWeight / originalServings) * servingMultiplier
+        } else {
+            totalWeight = ingredients.reduce(0.0) { $0 + $1.quantity } * servingMultiplier
         }
-        totalWeight *= servingMultiplier
         
-        let unit = foodItem?.unit ?? "g"
-        label.text = String(format: "Total\n%.0f %@", totalWeight, unit)
+        label.text = String(format: "Weight total\n%.0f g", totalWeight)
     }
     
     // MARK: - Update Header
@@ -274,6 +278,10 @@ class AddDescribedMealViewController: UIViewController {
         totalCarbs *= servingMultiplier
         totalFat *= servingMultiplier
         
+        // Compute calories explicitly so Food.calories uses customCalories branch
+        // (avoids the ingredient-based branch which previously used 100g macros without quantity scaling)
+        let totalCalories = (totalProtein * 4) + (totalCarbs * 4) + (totalFat * 9)
+        
         if let food = food {
             return Food(
                 id: UUID(),
@@ -286,23 +294,24 @@ class AddDescribedMealViewController: UIViewController {
                 proteinContent: totalProtein,
                 carbsContent: totalCarbs,
                 fatsContent: totalFat,
-                customCalories: nil,
+                customCalories: totalCalories,
                 tags: food.tags,
                 ingredients: ingredients
             )
         } else if let foodItem = foodItem {
+            let totalWeight = ingredients.reduce(0.0) { $0 + $1.quantity } * servingMultiplier
             return Food(
                 id: UUID(),
                 name: foodItem.name,
                 image: foodItem.image,
                 timeStamp: Date(),
                 servingSize: foodItem.servingSize * servingMultiplier,
-                weight: nil,
+                weight: totalWeight,
                 desc: foodItem.desc,
                 proteinContent: totalProtein,
                 carbsContent: totalCarbs,
                 fatsContent: totalFat,
-                customCalories: nil,
+                customCalories: totalCalories,
                 tags: [],
                 ingredients: ingredients
             )
@@ -334,25 +343,27 @@ extension AddDescribedMealViewController: UITableViewDelegate, UITableViewDataSo
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        var cell = tableView.dequeueReusableCell(withIdentifier: "cell")
+        if cell == nil {
+            cell = UITableViewCell(style: .value1, reuseIdentifier: "cell")
+        }
+        let activeCell = cell!
         
         if ingredients.isEmpty {
-            cell.textLabel?.text = "No ingredients available"
-            cell.textLabel?.textColor = .secondaryLabel
-            cell.detailTextLabel?.text = nil
-            cell.selectionStyle = .none
+            activeCell.textLabel?.text = "No ingredients available"
+            activeCell.textLabel?.textColor = .secondaryLabel
+            activeCell.detailTextLabel?.text = nil
+            activeCell.selectionStyle = .none
         } else {
             let ingredient = ingredients[indexPath.row]
-            cell.textLabel?.text = ingredient.name
-            cell.textLabel?.textColor = .label
-            cell.detailTextLabel?.text = String(
-                format: "%.0f%@", ingredient.quantity, ingredient.unit
-            )
-            cell.detailTextLabel?.textColor = .secondaryLabel
-            cell.selectionStyle = .default
+            activeCell.textLabel?.text = ingredient.name
+            activeCell.textLabel?.textColor = .label
+            activeCell.detailTextLabel?.text = String(format: "%.0f g", ingredient.quantity)
+            activeCell.detailTextLabel?.textColor = .secondaryLabel
+            activeCell.selectionStyle = .default
         }
         
-        return cell
+        return activeCell
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {

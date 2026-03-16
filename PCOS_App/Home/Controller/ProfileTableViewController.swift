@@ -10,7 +10,7 @@ import UIKit
 class ProfileTableViewController: UITableViewController {
 
     private let section0 = ["Health details"]
-    private let features = ["Reminders", "Notifications"]
+    private let features = ["Reminders"]
     private let privacy = ["Apps", "Devices"]
     
     // Profile header view
@@ -174,8 +174,8 @@ class ProfileTableViewController: UITableViewController {
         
         // Handle other selections
         if indexPath.section == 1 {
-            print("Selected feature: \(features[indexPath.row])")
-            // TODO: Navigate to appropriate view controller
+            let vc = RemindersViewController(style: .insetGrouped)
+            navigationController?.pushViewController(vc, animated: true)
         } else if indexPath.section == 2 {
             print("Selected privacy option: \(privacy[indexPath.row])")
             //Navigate to appropriate view controller

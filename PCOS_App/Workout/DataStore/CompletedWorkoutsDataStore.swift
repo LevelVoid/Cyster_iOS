@@ -42,7 +42,7 @@ final class CompletedWorkoutsDataStore {
             do {
                 try ctx.save()
             } catch {
-                print("❌ Failed to save CDCompletedWorkout: \(error)")
+                print(" Failed to save CDCompletedWorkout: \(error)")
             }
         }
     }
@@ -57,7 +57,7 @@ final class CompletedWorkoutsDataStore {
             let results = try Self.context.fetch(request)
             return results.map { $0.toCompletedWorkout() }
         } catch {
-            print("❌ Failed to fetch CDCompletedWorkout: \(error)")
+            print("Failed to fetch CDCompletedWorkout: \(error)")
             return []
         }
     }
@@ -88,7 +88,7 @@ final class CompletedWorkoutsDataStore {
             return
         }
         
-        print("🔄 Migrating CompletedWorkouts from UserDefaults → Core Data...")
+        print("Migrating CompletedWorkouts from UserDefaults → Core Data...")
         
         for workout in legacyWorkouts {
             let cdWorkout = CDCompletedWorkout(context: context)
@@ -106,7 +106,7 @@ final class CompletedWorkoutsDataStore {
         }
         
         UserDefaults.standard.removeObject(forKey: key)
-        print("✅ Migrated \(legacyWorkouts.count) workouts to Core Data")
+        print("Migrated \(legacyWorkouts.count) workouts to Core Data")
     }
     
     // MARK: - Seed Mock Data
@@ -156,6 +156,6 @@ final class CompletedWorkoutsDataStore {
                 save(historicalWorkout)
             }
         }
-        print("✅ Seeded CDCompletedWorkout Mock Data")
+        print("Seeded CDCompletedWorkout Mock Data")
     }
 }

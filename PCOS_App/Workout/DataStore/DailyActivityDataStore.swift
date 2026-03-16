@@ -74,14 +74,9 @@ class DailyActivityDataStore {
             .filter { calendar.isDate($0.date, inSameDayAs: date) }
         
         let totalDuration = todayWorkouts.reduce(0) { $0 + $1.durationSeconds }
-        let totalCals = todayWorkouts.reduce(0.0) { total, w in
-            if w.caloriesBurned > 0 {
-                return total + w.caloriesBurned
-            } else {
-                // Fallback estimate: ~6 cal/min
-                return total + (Double(w.durationSeconds) / 60.0 * 6.0)
-            }
-        }
+        // Only use real calorie data (from Apple Watch via SummaryViewController).
+        // No time-based fallback — if caloriesBurned == 0, store 0.
+        let totalCals = todayWorkouts.reduce(0.0) { $0 + $1.caloriesBurned }
         
         let ctx = getOrCreateContext(for: date)
         ctx.activeDurationSeconds = Int32(totalDuration)

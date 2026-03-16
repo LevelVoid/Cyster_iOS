@@ -31,8 +31,12 @@ class FoodIngredientListTableViewCell: UITableViewCell {
     
     func configureCell(with ingredient: Ingredient){
         IngredientNameLabel.text = ingredient.name
-        IngredientCalorieLabel.text = "\(ingredient.calories) kcal"
-        IngredientWeightLabel.text = "\(Int(((ingredient.weight) ?? 100))) g"
+        
+        // Optional unwrapping to avoid crash. Note: ingredient.calories may be nil.
+        let cals = ingredient.calories ?? 0
+        IngredientCalorieLabel.text = "\(Int(cals)) kcal"
+        
+        IngredientWeightLabel.text = nil // Removed the gram label per user request
     }
     
 }

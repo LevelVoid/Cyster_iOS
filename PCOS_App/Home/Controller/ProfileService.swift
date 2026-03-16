@@ -34,10 +34,32 @@ class ProfileService {
         do {
             return try context.fetch(request).first
         } catch {
-            print("❌ Failed to fetch CDUser: \(error)")
+            print(" Failed to fetch CDUser: \(error)")
             return nil
         }
     }
+    
+    /// Converts the stored CDUser into a UserProfile for use with GoalEngine.
+    /// Returns nil only when no profile has been created yet (fresh install before onboarding).
+    func buildUserProfile() -> UserProfile? {
+        guard let user = getProfile(),
+              let dob = user.dateOfBirth else { return nil }
+        
+        let diet     = DietPattern(rawString: user.dietPattern ?? "")
+        let activity = ActivityLevel(rawString: user.activityLevel ?? "")
+        let phenotype = PCOSPhenotype(rawValue: user.pcosPhenotype ?? "") ?? .unknown
+        
+        return UserProfile(
+            name:         user.name ?? "",
+            dateOfBirth:  dob,
+            heightInCm:   user.heightCm,
+            weightInKg:   user.weightKg,
+            dietPattern:  diet,
+            activityLevel: activity,
+            phenotype:    phenotype
+        )
+    }
+
     
     // MARK: - Write
     

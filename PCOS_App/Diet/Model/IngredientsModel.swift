@@ -19,8 +19,11 @@ struct Ingredient: Codable, Identifiable {
     var fibre: Double
     var tags: [ImpactTags]
 
+    /// Actual kcal for this ingredient at its current quantity.
+    /// Macros are stored per-100g, so we scale by quantity.
     var calories: Double? {
-        (protein * 4) + (carbs * 4) + (fats * 9)
+        let factor = quantity / 100.0
+        return ((protein * 4) + (carbs * 4) + (fats * 9)) * factor
     }
 
     init(from decoder: Decoder) throws {

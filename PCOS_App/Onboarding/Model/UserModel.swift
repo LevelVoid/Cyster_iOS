@@ -28,6 +28,15 @@ enum DietPattern {
     case highSugar
     case irregular
     case unsure
+    
+    init(rawString: String) {
+        switch rawString {
+        case "Balanced Diet":    self = .balanced
+        case "Frequent Sugar":   self = .highSugar
+        case "Irregular Meals":  self = .irregular
+        default:                 self = .unsure
+        }
+    }
 }
 
 enum ActivityLevel {
@@ -35,7 +44,18 @@ enum ActivityLevel {
     case lightlyActive // 1.375-light exercise 1-3 days/week
     case active //1.55 - moderate exercise 3-5 days/week
     case veryActive // 1.725 : hard exercise 6-7 days
+    
+    init(rawString: String) {
+        switch rawString {
+        case "Sedentary Type":           self = .sedentary
+        case "Light Movements":          self = .lightlyActive
+        case "Regular Movements":        self = .active
+        case "Very active on most days": self = .veryActive
+        default:                         self = .lightlyActive
+        }
+    }
 }
+
 
 //enum PrimaryFocus {
 //    case cycleRegularity

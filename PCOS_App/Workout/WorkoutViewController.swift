@@ -7,11 +7,12 @@ import UIKit
 
 class WorkoutViewController: UIViewController {
 
-    // ── Set these from outside before the VC appears ─────────────────────────
-    var goalMinutes: Double = 20
-    var goalSteps: Double   = 8000
+    // ── Workout goals — populated from GoalEngine in viewWillAppear ───────────
+    private var goalMinutes:   Double = 20
+    private var goalCalories:  Double = 300
+    private var goalSteps:     Double = 8000
 
-    private var cards: [Card] = []   // built in viewDidLoad using goal vars above
+    private var cards: [Card] = []   // rebuilt every viewWillAppear using live goal vars
     private var exploreRoutine: [Routine] = []
     private var currentPhase: Phase = .unknown
     private var recommendedRoutineId: UUID?
@@ -24,11 +25,12 @@ class WorkoutViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Build cards using whatever goals were injected from outside
+        // Cards are (re)built in viewWillAppear with live GoalEngine values.
+        // Build defaults here just to satisfy the non-optional array before first appear.
         cards = [
-            Card(name: "Duration",   image: "clock.fill",     toBeDone: goalMinutes, done: 0, unit: "min"),
-            Card(name: "Cals burnt", image: "flame.fill",      toBeDone: 300,         done: 0, unit: "kcal"),
-            Card(name: "Steps",      image: "shoeprints.fill", toBeDone: goalSteps,   done: 0)
+            Card(name: "Duration",   image: "clock.fill",     toBeDone: goalMinutes,  done: 0, unit: "min"),
+            Card(name: "Cals burnt", image: "flame.fill",      toBeDone: goalCalories, done: 0, unit: "kcal"),
+            Card(name: "Steps",      image: "shoeprints.fill", toBeDone: goalSteps,    done: 0)
         ]
         
         title = "Workout"
@@ -322,6 +324,22 @@ extension WorkoutViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        // ── Load personalised goals from GoalEngine (updates on every appear so
+        //    BMI/profile changes in HealthDetails are picked up immediately) ──────
+        if let profile = ProfileService.shared.buildUserProfile() {
+            let workoutGoals = GoalEngine.generateGoals(for: profile).workout
+            goalMinutes  = Double(workoutGoals.workoutMinutesPerDay)
+            goalCalories = Double(workoutGoals.caloriesBurnedPerDay)
+            goalSteps    = Double(workoutGoals.stepsPerDay)
+        }
+
+        // Rebuild cards with updated goal denominators
+        cards = [
+            Card(name: "Duration",   image: "clock.fill",     toBeDone: goalMinutes,  done: 0, unit: "min"),
+            Card(name: "Cals burnt", image: "flame.fill",      toBeDone: goalCalories, done: 0, unit: "kcal"),
+            Card(name: "Steps",      image: "shoeprints.fill", toBeDone: goalSteps,    done: 0)
+        ]
 
         // Update current phase and phase-filtered routines
         currentPhase = CycleDataStore.shared.currentPhaseInfo().phase

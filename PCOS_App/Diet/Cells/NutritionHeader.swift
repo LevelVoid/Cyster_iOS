@@ -67,6 +67,19 @@ class NutritionHeader: UITableViewHeaderFooterView {
        nutritionCard.layer.borderWidth = 0.5
        stackMacros.layer.cornerRadius = 16
        setupTapGestures()
+       
+       if let user = ProfileService.shared.buildUserProfile() {
+           let goals = GoalEngine.generateGoals(for: user)
+           
+           // Rounding figures
+           goalProtein = Double(Int(round(Double(goals.diet.proteinGrams) / 5.0)) * 5)
+           goalCarbs = Double(Int(round(Double(goals.diet.carbsGrams) / 5.0)) * 5)
+           goalFats = Double(Int(round(Double(goals.diet.fatsGrams) / 5.0)) * 5)
+           
+           let totalCalories = (goalProtein * 4) + (goalCarbs * 4) + (goalFats * 9)
+           goalCalories = Double(Int(round(totalCalories / 10.0)) * 10)
+       }
+       
        setGoalLabels()
        setValues()
    }

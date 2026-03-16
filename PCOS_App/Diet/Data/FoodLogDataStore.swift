@@ -57,7 +57,7 @@ struct FoodLogDataStore {
             CDFoodTag.saveTags(for: cdFood, staticTags: food.tags, context: context)
             
             saveContext()
-            print("✅ CDFoodLog saved: \(food.name) with \((cdFood.foodTags as? Set<CDFoodTag>)?.count ?? 0) tags")
+            print("CDFoodLog saved: \(food.name) with \((cdFood.foodTags as? Set<CDFoodTag>)?.count ?? 0) tags")
         }
     
     // MARK: - Remove
@@ -70,7 +70,7 @@ struct FoodLogDataStore {
         if let result = try? context.fetch(request).first {
             context.delete(result)
             saveContext()
-            print("🗑️ CDFoodLog deleted: \(food.name)")
+            print("CDFoodLog deleted: \(food.name)")
         }
     }
     
@@ -82,7 +82,7 @@ struct FoodLogDataStore {
         request.fetchLimit = 1
         
         guard let existing = try? context.fetch(request).first else {
-            print("❌ CDFoodLog not found for update: \(food.name)")
+            print("CDFoodLog not found for update: \(food.name)")
             return
         }
         
@@ -109,7 +109,7 @@ struct FoodLogDataStore {
         }
         
         saveContext()
-        print("✅ CDFoodLog updated: \(food.name)")
+        print("CDFoodLog updated: \(food.name)")
     }
 
     
@@ -129,7 +129,7 @@ struct FoodLogDataStore {
             do {
                 try context.save()
             } catch {
-                print("❌ CDFoodLog save error: \(error)")
+                print("CDFoodLog save error: \(error)")
             }
         }
     }
@@ -195,6 +195,6 @@ struct FoodLogDataStore {
         }
         
         saveContext()
-        print("✅ Seeded \(sampleData.count) sample CDFoodLog records")
+        print("Seeded \(sampleData.count) sample CDFoodLog records")
     }
 }

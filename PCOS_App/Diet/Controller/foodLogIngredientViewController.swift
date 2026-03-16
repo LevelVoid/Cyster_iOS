@@ -110,8 +110,10 @@ class FoodLogIngredientViewController: UIViewController {
             stepper.minimumValue = 0.5
             stepper.maximumValue = 10.0
             stepper.stepValue = 0.5
-            stepper.value = 1.0
-            servingMultiplier = 1.0
+            
+            let initialValue = food?.servingSize ?? 1.0
+            stepper.value = initialValue
+            servingMultiplier = initialValue
             
             // Style the stepper to match design
             stepper.tintColor = .label
@@ -180,7 +182,8 @@ class FoodLogIngredientViewController: UIViewController {
                 return newIngredient
                 }
             }
-                    // Save to Core Data
+        // Save to Core Data. Don't multiply customCalories again since the model itself recalculates macros on save if not strictly bound. CustomCalories are explicit override, so we should multiply that.
+    
         FoodLogDataStore.updateFood(updatedFood)
         navigationController?.popViewController(animated: true)
     }
@@ -203,19 +206,18 @@ class FoodLogIngredientViewController: UIViewController {
             // Update weight label - check weight property, fallback to quantity
             guard let food = food else { return }
             
-            // Priority: weight > quantity
             let weightText: String
-            if let baseWeight = food.weight {
-                // Use weight if available
-                let totalWeight = Int(baseWeight * servingMultiplier)
-                weightText = "Weight total\n\(totalWeight) g"
-            } else if food.servingSize > 0 {
-                // Fallback to quantity
-                let totalWeight = Int(food.servingSize * servingMultiplier)
-                weightText = "Weight total\n\(totalWeight) g"
+            if let baseWeight = food.weight, baseWeight > 0 {
+                // Determine the base weight for 1 serving (CoreData currently stores the scaled weight when saved)
+                // food.weight is the weight AT the current food.servingSize.
+                // Weight for a new servingMultiplier = (food.weight / food.servingSize) * servingMultiplier
+                let scaledWeight = (baseWeight / food.servingSize) * servingMultiplier
+                weightText = "Weight total\n\(Int(scaledWeight)) g"
             } else {
-                // No data available
-                weightText = "Weight total\nNo data"
+                // Fallback to ingredient sum
+                let ingTotal = (food.ingredients ?? []).reduce(0.0) { $0 + $1.quantity }
+                let scaledWeight = (ingTotal / food.servingSize) * servingMultiplier
+                weightText = "Weight total\n\(Int(scaledWeight)) g"
             }
             
             // Create attributed string for better formatting
