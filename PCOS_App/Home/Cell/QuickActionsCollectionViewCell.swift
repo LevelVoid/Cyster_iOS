@@ -61,10 +61,26 @@ class QuickActionsCollectionViewCell: UICollectionViewCell {
         workoutDurationCompleted.text = "\(todayCalories)"
         
         if let profile = ProfileService.shared.buildUserProfile() {
-            let goals = GoalEngine.generateGoals(for: profile).workout
-            durationGoal.text = "/ \(goals.workoutMinutesPerDay) min"
-            workoutDurationGoal.text = "/ \(goals.caloriesBurnedPerDay) kcal"
-            stepsGoal.text = "/ \(goals.stepsPerDay)"
+            let workoutGoals = GoalEngine.generateGoals(for: profile).workout
+            let dietGoals = GoalEngine.generateGoals(for: profile).diet
+            
+            // Rounding Diet Goals
+            let goalProtein = Int(round(Double(dietGoals.proteinGrams) / 5.0)) * 5
+            let goalCarbs = Int(round(Double(dietGoals.carbsGrams) / 5.0)) * 5
+            let goalFats = Int(round(Double(dietGoals.fatsGrams) / 5.0)) * 5
+            
+            proteinGoal.text = "/ \(goalProtein) g"
+            carbsGoal.text = "/ \(goalCarbs) g"
+            fatsGoal.text = "/ \(goalFats) g"
+            
+            // Rounding Workout Goals
+            let goalMinutes  = Int(round(Double(workoutGoals.workoutMinutesPerDay) / 5.0)) * 5
+            let goalCalories = Int(round(Double(workoutGoals.caloriesBurnedPerDay) / 10.0)) * 10
+            let goalSteps    = Int(round(Double(workoutGoals.stepsPerDay) / 100.0)) * 100
+            
+            durationGoal.text = "/ \(goalMinutes) min"
+            workoutDurationGoal.text = "/ \(goalCalories) kcal"
+            stepsGoal.text = "/ \(goalSteps)"
         }
     }
 
