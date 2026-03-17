@@ -145,7 +145,7 @@ class PCOSPhenotypeViewController: UIViewController {
         // --- Weight: convert to kg if stored in lbs ---
         let rawWeight = UserDefaults.standard.integer(forKey: "userWeight")
         let weightIsMetric = UserDefaults.standard.bool(forKey: "weightIsMetric")
-        let weightInKg: Double = weightIsMetric ? Double(rawWeight) / 2.205 : Double(rawWeight)
+        let weightInKg: Double = weightIsMetric ? Double(rawWeight) : Double(rawWeight) / 2.205
         
         // Create complete profile with all onboarding data
         let profile = ProfileModel(

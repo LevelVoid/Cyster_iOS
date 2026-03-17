@@ -397,7 +397,7 @@ extension AddMealViewController: UITableViewDataSource {
         if isShowingRecent {
             let food = filteredRecentMeals[indexPath.row]
             cell.textLabel?.text = food.name
-            let calories = Int((food.proteinContent * 4) + (food.carbsContent * 4) + (food.fatsContent * 9))
+            let calories = Int(food.calories)
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "MMM d, h:mm a"
             let timeString = dateFormatter.string(from: food.timeStamp)

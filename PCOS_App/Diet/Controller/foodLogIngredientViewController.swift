@@ -111,9 +111,8 @@ class FoodLogIngredientViewController: UIViewController {
             stepper.maximumValue = 10.0
             stepper.stepValue = 0.5
             
-            let initialValue = food?.servingSize ?? 1.0
-            stepper.value = initialValue
-            servingMultiplier = initialValue
+            stepper.value = 1.0
+            servingMultiplier = 1.0
             
             // Style the stepper to match design
             stepper.tintColor = .label
@@ -208,15 +207,14 @@ class FoodLogIngredientViewController: UIViewController {
             
             let weightText: String
             if let baseWeight = food.weight, baseWeight > 0 {
-                // Determine the base weight for 1 serving (CoreData currently stores the scaled weight when saved)
-                // food.weight is the weight AT the current food.servingSize.
-                // Weight for a new servingMultiplier = (food.weight / food.servingSize) * servingMultiplier
-                let scaledWeight = (baseWeight / food.servingSize) * servingMultiplier
+                // food.weight is already the total weight for the saved food.
+                // Multiply by servingMultiplier to scale (1.0 = as saved, 2.0 = double)
+                let scaledWeight = baseWeight * servingMultiplier
                 weightText = "Weight total\n\(Int(scaledWeight)) g"
             } else {
-                // Fallback to ingredient sum
+                // Fallback to ingredient sum — quantities are already the actual amounts
                 let ingTotal = (food.ingredients ?? []).reduce(0.0) { $0 + $1.quantity }
-                let scaledWeight = (ingTotal / food.servingSize) * servingMultiplier
+                let scaledWeight = ingTotal * servingMultiplier
                 weightText = "Weight total\n\(Int(scaledWeight)) g"
             }
             

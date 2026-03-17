@@ -34,7 +34,7 @@ public class CDFoodLog: NSManagedObject {
             image: imageURL ?? localImage,
             timeStamp: timeStamp ?? Date(),
             servingSize: servingSize,
-            weight: weight,
+            weight: weight > 0 ? weight : nil,
             proteinContent: proteinContent,
             carbsContent: carbsContent,
             fatsContent: fatsContent,

@@ -113,9 +113,8 @@ class AddDescribedMealViewController: UIViewController {
         stepper.stepValue = 0.5
         
         // Initialize from existing data if available
-        let initialValue = food?.servingSize ?? foodItem?.servingSize ?? 1.0
-        stepper.value = initialValue
-        servingMultiplier = initialValue
+        stepper.value = 1.0
+        servingMultiplier = 1.0
         
         stepper.tintColor = .label
         stepper.layer.cornerRadius = 10
@@ -170,8 +169,9 @@ class AddDescribedMealViewController: UIViewController {
         guard let label = FoodWeightLabel else { return }
         
         var totalWeight: Double = 0
-        if let originalWeight = food?.weight, originalWeight > 0, let originalServings = food?.servingSize, originalServings > 0 {
-            totalWeight = (originalWeight / originalServings) * servingMultiplier
+        if let originalWeight = food?.weight, originalWeight > 0 {
+            // Weight is already the total for the saved food, just scale by servingMultiplier
+            totalWeight = originalWeight * servingMultiplier
         } else {
             totalWeight = ingredients.reduce(0.0) { $0 + $1.quantity } * servingMultiplier
         }
@@ -289,7 +289,7 @@ class AddDescribedMealViewController: UIViewController {
                 image: food.image,
                 timeStamp: Date(),
                 servingSize: food.servingSize * servingMultiplier,
-                weight: food.weight,
+                weight: food.weight != nil ? food.weight! * servingMultiplier : nil,
                 desc: food.desc,
                 proteinContent: totalProtein,
                 carbsContent: totalCarbs,
