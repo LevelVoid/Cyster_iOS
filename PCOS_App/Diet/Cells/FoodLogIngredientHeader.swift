@@ -122,17 +122,37 @@ class FoodLogIngredientHeader: UIView {
             self.food = food
             self.foodItem = nil
             
-            if let imageName = food.image, let image = UIImage(named: imageName) {
-                FoodImageView.image = image
+            // Image loading with full fallback chain (matches LogsTableViewCell)
+            if let imageName = food.image, imageName.hasPrefix("http"),
+               let url = URL(string: imageName) {
+                // Remote URL → load async with placeholder
+                FoodImageView.image = UIImage(named: "dietPlaceholder")
+                FoodImageView.backgroundColor = .systemGray5
+                loadImage(from: url)
+            } else if let imageName = food.image, !imageName.isEmpty,
+                      let localImg = UIImage(named: imageName) {
+                // Valid local asset
+                FoodImageView.image = localImg
                 FoodImageView.backgroundColor = .clear
             } else {
-                FoodImageView.image = UIImage(named: food.image ?? "dietPlaceholder")
+                // No URL, no local image → placeholder
+                FoodImageView.image = UIImage(named: "dietPlaceholder")
                 FoodImageView.backgroundColor = .systemGray5
             }
             
             updateMacros()
             print("DEBUG: Header configured with Food: \(food.name)")
         }
+    
+    private func loadImage(from url: URL) {
+        URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            guard let data = data, let image = UIImage(data: data) else { return }
+            DispatchQueue.main.async {
+                self?.FoodImageView.image = image
+                self?.FoodImageView.backgroundColor = .clear
+            }
+        }.resume()
+    }
         
         func configure(with foodItem: FoodItem) {
             self.foodItem = foodItem

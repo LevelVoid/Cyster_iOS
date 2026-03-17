@@ -451,23 +451,38 @@ extension AddMealViewController: BarcodeScannerDelegate {
         let urlString = "https://world.openfoodfacts.org/api/v0/product/\(barcode).json"
         guard let url = URL(string: urlString) else { return }
         
+        showFetchingIndicator()
+        
         URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
                 print("Network error:", error)
+                DispatchQueue.main.async {
+                    self.hideFetchingIndicator()
+                    self.showBarcodeError("Network error. Please check your connection and try again.")
+                }
                 return
             }
             guard let data = data else {
                 print("No data received.")
+                DispatchQueue.main.async {
+                    self.hideFetchingIndicator()
+                    self.showBarcodeError("No response from server. Please try again.")
+                }
                 return
             }
             do {
                 let decoded = try JSONDecoder().decode(OFFResponse.self, from: data)
                 guard decoded.status == 1, let product = decoded.product else {
                     print("Product not found in API")
+                    DispatchQueue.main.async {
+                        self.hideFetchingIndicator()
+                        self.showBarcodeError("Food not found in our database.\n\nTry using \"Describe Meal\" or \"Scan Food\" to add it manually.")
+                    }
                     return
                 }
                 let food = product.toFood()
                 DispatchQueue.main.async {
+                    self.hideFetchingIndicator()
                     // ← KEY FIX: call delegate (DietVC) and pop back
                     self.delegate?.didAddMeal(food)
                     self.navigationController?.popToRootViewController(animated: true)
@@ -475,7 +490,54 @@ extension AddMealViewController: BarcodeScannerDelegate {
             } catch {
                 print("JSON decode error:", error)
                 print(String(data: data, encoding: .utf8) ?? "No readable data")
+                DispatchQueue.main.async {
+                    self.hideFetchingIndicator()
+                    self.showBarcodeError("Could not read product data. Try describing the meal instead.")
+                }
             }
         }.resume()
+    }
+    
+    // MARK: - Loading Indicator
+    
+    private func showFetchingIndicator() {
+        let overlay = UIView(frame: view.bounds)
+        overlay.backgroundColor = UIColor.black.withAlphaComponent(0.3)
+        overlay.tag = 998
+        
+        let activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.center = overlay.center
+        activityIndicator.color = .white
+        activityIndicator.startAnimating()
+        
+        let label = UILabel()
+        label.text = "Looking up product..."
+        label.textColor = .white
+        label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.textAlignment = .center
+        label.frame = CGRect(
+            x: 0,
+            y: activityIndicator.frame.maxY + 20,
+            width: view.bounds.width,
+            height: 30
+        )
+        
+        overlay.addSubview(activityIndicator)
+        overlay.addSubview(label)
+        view.addSubview(overlay)
+    }
+    
+    private func hideFetchingIndicator() {
+        view.viewWithTag(998)?.removeFromSuperview()
+    }
+    
+    private func showBarcodeError(_ message: String) {
+        let alert = UIAlertController(
+            title: "Product Not Found",
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }

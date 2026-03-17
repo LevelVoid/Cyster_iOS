@@ -217,6 +217,8 @@ class BarcodeScannerViewController: UIViewController, AVCaptureMetadataOutputObj
         if let metadataObj = metadataObjects.first as? AVMetadataMachineReadableCodeObject,
            let code = metadataObj.stringValue {
             
+            // Immediately stop scanning to prevent duplicate detections
+            isScanning = false
             detectedCode = code
             stopAnimatingScanningFrame()
             
