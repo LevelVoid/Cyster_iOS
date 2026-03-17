@@ -1,4 +1,3 @@
-
 //
 //  UserModel.swift
 //  PCOS_App
@@ -176,10 +175,13 @@ extension UserProfile {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MARK: - GOAL MODELS  (unchanged)
+// MARK: - GOAL MODELS
 // ─────────────────────────────────────────────────────────────────────────────
  
 struct DietGoals {
+    /// Daily calorie target (TDEE ± BMI-based deficit/surplus, floored at 1 200 kcal)
+    let dailyCalories: Int
+
     /// Full ideal macro targets (phenotype + BMI calibrated)
     let proteinGrams: Int
     let carbsGrams: Int
@@ -379,6 +381,7 @@ private func dietGoals(for user: UserProfile) -> DietGoals {
     let startFats    = Int(Double(fats)    * r)
 
     return DietGoals(
+        dailyCalories:        Int(dailyCalories),
         proteinGrams:         protein,
         carbsGrams:           carbs,
         fatsGrams:            fats,

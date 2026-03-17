@@ -60,30 +60,29 @@ class NutritionHeader: UITableViewHeaderFooterView {
        return UINib(nibName: identifier, bundle: nil)
    }
    
-   func configure() {
-       nutritionCard.layer.cornerRadius = 16
-       nutritionCard.layer.masksToBounds = true
-       nutritionCard.layer.borderColor = UIColor.systemGray5.cgColor
-       nutritionCard.layer.borderWidth = 0.5
-       stackMacros.layer.cornerRadius = 16
-       setupTapGestures()
-       
-       if let user = ProfileService.shared.buildUserProfile() {
-           let goals = GoalEngine.generateGoals(for: user)
-           
-           // Use starting (ramp-adjusted) macro targets so irregular/high-sugar
-           // eaters begin with an achievable day-1 goal rather than the full ideal.
-           goalProtein = Double(Int(round(Double(goals.diet.startingProteinGrams) / 5.0)) * 5)
-           goalCarbs   = Double(Int(round(Double(goals.diet.startingCarbsGrams)   / 5.0)) * 5)
-           goalFats    = Double(Int(round(Double(goals.diet.startingFatsGrams)    / 5.0)) * 5)
-           
-           let totalCalories = (goalProtein * 4) + (goalCarbs * 4) + (goalFats * 9)
-           goalCalories = Double(Int(round(totalCalories / 10.0)) * 10)
-       }
-       
-       setGoalLabels()
-       setValues()
-   }
+    func configure() {
+        nutritionCard.layer.cornerRadius = 16
+        nutritionCard.layer.masksToBounds = true
+        nutritionCard.layer.borderColor = UIColor.systemGray5.cgColor
+        nutritionCard.layer.borderWidth = 0.5
+        stackMacros.layer.cornerRadius = 16
+        setupTapGestures()
+        
+        if let user = ProfileService.shared.buildUserProfile() {
+            let goals = GoalEngine.generateGoals(for: user)
+            
+            goalProtein  = Double(Int(round(Double(goals.diet.startingProteinGrams) / 5.0)) * 5)
+            goalCarbs    = Double(Int(round(Double(goals.diet.startingCarbsGrams)   / 5.0)) * 5)
+            goalFats     = Double(Int(round(Double(goals.diet.startingFatsGrams)    / 5.0)) * 5)
+            
+            // ✅ FIX — use the engine's actual calorie target, not a back-calculation
+            // from the ramped-down starting macros (which would give ~80% of the true goal)
+            goalCalories = Double(Int(round(Double(goals.diet.dailyCalories) / 10.0)) * 10)
+        }
+        
+        setGoalLabels()
+        setValues()
+    }
 
    // ── Fills the "goal" labels from whatever the VC passed in ───────────────
    private func setGoalLabels() {
