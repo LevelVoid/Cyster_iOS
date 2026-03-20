@@ -309,7 +309,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             case 2: return self.createQuickActionsSection()
 //            case 3: return self.createRecommendationSection()
             case 4: return self.createSleepCardSection()
-            case 5: return CycleDataStore.shared.hasTwoCycles ? self.createCycleSection() : nil
+            case 5: return self.createCycleSection()
             case 6: return CycleDataStore.shared.hasTwoCycles ? self.createSymptomPatternsSection() : nil
             case 7: return self.createAboutPCOSSection()
             default: return nil
@@ -676,7 +676,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         case 2: return 1
 //        case 3: return recommendationCards.count
         case 4: return 1
-        case 5: return CycleDataStore.shared.hasTwoCycles ? 1 : 0
+        case 5: return 1
         case 6: return CycleDataStore.shared.hasTwoCycles ? allSymptoms.count : 0
         case 7: return aboutPCOSArticles.count
         default: return 0
@@ -757,7 +757,11 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
                 withReuseIdentifier: "cycle_pattern_cell",
                 for: indexPath
             ) as! CyclePatternCollectionViewCell
-            cell.refreshChart()
+            if CycleDataStore.shared.hasTwoCycles {
+                cell.refreshChart()
+            } else {
+                cell.configureEmptyState()
+            }
             return cell
             
         case 6:

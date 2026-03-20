@@ -23,6 +23,9 @@ class CyclePatternCollectionViewCell: UICollectionViewCell {
     private var observationLabel: UILabel!
     private var loadingIndicator: UIActivityIndicatorView!
     
+    // Empty state overlay (built in code — no XIB changes)
+    private var emptyStateContainer: UIView!
+    
     private var currentInsightFetchTask: Task<Void, Never>?
     private var cachedInsight: String?
     private var lastCycleCount: Int = -1
@@ -32,6 +35,10 @@ class CyclePatternCollectionViewCell: UICollectionViewCell {
         // Ensure multiline label wraps correctly in a self-sizing environment
         if observationLabel != nil {
             observationLabel.preferredMaxLayoutWidth = observationLabel.frame.width
+        }
+        // Redraw dashed bars when layout changes
+        if emptyStateContainer != nil && !emptyStateContainer.isHidden {
+            updateDashedBarLayers()
         }
     }
 
@@ -50,7 +57,7 @@ class CyclePatternCollectionViewCell: UICollectionViewCell {
         // Setup AI Observation Label below the chart
         observationLabel = UILabel()
         observationLabel.translatesAutoresizingMaskIntoConstraints = false
-        observationLabel.font = .systemFont(ofSize: 14) // Slightly larger than caption2 for better readability
+        observationLabel.font = .systemFont(ofSize: 14)
         observationLabel.textColor = .black
         observationLabel.numberOfLines = 0
         observationLabel.textAlignment = .left
@@ -61,6 +68,8 @@ class CyclePatternCollectionViewCell: UICollectionViewCell {
         
         viewTooTiredToRemove.addSubview(observationLabel)
         viewTooTiredToRemove.addSubview(loadingIndicator)
+        
+        setupEmptyStateView()
         
         NSLayoutConstraint.activate([
             cyclePatternView.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -82,9 +91,149 @@ class CyclePatternCollectionViewCell: UICollectionViewCell {
             loadingIndicator.centerXAnchor.constraint(equalTo: viewTooTiredToRemove.centerXAnchor)
         ])
     }
+    
+    // MARK: - Empty State Setup
+    
+    private func setupEmptyStateView() {
+        emptyStateContainer = UIView()
+        emptyStateContainer.translatesAutoresizingMaskIntoConstraints = false
+        emptyStateContainer.isHidden = true
+        emptyStateContainer.backgroundColor = .clear
+        viewTooTiredToRemove.addSubview(emptyStateContainer)
+        
+        // Pin to the same area as the chart + observation label
+        NSLayoutConstraint.activate([
+            emptyStateContainer.topAnchor.constraint(equalTo: periodCycleChartView.topAnchor),
+            emptyStateContainer.leadingAnchor.constraint(equalTo: viewTooTiredToRemove.leadingAnchor, constant: 16),
+            emptyStateContainer.trailingAnchor.constraint(equalTo: viewTooTiredToRemove.trailingAnchor, constant: -16),
+            emptyStateContainer.bottomAnchor.constraint(equalTo: viewTooTiredToRemove.bottomAnchor, constant: -20)
+        ])
+        
+        // Dashed bars container — holds the 3 placeholder bars
+        let barsContainer = UIView()
+        barsContainer.translatesAutoresizingMaskIntoConstraints = false
+        barsContainer.tag = 100 // tag to find later for layer updates
+        emptyStateContainer.addSubview(barsContainer)
+        
+        // Create 3 dashed bar views with varying heights
+        let barHeights: [CGFloat] = [90, 120, 70]
+        let barWidth: CGFloat = 44
+        let barSpacing: CGFloat = 16
+        
+        var previousBar: UIView? = nil
+        for (index, height) in barHeights.enumerated() {
+            let bar = UIView()
+            bar.translatesAutoresizingMaskIntoConstraints = false
+            bar.tag = 200 + index // tags 200, 201, 202
+            bar.layer.cornerRadius = 6
+            bar.backgroundColor = UIColor(red: 0.98, green: 0.93, blue: 0.93, alpha: 0.5)
+            barsContainer.addSubview(bar)
+            
+            NSLayoutConstraint.activate([
+                bar.bottomAnchor.constraint(equalTo: barsContainer.bottomAnchor),
+                bar.widthAnchor.constraint(equalToConstant: barWidth),
+                bar.heightAnchor.constraint(equalToConstant: height)
+            ])
+            
+            if let prev = previousBar {
+                bar.leadingAnchor.constraint(equalTo: prev.trailingAnchor, constant: barSpacing).isActive = true
+            } else {
+                bar.leadingAnchor.constraint(equalTo: barsContainer.leadingAnchor).isActive = true
+            }
+            
+            previousBar = bar
+        }
+        
+        // Title label
+        let titleLabel = UILabel()
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.text = "Keep logging to see your trends"
+        titleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
+        titleLabel.textColor = UIColor(red: 0.35, green: 0.30, blue: 0.33, alpha: 1.0)
+        titleLabel.textAlignment = .center
+        titleLabel.numberOfLines = 0
+        emptyStateContainer.addSubview(titleLabel)
+        
+        // Subtitle label
+        let subtitleLabel = UILabel()
+        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        subtitleLabel.text = "Your cycle patterns will appear here\nafter a few logs"
+        subtitleLabel.font = .systemFont(ofSize: 13)
+        subtitleLabel.textColor = .secondaryLabel
+        subtitleLabel.textAlignment = .center
+        subtitleLabel.numberOfLines = 0
+        emptyStateContainer.addSubview(subtitleLabel)
+        
+        // Bars container sizing
+        let totalBarsWidth = (barWidth * 3) + (barSpacing * 2)
+        NSLayoutConstraint.activate([
+            barsContainer.centerXAnchor.constraint(equalTo: emptyStateContainer.centerXAnchor),
+            barsContainer.topAnchor.constraint(equalTo: emptyStateContainer.topAnchor, constant: 35),
+            barsContainer.widthAnchor.constraint(equalToConstant: totalBarsWidth),
+            barsContainer.heightAnchor.constraint(equalToConstant: 120),
+            
+            titleLabel.topAnchor.constraint(equalTo: barsContainer.bottomAnchor, constant: 20),
+            titleLabel.leadingAnchor.constraint(equalTo: emptyStateContainer.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(equalTo: emptyStateContainer.trailingAnchor, constant: -16),
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
+            subtitleLabel.leadingAnchor.constraint(equalTo: emptyStateContainer.leadingAnchor, constant: 16),
+            subtitleLabel.trailingAnchor.constraint(equalTo: emptyStateContainer.trailingAnchor, constant: -16)
+        ])
+    }
+    
+    /// Adds dashed border layers to the placeholder bars
+    private func updateDashedBarLayers() {
+        guard let barsContainer = emptyStateContainer.viewWithTag(100) else { return }
+        
+        let dashedColor = UIColor(red: 0.90, green: 0.75, blue: 0.78, alpha: 1.0).cgColor
+        
+        for index in 0..<3 {
+            guard let bar = barsContainer.viewWithTag(200 + index) else { continue }
+            
+            // Remove old dashed layers
+            bar.layer.sublayers?.removeAll(where: { $0.name == "dashedBorder" })
+            
+            let dashLayer = CAShapeLayer()
+            dashLayer.name = "dashedBorder"
+            dashLayer.strokeColor = dashedColor
+            dashLayer.fillColor = UIColor.clear.cgColor
+            dashLayer.lineWidth = 2
+            dashLayer.lineDashPattern = [6, 4]
+            dashLayer.path = UIBezierPath(roundedRect: bar.bounds, cornerRadius: 6).cgPath
+            bar.layer.addSublayer(dashLayer)
+        }
+    }
+    
+    // MARK: - Configure Empty State
+    
+    /// Shows the empty-state placeholder when fewer than 2 cycles are logged
+    func configureEmptyState() {
+        // Cancel any in-flight AI insight fetch
+        currentInsightFetchTask?.cancel()
+        loadingIndicator.stopAnimating()
+        
+        // Set stat cards to "--"
+        avgCycleLengthLabel?.text = "--"
+        avgPeriodLengthLabel?.text = "--"
+        
+        // Hide data views, show empty state
+        periodCycleChartView.isHidden = true
+        observationLabel.isHidden = true
+        emptyStateContainer.isHidden = false
+        
+        // Force layout so dashed layers draw correctly
+        layoutIfNeeded()
+        updateDashedBarLayers()
+    }
 
     /// Call from cellForItemAt to refresh chart data on every display
     func refreshChart() {
+        // Ensure data views are visible and empty state is hidden
+        periodCycleChartView.isHidden = false
+        observationLabel.isHidden = false
+        emptyStateContainer.isHidden = true
+        
         let cycles = CycleDataStore.shared.previousCycles(count: 6)
         let prediction = CycleDataStore.shared.nextPeriodPrediction
         
