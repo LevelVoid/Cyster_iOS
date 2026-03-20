@@ -310,7 +310,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
 //            case 3: return self.createRecommendationSection()
             case 4: return self.createSleepCardSection()
             case 5: return self.createCycleSection()
-            case 6: return CycleDataStore.shared.hasTwoCycles ? self.createSymptomPatternsSection() : nil
+            case 6: return self.createSymptomPatternsSection()
             case 7: return self.createAboutPCOSSection()
             default: return nil
             }
@@ -441,15 +441,45 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     }
     
     func createSymptomPatternsSection() -> NSCollectionLayoutSection {
+        let hasData = CycleDataStore.shared.hasTwoCycles && allSymptoms.count > 0
+        
         // Dynamic height: header(~92pt) + grid(rows*34) + legend+padding(~39pt) + AI Insight(~65pt)
         let cycleCount = min(CycleDataStore.shared.previousCycles(count: 3).count, 3)
         let cellHeight: CGFloat
-        switch cycleCount {
-        case 1:  cellHeight = 265
-        case 2:  cellHeight = 305
-        default: cellHeight = 365
+        if hasData {
+            switch cycleCount {
+            case 1:  cellHeight = 265
+            case 2:  cellHeight = 305
+            default: cellHeight = 365
+            }
+        } else {
+            cellHeight = 300  // empty state
+        }
+        
+        // Full-width when empty state OR only 1 symptom
+        if !hasData || allSymptoms.count <= 1 {
+            let itemSize = NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1.0),
+                heightDimension: .absolute(cellHeight)
+            )
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+            let groupSize = NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1.0),
+                heightDimension: .absolute(cellHeight)
+            )
+            let group = NSCollectionLayoutGroup.horizontal(
+                layoutSize: groupSize,
+                subitems: [item]
+            )
+            let section = NSCollectionLayoutSection(group: group)
+            section.contentInsets = NSDirectionalEdgeInsets(
+                top: 4, leading: 16, bottom: 16, trailing: 16
+            )
+            addHeader(to: section)
+            return section
         }
 
+        // Multiple symptoms → 340pt paging cards
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .absolute(340),
             heightDimension: .absolute(cellHeight)
@@ -465,17 +495,12 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         )
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 16
-        // Remove leading/trailing insets so groupPagingCentered can truly center each card
         section.contentInsets = NSDirectionalEdgeInsets(
             top: 4, leading: 0, bottom: 16, trailing: 0
         )
-        // Centers a single card in the frame; pages center-to-center with multiple cards
         section.orthogonalScrollingBehavior = .groupPagingCentered
         
-        // Only add header if there are symptoms to display
-        if allSymptoms.count > 0 {
-            addHeader(to: section, leadingInset: 16, trailingInset: 16)
-        }
+        addHeader(to: section, leadingInset: 16, trailingInset: 16)
         return section
     }
     
@@ -677,7 +702,11 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
 //        case 3: return recommendationCards.count
         case 4: return 1
         case 5: return 1
-        case 6: return CycleDataStore.shared.hasTwoCycles ? allSymptoms.count : 0
+        case 6:
+            if CycleDataStore.shared.hasTwoCycles && allSymptoms.count > 0 {
+                return allSymptoms.count
+            }
+            return 1  // empty state card
         case 7: return aboutPCOSArticles.count
         default: return 0
         }
@@ -769,10 +798,13 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
                 withReuseIdentifier: "symptom_patterns_cell",
                 for: indexPath
             ) as! SymptomPatternsCollectionViewCell
-            let symptom = allSymptoms[indexPath.item]
-            // Pass only completed previous cycles (newest-first), not the ongoing one
-            let cycles = CycleDataStore.shared.previousCycles(count: 3)
-            cell.configure(cycles: cycles, symptom: symptom)
+            if CycleDataStore.shared.hasTwoCycles && indexPath.item < allSymptoms.count {
+                let symptom = allSymptoms[indexPath.item]
+                let cycles = CycleDataStore.shared.previousCycles(count: 3)
+                cell.configure(cycles: cycles, symptom: symptom)
+            } else {
+                cell.configureEmptyState()
+            }
             return cell
             
         case 7:

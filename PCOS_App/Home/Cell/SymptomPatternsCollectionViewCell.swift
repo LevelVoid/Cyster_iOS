@@ -31,11 +31,15 @@ class SymptomPatternsCollectionViewCell:
     
     private var currentInsightTask: Task<Void, Never>?
     
+    // Empty state overlay (built in code — no XIB changes)
+    private var emptyStateContainer: UIView!
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         currentInsightTask?.cancel()
         insightLabel?.text = "Analyzing pattern..."
         insightLabel?.textColor = .systemGray
+        emptyStateContainer?.isHidden = true
     }
 
 
@@ -59,6 +63,7 @@ class SymptomPatternsCollectionViewCell:
             }
             
             setupCollectionView()
+            setupEmptyStateView()
         }
 
     // Height constraint outlet wired up programmatically – updated in configure()
@@ -79,8 +84,163 @@ class SymptomPatternsCollectionViewCell:
        
     }
 
+    // MARK: - Empty State Setup
+    
+     private func setupEmptyStateView() {
+        emptyStateContainer = UIView()
+        emptyStateContainer.translatesAutoresizingMaskIntoConstraints = false
+        emptyStateContainer.isHidden = true
+        emptyStateContainer.backgroundColor = UIColor.systemGray6
+        contentView.addSubview(emptyStateContainer)
+        
+        NSLayoutConstraint.activate([
+            emptyStateContainer.topAnchor.constraint(equalTo: contentView.topAnchor),
+            emptyStateContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            emptyStateContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            emptyStateContainer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        ])
+        
+        // ── Header: Placeholder icon (container with centered SF Symbol) ──
+        let iconContainer = UIView()
+        iconContainer.translatesAutoresizingMaskIntoConstraints = false
+        iconContainer.backgroundColor = UIColor.systemGray6
+        iconContainer.layer.cornerRadius = 25
+        iconContainer.clipsToBounds = true
+        emptyStateContainer.addSubview(iconContainer)
+        
+        let headerIcon = UIImageView()
+        headerIcon.translatesAutoresizingMaskIntoConstraints = false
+        headerIcon.image = UIImage(systemName: "cross.case")?
+            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 22, weight: .light))
+        headerIcon.tintColor = .systemGray3
+        headerIcon.contentMode = .scaleAspectFit
+        iconContainer.addSubview(headerIcon)
+        
+        let headerTitle = UILabel()
+        headerTitle.translatesAutoresizingMaskIntoConstraints = false
+        headerTitle.text = "No Symptom Logged"
+        headerTitle.font = .systemFont(ofSize: 17, weight: .regular)
+        headerTitle.textColor = .label
+        emptyStateContainer.addSubview(headerTitle)
+        
+        let headerSubtitle = UILabel()
+        headerSubtitle.translatesAutoresizingMaskIntoConstraints = false
+        headerSubtitle.text = "Log a symptom to view patterns"
+        headerSubtitle.font = .systemFont(ofSize: 13)
+        headerSubtitle.textColor = .secondaryLabel
+        emptyStateContainer.addSubview(headerSubtitle)
+        
+        // Separator line (very subtle)
+        let separator = UIView()
+        separator.translatesAutoresizingMaskIntoConstraints = false
+        separator.backgroundColor = UIColor.separator.withAlphaComponent(0.2)
+        emptyStateContainer.addSubview(separator)
+        
+        // ── Phase circles (smaller, 32pt) ──
+        let circleColors: [UIColor] = [
+            Phase.menstrual.backgroundColor.withAlphaComponent(0.5),
+            Phase.follicular.backgroundColor.withAlphaComponent(0.5),
+            Phase.ovulation.backgroundColor.withAlphaComponent(0.5),
+            Phase.luteal.backgroundColor.withAlphaComponent(0.5)
+        ]
+        
+        let circlesStack = UIStackView()
+        circlesStack.translatesAutoresizingMaskIntoConstraints = false
+        circlesStack.axis = .horizontal
+        circlesStack.spacing = 14
+        circlesStack.alignment = .center
+        emptyStateContainer.addSubview(circlesStack)
+        
+        let circleSize: CGFloat = 32
+        for color in circleColors {
+            let circle = UIView()
+            circle.translatesAutoresizingMaskIntoConstraints = false
+            circle.backgroundColor = color
+            circle.layer.cornerRadius = circleSize / 2
+            NSLayoutConstraint.activate([
+                circle.widthAnchor.constraint(equalToConstant: circleSize),
+                circle.heightAnchor.constraint(equalToConstant: circleSize)
+            ])
+            circlesStack.addArrangedSubview(circle)
+        }
+        
+        // ── Title ──
+        let titleLabel = UILabel()
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.text = "No Data Yet"
+        titleLabel.font = .systemFont(ofSize: 17, weight: .regular)
+        titleLabel.textColor = .label
+        titleLabel.textAlignment = .center
+        emptyStateContainer.addSubview(titleLabel)
+        
+        // ── Subtitle ──
+        let subtitleLabel = UILabel()
+        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        subtitleLabel.text = "Log your symptoms daily to see\nhow they change across your cycle\nphases"
+        subtitleLabel.font = .systemFont(ofSize: 13)
+        subtitleLabel.textColor = .secondaryLabel
+        subtitleLabel.textAlignment = .center
+        subtitleLabel.numberOfLines = 0
+        emptyStateContainer.addSubview(subtitleLabel)
+        
+        // ── Layout ──
+        NSLayoutConstraint.activate([
+            // Icon container (circle background)
+            iconContainer.topAnchor.constraint(equalTo: emptyStateContainer.topAnchor, constant: 12),
+            iconContainer.leadingAnchor.constraint(equalTo: emptyStateContainer.leadingAnchor, constant: 12),
+            iconContainer.widthAnchor.constraint(equalToConstant: 50),
+            iconContainer.heightAnchor.constraint(equalToConstant: 50),
+            
+            // SF Symbol centered inside the container with padding
+            headerIcon.centerXAnchor.constraint(equalTo: iconContainer.centerXAnchor),
+            headerIcon.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor),
+            headerIcon.widthAnchor.constraint(equalToConstant: 24),
+            headerIcon.heightAnchor.constraint(equalToConstant: 24),
+            
+            // Header title
+            headerTitle.topAnchor.constraint(equalTo: iconContainer.topAnchor, constant: 4),
+            headerTitle.leadingAnchor.constraint(equalTo: iconContainer.trailingAnchor, constant: 12),
+            headerTitle.trailingAnchor.constraint(equalTo: emptyStateContainer.trailingAnchor, constant: -12),
+            
+            // Header subtitle
+            headerSubtitle.topAnchor.constraint(equalTo: headerTitle.bottomAnchor, constant: 2),
+            headerSubtitle.leadingAnchor.constraint(equalTo: headerTitle.leadingAnchor),
+            headerSubtitle.trailingAnchor.constraint(equalTo: headerTitle.trailingAnchor),
+            
+            // Separator
+            separator.topAnchor.constraint(equalTo: iconContainer.bottomAnchor, constant: 8),
+            separator.leadingAnchor.constraint(equalTo: emptyStateContainer.leadingAnchor, constant: 12),
+            separator.trailingAnchor.constraint(equalTo: emptyStateContainer.trailingAnchor, constant: -12),
+            separator.heightAnchor.constraint(equalToConstant: 0.5),
+            
+            // Phase circles — centered
+            circlesStack.centerXAnchor.constraint(equalTo: emptyStateContainer.centerXAnchor),
+            circlesStack.topAnchor.constraint(equalTo: separator.bottomAnchor, constant: 35),
+            
+            // Title
+            titleLabel.topAnchor.constraint(equalTo: circlesStack.bottomAnchor, constant: 16),
+            titleLabel.leadingAnchor.constraint(equalTo: emptyStateContainer.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(equalTo: emptyStateContainer.trailingAnchor, constant: -16),
+            
+            // Subtitle
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 6),
+            subtitleLabel.leadingAnchor.constraint(equalTo: emptyStateContainer.leadingAnchor, constant: 16),
+            subtitleLabel.trailingAnchor.constraint(equalTo: emptyStateContainer.trailingAnchor, constant: -16)
+        ])
+    }
+    
+    // MARK: - Configure Empty State
+    
+    /// Shows the empty-state placeholder when no cycle/symptom data is available
+    func configureEmptyState() {
+        currentInsightTask?.cancel()
+        emptyStateContainer.isHidden = false
+    }
+
 
         func configure(cycles: [CycleData], symptom: SymptomItem) {
+            emptyStateContainer.isHidden = true
+            
             self.symptom = symptom
             
             // Keep the 3 most recent cycles (newest-first input)
@@ -141,7 +301,7 @@ class SymptomPatternsCollectionViewCell:
                     if !Task.isCancelled {
                         await MainActor.run {
                             self.insightLabel.text = "Insight unavailable at this time."
-                            self.insightLabel.textColor = .systemGray
+                            self.insightLabel.textColor = .secondaryLabel
                         }
                     }
                 }
@@ -158,19 +318,6 @@ class SymptomPatternsCollectionViewCell:
                 let rows = self.cycles.count + 1   // day numbers + cycles
                 let columns = self.maxDayCount()
 
-                // One day cell
-//                let itemSize = NSCollectionLayoutSize(
-//                    widthDimension: .absolute(44),
-//                    heightDimension: .absolute(45)
-//                )
-//                
-//                let item = NSCollectionLayoutItem(layoutSize: itemSize)
-//
-//                // One ROW = days laid out horizontally
-//                let rowGroupSize = NSCollectionLayoutSize(
-//                    widthDimension: .estimated(CGFloat(columns) * 68),
-//                    heightDimension: .absolute(64)
-                //)
                 let itemSize = NSCollectionLayoutSize(
                     widthDimension: .absolute(26),
                     heightDimension: .absolute(26)
@@ -223,7 +370,7 @@ extension SymptomPatternsCollectionViewCell: UICollectionViewDataSource {
         return (cycles.count + 1) * maxDayCount()
     }
     private func maxDayCount() -> Int {
-        cycles.map { $0.days.count }.max() ?? 0
+        max(cycles.map { $0.days.count }.max() ?? 1, 1)
     }
 
 
