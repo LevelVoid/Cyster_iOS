@@ -120,6 +120,15 @@ struct Exercise: Identifiable, Codable {
     var isCardio: Bool {
         muscleGroup.isCardio
     }
+    
+    var isYoga: Bool {
+        muscleGroup == .mobility
+    }
+    
+    var isTimeBased: Bool {
+        isCardio || isYoga
+    }
+    
     var gifImage: UIImage? {
             guard let gifName = gifUrl else { return nil }
             return GIFManager.shared.gif(named: gifName)
@@ -152,11 +161,11 @@ struct RoutineExercise: Codable, Identifiable {
             self.notes = notes
             
             // Setting defaults based on exercise type
-            if exercise.isCardio {
+            if exercise.isTimeBased {
                 self.numberOfSets = 1
                 self.reps = 0
                 self.restTimerSeconds = nil
-                self.durationSeconds = durationSeconds ?? 600  // 10 minutes default
+                self.durationSeconds = durationSeconds ?? (exercise.isYoga ? 60 : 600)
             } else {
                 self.numberOfSets = numberOfSets ?? 3
                 self.reps = reps ?? 10
@@ -166,7 +175,7 @@ struct RoutineExercise: Codable, Identifiable {
         }
         
     func generateWorkoutExercise() -> WorkoutExercise {
-        if exercise.isCardio {
+        if exercise.isTimeBased {
                    // For cardio, create a single set with duration
                    let cardioSet = ExerciseSet(
                        setNumber: 1,
@@ -235,7 +244,7 @@ struct ExerciseSet: Codable, Identifiable {
 //    var weightKg: Int
     var restTimerSeconds: Int?
     var durationSeconds: Int? // For cardio exercises
-    //var isCompleted: Bool = false
+    var elapsedSeconds: Int? = 0 // Partial completion tracking
     var completionState: SetCompletionState = .notStarted
 }
 enum SetCompletionState: String, Codable{
@@ -270,15 +279,15 @@ struct Routine: Identifiable, Codable {
     
     var totalSets: Int {
         exercises.reduce(0) { total, ex in
-            // Cardio exercises count as 1 set
-            return total + (ex.exercise.isCardio ? 1 : ex.numberOfSets)
+            // Time-based exercises count as 1 set
+            return total + (ex.exercise.isTimeBased ? 1 : ex.numberOfSets)
         }
     }
     
     var estimatedDurationSeconds: Int {
         exercises.reduce(0) { total, ex in
-            if ex.exercise.isCardio {
-                // For cardio, use the user-specified duration
+            if ex.exercise.isTimeBased {
+                // For time-based, use the user-specified duration (defaults applied in init)
                 return total + (ex.durationSeconds ?? 0)
             } else {
                 // For strength exercises, estimate based on reps and rest
@@ -353,8 +362,8 @@ extension CompletedWorkout {
     func resumePoint() -> ResumePoint? {
         for (exIndex, exercise) in exercises.enumerated() {
 
-            // CARDIO
-            if exercise.exercise.isCardio {
+            // TIME-BASED
+            if exercise.exercise.isTimeBased {
                 if exercise.sets.first?.completionState != .completed {
                     return ResumePoint(exerciseIndex: exIndex, setIndex: 0)
                 }

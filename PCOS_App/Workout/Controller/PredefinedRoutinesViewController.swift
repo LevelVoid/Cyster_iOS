@@ -45,10 +45,17 @@ class PredefinedRoutinesViewController: UIViewController,UITableViewDelegate, UI
             
             cell.exerciseNameLabel.text = item.exercise.name
             
-            if item.exercise.isCardio {
-                // Convert seconds → minutes
-                let minutes = (item.durationSeconds ?? 0) / 60
-                cell.detailLabel.text = "\(minutes) min"
+            if item.exercise.isTimeBased {
+                let duration = item.durationSeconds ?? 0
+                let mins = duration / 60
+                let secs = duration % 60
+                if mins > 0 && secs > 0 {
+                    cell.detailLabel.text = "\(mins)m \(secs)s"
+                } else if secs > 0 {
+                    cell.detailLabel.text = "\(secs)s"
+                } else {
+                    cell.detailLabel.text = "\(mins) min"
+                }
             } else {
                 cell.detailLabel.text = "\(item.numberOfSets) sets • \(item.reps) reps"
             }

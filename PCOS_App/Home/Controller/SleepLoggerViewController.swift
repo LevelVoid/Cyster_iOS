@@ -77,21 +77,18 @@ class SleepLoggerViewController: UIViewController {
     
     // MARK: - Setup Logic
     private func setupDefaultTimes() {
-        let cal = Calendar.current
-        var sleepD = cal.date(bySettingHour: 23, minute: 45, second: 0, of: Date()) ?? Date()
-        var wakeD = cal.date(bySettingHour: 7, minute: 5, second: 0, of: Date()) ?? Date()
+        let now = Date()
         
-        if wakeD < sleepD {
-            wakeD = cal.date(byAdding: .day, value: 1, to: wakeD) ?? wakeD
-        }
+        startsPicker.maximumDate = now
+        endsPicker.maximumDate = now
         
-        startsPicker.date = sleepD
-        endsPicker.date = wakeD
+        startsPicker.date = now
+        endsPicker.date = now
     }
     
     private func setupProgrammaticUI() {
         // Hide all original storyboard outlets via subviews iteration if they exist
-        view.subviews.forEach { $0.isHidden = true }
+        view.subviews.forEach { $0.removeFromSuperview() }
         
         view.backgroundColor = .white
         
@@ -103,7 +100,7 @@ class SleepLoggerViewController: UIViewController {
         scrollView.isHidden = false
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -136,36 +133,66 @@ class SleepLoggerViewController: UIViewController {
         ])
     }
     
+    private func applyGlassmorphism(to button: UIButton) {
+        button.backgroundColor = .clear
+        let blurEffect = UIBlurEffect(style: .systemUltraThinMaterial)
+        let blurView = UIVisualEffectView(effect: blurEffect)
+        blurView.isUserInteractionEnabled = false
+        blurView.translatesAutoresizingMaskIntoConstraints = false
+        blurView.layer.cornerRadius = 22
+        blurView.clipsToBounds = true
+        blurView.layer.borderWidth = 0.5
+        blurView.layer.borderColor = UIColor.white.withAlphaComponent(0.5).cgColor
+        
+        // Add behind the button instead of inside
+        contentView.insertSubview(blurView, belowSubview: button)
+        
+        NSLayoutConstraint.activate([
+            blurView.topAnchor.constraint(equalTo: button.topAnchor),
+            blurView.bottomAnchor.constraint(equalTo: button.bottomAnchor),
+            blurView.leadingAnchor.constraint(equalTo: button.leadingAnchor),
+            blurView.trailingAnchor.constraint(equalTo: button.trailingAnchor)
+        ])
+    }
+    
     private func setupTopNav() {
         // Dismiss Button
         dismissButton.translatesAutoresizingMaskIntoConstraints = false
         dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
         dismissButton.tintColor = .black
         dismissButton.layer.cornerRadius = 22
-        dismissButton.layer.borderWidth = 1
-        dismissButton.layer.borderColor = UIColor.systemGray4.cgColor
         dismissButton.addTarget(self, action: #selector(dismissTapped), for: .touchUpInside)
         contentView.addSubview(dismissButton)
+        applyGlassmorphism(to: dismissButton)
         
         // Save Button
         customSaveButton.translatesAutoresizingMaskIntoConstraints = false
         customSaveButton.setImage(UIImage(systemName: "checkmark"), for: .normal)
         customSaveButton.tintColor = .black
-        customSaveButton.backgroundColor = .white
         customSaveButton.layer.cornerRadius = 22
-        customSaveButton.layer.borderWidth = 1
-        customSaveButton.layer.borderColor = UIColor.systemGray4.cgColor
         customSaveButton.addTarget(self, action: #selector(saveTapped), for: .touchUpInside)
         
         let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .bold)
         customSaveButton.setPreferredSymbolConfiguration(config, forImageIn: .normal)
         contentView.addSubview(customSaveButton)
+        applyGlassmorphism(to: customSaveButton)
+        
+        let navTitleLabel = UILabel()
+        navTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        navTitleLabel.text = "Log your sleep"
+        navTitleLabel.font = .systemFont(ofSize: 18, weight: .bold)
+        navTitleLabel.textColor = .black
+        navTitleLabel.textAlignment = .center
+        contentView.addSubview(navTitleLabel)
         
         NSLayoutConstraint.activate([
             dismissButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
             dismissButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
             dismissButton.widthAnchor.constraint(equalToConstant: 44),
             dismissButton.heightAnchor.constraint(equalToConstant: 44),
+            
+            navTitleLabel.centerYAnchor.constraint(equalTo: dismissButton.centerYAnchor),
+            navTitleLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
             customSaveButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24),
             customSaveButton.centerYAnchor.constraint(equalTo: dismissButton.centerYAnchor),

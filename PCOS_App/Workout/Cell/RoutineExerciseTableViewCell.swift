@@ -97,13 +97,13 @@ class RoutineExerciseTableViewCell: UITableViewCell {
         }
         
         // Show appropriate UI based on exercise type
-        if model.exercise.isCardio {
+        if model.exercise.isTimeBased {
             strengthStackView.isHidden = true
             cardioStackView.isHidden = false
             
-            // Default to 10 minutes (600 seconds) if not set
-            let durationInSeconds = model.durationSeconds ?? 600
-            let minutes = durationInSeconds / 60
+            let defaultDuration = model.exercise.isYoga ? 60 : 600
+            let durationInSeconds = model.durationSeconds ?? defaultDuration
+            let minutes = max(1, durationInSeconds / 60)
             durationTextField.text = "\(minutes)"
             
         } else {

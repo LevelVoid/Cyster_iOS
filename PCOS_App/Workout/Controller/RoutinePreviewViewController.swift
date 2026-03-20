@@ -23,9 +23,10 @@ class RoutinePreviewViewController: UIViewController, UITableViewDelegate, UITab
                 let routineExercise = routine.exercises[indexPath.row]
        
         let completedWorkout = CompletedWorkoutsDataStore.shared.loadAll()
-                    .last { $0.routineName == routine.name }
+                    .first { $0.routineName == routine.name }
+        
         let workoutExercise = completedWorkout?.exercises.first {
-            $0.id == routineExercise.id
+            $0.id == routineExercise.id || $0.exercise.name == routineExercise.exercise.name
         }
 
         cell.configure(
@@ -90,7 +91,7 @@ class RoutinePreviewViewController: UIViewController, UITableViewDelegate, UITab
         let manager = WorkoutSessionManager.shared
 
         // Check if we can resume
-        if let completedWorkout = CompletedWorkoutsDataStore.shared.loadAll().last(
+        if let completedWorkout = CompletedWorkoutsDataStore.shared.loadAll().first(
                     where: { $0.routineName == routine.name }
         ),
         let resumePoint = completedWorkout.resumePoint() {

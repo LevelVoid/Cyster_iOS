@@ -50,9 +50,20 @@ class RoutinePreviewTableViewCell: UITableViewCell {
         exerciseNameLabel.text = exercise.name
         muscleLabel.text = exercise.muscleGroup.displayName
         levelLabel.text = exercise.level
-        setCountLabel.text = exercise.isCardio
-        ? "\(routineExercise.durationSeconds ?? 0 / 60) min"
-        : "\(routineExercise.numberOfSets) sets"
+        if exercise.isTimeBased {
+            let duration = routineExercise.durationSeconds ?? 0
+            let mins = duration / 60
+            let secs = duration % 60
+            if mins > 0 && secs > 0 {
+                setCountLabel.text = "\(mins)m \(secs)s"
+            } else if secs > 0 {
+                setCountLabel.text = "\(secs)s"
+            } else {
+                setCountLabel.text = "\(mins) min"
+            }
+        } else {
+            setCountLabel.text = "\(routineExercise.numberOfSets) sets"
+        }
         
         exerciseImageView.image = UIImage(named: exercise.image ?? "exercise_placeholder")
         
@@ -68,14 +79,28 @@ class RoutinePreviewTableViewCell: UITableViewCell {
             return
         }
 
-        let totalSets = workoutExercise.sets.count
-        let completedSets = workoutExercise.sets.filter {
-            $0.completionState == .completed
-        }.count
+        if workoutExercise.exercise.isTimeBased {
+            let duration = workoutExercise.sets.first?.durationSeconds ?? 0
+            let elapsed = workoutExercise.sets.first?.elapsedSeconds ?? 0
+            
+            if workoutExercise.sets.first?.completionState == .completed {
+                ExerciseProgressViewOutlet.progress = 1.0
+            } else if duration > 0 {
+                ExerciseProgressViewOutlet.progress = Float(elapsed) / Float(duration)
+            } else {
+                ExerciseProgressViewOutlet.progress = 0
+            }
+        } else {
+            let totalSets = workoutExercise.sets.count
+            let completedSets = workoutExercise.sets.filter {
+                $0.completionState == .completed
+            }.count
 
-        let progress = Float(completedSets) / Float(max(totalSets, 1))
-        ExerciseProgressViewOutlet.progress = progress
-        ExerciseProgressViewOutlet.setProgress(progress, animated: true)
+            let progress = Float(completedSets) / Float(max(totalSets, 1))
+            ExerciseProgressViewOutlet.progress = progress
+        }
+        
+        ExerciseProgressViewOutlet.setProgress(ExerciseProgressViewOutlet.progress, animated: true)
 
     }
 

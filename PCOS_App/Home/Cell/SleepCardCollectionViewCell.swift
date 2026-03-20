@@ -40,29 +40,7 @@ class SleepCardCollectionViewCell: UICollectionViewCell {
     // MARK: - Button Setup
 
     private func setupButton() {
-
-        logSleepButton.setTitle("Log Your Sleep", for: .normal)
-        logSleepButton.setTitleColor(.white, for: .normal)
-        logSleepButton.backgroundColor = UIColor(hex: "#FE7A96")
-        logSleepButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .semibold)
-        // Corner radius is now handled in PillButton
-        logSleepButton.translatesAutoresizingMaskIntoConstraints = false
-
-        logSleepButton.addTarget(
-            self,
-            action: #selector(logSleepTapped),
-            for: .touchUpInside
-        )
-
-        Card.addSubview(logSleepButton)
-
-        NSLayoutConstraint.activate([
-            logSleepButton.topAnchor.constraint(equalTo: emptyStateLabel.bottomAnchor, constant: 16),
-            logSleepButton.bottomAnchor.constraint(lessThanOrEqualTo: Card.bottomAnchor, constant: -20),
-            logSleepButton.leadingAnchor.constraint(equalTo: Card.leadingAnchor, constant: 30),
-            logSleepButton.trailingAnchor.constraint(equalTo: Card.trailingAnchor, constant: -30),
-            logSleepButton.heightAnchor.constraint(equalToConstant: 34.33)
-        ])
+        // Log sleep button removed
     }
 
     // MARK: - Configure
@@ -94,7 +72,7 @@ class SleepCardCollectionViewCell: UICollectionViewCell {
         } else {
             lastNightTitle.isHidden = false
             emptyStateLabel.isHidden = false
-            logSleepButton.isHidden = false
+            logSleepButton.isHidden = true
         }
     }
 

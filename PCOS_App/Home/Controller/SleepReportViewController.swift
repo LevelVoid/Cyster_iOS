@@ -15,9 +15,7 @@ class SleepReportViewController: UIViewController {
     @IBOutlet weak var chartContainerView: UIView!
     
     @IBOutlet weak var sleepInfoCard: UIView!
-    @IBOutlet weak var dietRec: UIView!
-    @IBOutlet weak var workoutRec: UIView!
-    @IBOutlet weak var miscRec: UIView!
+    
     
     @IBOutlet weak var logSleepButton: UIButton!
     
@@ -44,16 +42,24 @@ class SleepReportViewController: UIViewController {
         // Hide navigation bar to use our custom top bar
         navigationController?.setNavigationBarHidden(true, animated: false)
         
-        // Hide all original storyboard ui elements entirely to prevent layout overlaps
-        view.subviews.forEach { $0.isHidden = true }
+        // Remove all original storyboard ui elements entirely to prevent layout overlaps
+        view.subviews.forEach { $0.removeFromSuperview() }
         
         setupProgrammaticUI()
         loadData(for: .week)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: false)
+        // Only restore nav bar when popping, NOT when pushing/presenting
+        if isMovingFromParent {
+            navigationController?.setNavigationBarHidden(false, animated: false)
+        }
     }
 
     private func setupProgrammaticUI() {
@@ -70,7 +76,7 @@ class SleepReportViewController: UIViewController {
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
             contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
@@ -90,14 +96,38 @@ class SleepReportViewController: UIViewController {
             navBar.heightAnchor.constraint(equalToConstant: 44)
         ])
         
+        // 2.5 Segmented Control
+        segmentedControl.translatesAutoresizingMaskIntoConstraints = false
+        segmentedControl.selectedSegmentIndex = 0
+        segmentedControl.addTarget(self, action: #selector(segmentChanged(_:)), for: .valueChanged)
+        
+        let segContainer = UIView()
+        segContainer.translatesAutoresizingMaskIntoConstraints = false
+        segContainer.backgroundColor = UIColor(white: 0.9, alpha: 1) // basic pill background
+        segContainer.layer.cornerRadius = 20
+        segContainer.addSubview(segmentedControl)
+        contentView.addSubview(segContainer)
+        
+        NSLayoutConstraint.activate([
+            segmentedControl.topAnchor.constraint(equalTo: segContainer.topAnchor, constant: 2),
+            segmentedControl.bottomAnchor.constraint(equalTo: segContainer.bottomAnchor, constant: -2),
+            segmentedControl.leadingAnchor.constraint(equalTo: segContainer.leadingAnchor, constant: 2),
+            segmentedControl.trailingAnchor.constraint(equalTo: segContainer.trailingAnchor, constant: -2),
+            
+            segContainer.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 24),
+            segContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
+            segContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24),
+            segContainer.heightAnchor.constraint(equalToConstant: 44)
+        ])
+        
         // 3. Chart Card
         let chartCard = setupChartCard()
         contentView.addSubview(chartCard)
         
         NSLayoutConstraint.activate([
-            chartCard.topAnchor.constraint(equalTo: navBar.bottomAnchor, constant: 24),
-            chartCard.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
-            chartCard.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24)
+            chartCard.topAnchor.constraint(equalTo: segContainer.bottomAnchor, constant: 24),
+            chartCard.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            chartCard.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
         ])
         
         // 4. Observations Section
@@ -185,16 +215,6 @@ class SleepReportViewController: UIViewController {
         card.backgroundColor = .white
         card.layer.cornerRadius = 16
         
-        // Segmented Control
-        segmentedControl.translatesAutoresizingMaskIntoConstraints = false
-        segmentedControl.selectedSegmentIndex = 0
-        segmentedControl.addTarget(self, action: #selector(segmentChanged(_:)), for: .valueChanged)
-        
-        let segContainer = UIView()
-        segContainer.translatesAutoresizingMaskIntoConstraints = false
-        segContainer.addSubview(segmentedControl)
-        card.addSubview(segContainer)
-        
         // Chart SwiftUI Host
         let chartHost = UIHostingController(rootView: SleepChartView(dataPoints: dataPoints, timeRange: currentTimeRange))
         nativeChartHostingController = chartHost
@@ -206,19 +226,10 @@ class SleepReportViewController: UIViewController {
         chartHost.didMove(toParent: self)
         
         NSLayoutConstraint.activate([
-            segmentedControl.centerXAnchor.constraint(equalTo: segContainer.centerXAnchor),
-            segmentedControl.centerYAnchor.constraint(equalTo: segContainer.centerYAnchor),
-            segmentedControl.widthAnchor.constraint(equalToConstant: 200),
-            
-            segContainer.topAnchor.constraint(equalTo: card.topAnchor, constant: 16),
-            segContainer.leadingAnchor.constraint(equalTo: card.leadingAnchor),
-            segContainer.trailingAnchor.constraint(equalTo: card.trailingAnchor),
-            segContainer.heightAnchor.constraint(equalToConstant: 32),
-            
-            chartHost.view.topAnchor.constraint(equalTo: segContainer.bottomAnchor, constant: 16),
-            chartHost.view.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 16),
-            chartHost.view.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -16),
-            chartHost.view.heightAnchor.constraint(equalToConstant: 240),
+            chartHost.view.topAnchor.constraint(equalTo: card.topAnchor, constant: 16),
+            chartHost.view.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 8),
+            chartHost.view.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -8),
+            chartHost.view.heightAnchor.constraint(equalToConstant: 300),
             chartHost.view.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -16)
         ])
         
@@ -355,11 +366,7 @@ class SleepReportViewController: UIViewController {
         guard let loggerVC = storyboard?.instantiateViewController(withIdentifier: "SleepLoggerViewController") as? SleepLoggerViewController else { return }
 
         loggerVC.isNotNowMode = true
-        loggerVC.modalPresentationStyle = .pageSheet
-        if let sheet = loggerVC.sheetPresentationController {
-            sheet.detents = [.medium(), .large()]
-            sheet.prefersGrabberVisible = true
-        }
+        loggerVC.modalPresentationStyle = .fullScreen
 
         loggerVC.onSleepSaved = { [weak self] in
             guard let self = self else { return }
@@ -405,8 +412,12 @@ class SleepReportViewController: UIViewController {
             case .week:
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "EEE"
-                for dayOffset in (0..<7).reversed() { // 7 days ending today
-                    if let date = calendar.date(byAdding: .day, value: -dayOffset, to: now) {
+                // Find last Sunday (start of this week)
+                var sundayComponents = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: now)
+                sundayComponents.weekday = 1 // Sunday
+                let sunday = calendar.date(from: sundayComponents) ?? now
+                for dayOffset in 0..<7 {
+                    if let date = calendar.date(byAdding: .day, value: dayOffset, to: sunday) {
                         let hours = getHoursForDate(date)
                         newData.append(SleepChartDataModel(
                             date: date,
@@ -443,39 +454,41 @@ class SleepReportViewController: UIViewController {
                 }
                 
             case .year:
-                // 12 months average
+                // Always show Jan–Dec of current year for equidistant alignment
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "MMM"
+                let currentYear = calendar.component(.year, from: now)
                 
-                for monthOffset in (0..<12).reversed() {
-                    if let date = calendar.date(byAdding: .month, value: -monthOffset, to: now) {
-                        let components = calendar.dateComponents([.year, .month], from: date)
-                        guard let startOfMonth = calendar.date(from: components),
-                              let endOfMonth = calendar.date(byAdding: DateComponents(month: 1), to: startOfMonth) else {
-                            continue
-                        }
-                        
-                        let daysInMonth = calendar.dateComponents([.day], from: startOfMonth, to: endOfMonth).day ?? 30
-                        var totalHours = 0.0
-                        var daysWithData = 0
-                        
-                        for i in 0..<daysInMonth {
-                            if let dayDate = calendar.date(byAdding: .day, value: i, to: startOfMonth) {
-                                let h = getHoursForDate(dayDate)
-                                if h > 0 {
-                                    totalHours += h
-                                    daysWithData += 1
-                                }
+                for month in 1...12 {
+                    var comps = DateComponents()
+                    comps.year = currentYear
+                    comps.month = month
+                    comps.day = 1
+                    guard let startOfMonth = calendar.date(from: comps),
+                          let endOfMonth = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: startOfMonth) else {
+                        continue
+                    }
+                    
+                    let daysInMonth = calendar.dateComponents([.day], from: startOfMonth, to: endOfMonth).day ?? 30
+                    var totalHours = 0.0
+                    var daysWithData = 0
+                    
+                    for i in 0..<daysInMonth {
+                        if let dayDate = calendar.date(byAdding: .day, value: i, to: startOfMonth) {
+                            let h = getHoursForDate(dayDate)
+                            if h > 0 {
+                                totalHours += h
+                                daysWithData += 1
                             }
                         }
-                        
-                        let avg = daysWithData > 0 ? (totalHours / Double(daysWithData)) : 0
-                        newData.append(SleepChartDataModel(
-                            date: date,
-                            hours: avg,
-                            label: dateFormatter.string(from: date)
-                        ))
                     }
+                    
+                    let avg = daysWithData > 0 ? (totalHours / Double(daysWithData)) : 0
+                    newData.append(SleepChartDataModel(
+                        date: startOfMonth,
+                        hours: avg,
+                        label: dateFormatter.string(from: startOfMonth)
+                    ))
                 }
             }
             

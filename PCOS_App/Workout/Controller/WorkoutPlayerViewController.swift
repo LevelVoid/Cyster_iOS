@@ -159,6 +159,8 @@ class WorkoutPlayerViewController: UIViewController {
         bottomContainerView.layer.cornerRadius = 24
         PrimaryControlViewOutlet.isUserInteractionEnabled = true
         bottomContainerView.isUserInteractionEnabled = true
+        SetNumberOutlet.numberOfLines = 0
+        SetNumberOutlet.lineBreakMode = .byWordWrapping
         setupBottomContainer()
         //setupGestureRecognizers()
       //  setupPlayTap()
@@ -174,7 +176,7 @@ class WorkoutPlayerViewController: UIViewController {
     }
     private func progressForExercise(_ exercise: WorkoutExercise) -> CGFloat {
 
-        if exercise.exercise.isCardio {
+        if exercise.exercise.isTimeBased {
             guard let duration = exercise.sets.first?.durationSeconds, duration > 0 else {
                 return 0
             }
@@ -195,7 +197,7 @@ class WorkoutPlayerViewController: UIViewController {
             let progress: CGFloat
 
             //  CARDIO
-            if exercise.exercise.isCardio {
+            if exercise.exercise.isTimeBased {
                 guard let duration = exercise.sets.first?.durationSeconds, duration > 0 else {
                     progress = 0
                     continue
@@ -249,7 +251,7 @@ class WorkoutPlayerViewController: UIViewController {
     }
     private func setPace(_ pace: Pace) {
         //Hiding pace button for cardio exercises
-        if workoutExercise.exercise.isCardio {
+        if workoutExercise.exercise.isTimeBased {
             paceButton.isHidden=true
         }
         selectedPace = pace
@@ -257,7 +259,7 @@ class WorkoutPlayerViewController: UIViewController {
         paceButton.setTitle(paceTitle(pace), for: .normal)
 
         // Reset timer ONLY for strength exercises
-        if !isPaused && !workoutExercise.exercise.isCardio {
+        if !isPaused && !workoutExercise.exercise.isTimeBased {
             timer?.invalidate()
             elapsedSeconds = initialTimerSeconds()
             updateTimerDisplay()
@@ -298,7 +300,7 @@ class WorkoutPlayerViewController: UIViewController {
         let currentSet = workoutExercise.sets[currentSetIndex]
 
         //  Cardio → fixed duration
-        if exercise.isCardio {
+        if exercise.isTimeBased {
             return currentSet.durationSeconds ?? 0
         }
 
@@ -353,24 +355,27 @@ class WorkoutPlayerViewController: UIViewController {
         let currentSet = workoutExercise.sets[currentSetIndex]
         
         
-        title=exercise.name
+        title = activeWorkout.routine.name
         navigationController?.navigationBar.prefersLargeTitles = false
-        //ExerciseNameOutlet.text = exercise.name
-//        RepsOutlet.text = "\(currentSet.reps)"
-        if workoutExercise.exercise.isCardio {
+        
+        if workoutExercise.exercise.isTimeBased {
             RepsOutlet.text = "\(currentSet.durationSeconds ?? 0) sec"
             repetitionsText.text="Duration"
         } else {
             RepsOutlet.text = "\(currentSet.reps)"
             repetitionsText.isHidden=false
         }
-//        SetNumberOutlet.text = "Set \(currentSetIndex + 1)"
-        if workoutExercise.exercise.isCardio {
-            //SetNumberOutlet.text = "Cardio"
-             SetNumberOutlet.isHidden = true
+
+        if workoutExercise.exercise.isTimeBased {
+             SetNumberOutlet.isHidden = false
+             SetNumberOutlet.text = exercise.name
+             SetNumberOutlet.font = .systemFont(ofSize: 22, weight: .bold)
+             paceButton.isHidden = true
         } else {
-            SetNumberOutlet.text = "Set \(currentSetIndex + 1) of \(workoutExercise.sets.count)"
+            SetNumberOutlet.text = "\(exercise.name)\nSet \(currentSetIndex + 1) of \(workoutExercise.sets.count)"
             SetNumberOutlet.isHidden = false
+            SetNumberOutlet.font = .systemFont(ofSize: 18, weight: .semibold)
+            paceButton.isHidden = false
         }
 
         //WeightOutlet.text = "\(currentSet.weightKg)"
@@ -379,7 +384,7 @@ class WorkoutPlayerViewController: UIViewController {
         GifOutlet.layer.borderWidth = 1
         GifOutlet.layer.borderColor = UIColor.systemGray4.cgColor
         //GifOutlet.contentMode = AspectFit
-        paceButton.isHidden = workoutExercise.exercise.isCardio
+        paceButton.isHidden = workoutExercise.exercise.isTimeBased
         //disabling next,prev for last,first 
         updatePrevNextButtonState()
 //        pauseButton.setImage(UIImage(systemName: "pause.fill"), for: .normal)
@@ -393,7 +398,28 @@ class WorkoutPlayerViewController: UIViewController {
     }
 
     @IBAction func crossTapped(_ sender: UIBarButtonItem) {
+        if activeWorkout.exercises[exerciseIndex].exercise.isTimeBased {
+            let duration = workoutExercise.sets.first?.durationSeconds ?? 0
+            let completedTime = max(0, duration - elapsedSeconds)
+            activeWorkout.exercises[exerciseIndex].sets[0].elapsedSeconds = completedTime
+        }
+        saveProgressState()
         dismiss(animated: true)
+    }
+    
+    private func saveProgressState() {
+        let elapsed = Int(Date().timeIntervalSince(activeWorkout.startTime))
+        activeWorkout.durationSeconds = elapsed
+        
+        // Save the partial workout state so RoutinePreviewViewController sees in-progress checkmarks
+        let partialWorkout = CompletedWorkout(
+            routineName: activeWorkout.routine.name,
+            date: Date(),
+            startTime: activeWorkout.startTime,
+            durationSeconds: elapsed,
+            exercises: activeWorkout.exercises
+        )
+        CompletedWorkoutsDataStore.shared.save(partialWorkout)
     }
     
  
@@ -440,7 +466,7 @@ class WorkoutPlayerViewController: UIViewController {
             
             
 //for cardio updating eevery sec 
-            if self.workoutExercise.exercise.isCardio {
+            if self.workoutExercise.exercise.isTimeBased {
                     self.updateExerciseProgressBar()
                 }
             
@@ -463,7 +489,7 @@ class WorkoutPlayerViewController: UIViewController {
 
         var exercise = activeWorkout.exercises[exerciseIndex]
 
-        if exercise.exercise.isCardio {
+        if exercise.exercise.isTimeBased {
             exercise.sets[0].completionState = state
             activeWorkout.exercises[exerciseIndex] = exercise
             updateExerciseProgressBar()
@@ -518,7 +544,10 @@ class WorkoutPlayerViewController: UIViewController {
 
         var exercise = activeWorkout.exercises[exerciseIndex]
 
-            if exercise.exercise.isCardio {
+            if exercise.exercise.isTimeBased {
+                let duration = exercise.sets.first?.durationSeconds ?? 0
+                let completedTime = max(0, duration - elapsedSeconds)
+                exercise.sets[0].elapsedSeconds = completedTime
                 exercise.sets[0].completionState = .skipped
                 activeWorkout.exercises[exerciseIndex] = exercise
                 advanceToNextExerciseImmediately()
@@ -796,7 +825,7 @@ class WorkoutPlayerViewController: UIViewController {
     }
 
     private func isExerciseFullyCompleted(_ exercise: WorkoutExercise) -> Bool {
-        if exercise.exercise.isCardio {
+        if exercise.exercise.isTimeBased {
             return exercise.sets.first?.completionState == .completed
         }
         return exercise.sets.allSatisfy { $0.completionState == .completed }
