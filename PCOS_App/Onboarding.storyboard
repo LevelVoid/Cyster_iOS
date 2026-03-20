@@ -550,7 +550,7 @@ Learn, track and heal at your own pace</string>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Light Movements" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UJy-3A-EPD">
-                                                <rect key="frame" x="17" y="85" width="144" height="45.666666666666657"/>
+                                                <rect key="frame" x="20" y="85" width="138" height="45.666666666666657"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="19"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -562,12 +562,12 @@ Learn, track and heal at your own pace</string>
                                             <constraint firstItem="oqm-wf-miB" firstAttribute="top" secondItem="OdG-jQ-ClR" secondAttribute="top" constant="16" id="5sa-nR-qu2"/>
                                             <constraint firstItem="rkZ-TY-dNt" firstAttribute="top" secondItem="UJy-3A-EPD" secondAttribute="bottom" constant="-3.0000000000000142" id="9cA-hQ-7Yb"/>
                                             <constraint firstAttribute="trailing" secondItem="rkZ-TY-dNt" secondAttribute="trailing" constant="16" id="BbO-pJ-qv0"/>
-                                            <constraint firstAttribute="trailing" secondItem="UJy-3A-EPD" secondAttribute="trailing" constant="17" id="I5y-LB-slr"/>
+                                            <constraint firstAttribute="trailing" secondItem="UJy-3A-EPD" secondAttribute="trailing" constant="20" id="I5y-LB-slr"/>
                                             <constraint firstAttribute="bottom" secondItem="rkZ-TY-dNt" secondAttribute="bottom" constant="16" id="R2m-gv-SwQ"/>
                                             <constraint firstItem="oqm-wf-miB" firstAttribute="centerX" secondItem="OdG-jQ-ClR" secondAttribute="centerX" id="WbM-XO-Scf"/>
                                             <constraint firstItem="rkZ-TY-dNt" firstAttribute="leading" secondItem="OdG-jQ-ClR" secondAttribute="leading" constant="16" id="gzm-c3-OXc"/>
                                             <constraint firstItem="UJy-3A-EPD" firstAttribute="top" secondItem="oqm-wf-miB" secondAttribute="bottom" constant="19" id="t7E-rJ-HKQ"/>
-                                            <constraint firstItem="UJy-3A-EPD" firstAttribute="leading" secondItem="OdG-jQ-ClR" secondAttribute="leading" constant="17" id="uCO-aS-xsD"/>
+                                            <constraint firstItem="UJy-3A-EPD" firstAttribute="leading" secondItem="OdG-jQ-ClR" secondAttribute="leading" constant="20" id="uCO-aS-xsD"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -722,7 +722,7 @@ Learn, track and heal at your own pace</string>
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Syy-jW-hMb">
-                                <rect key="frame" x="16" y="273.66666666666669" width="175" height="175"/>
+                                <rect key="frame" x="16" y="305.33333333333331" width="175" height="175"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="TYPE A" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9WT-mU-ejc">
                                         <rect key="frame" x="16" y="28" width="143" height="30"/>
@@ -732,12 +732,12 @@ Learn, track and heal at your own pace</string>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="Full blown" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2wy-3E-m7q">
                                         <rect key="frame" x="16" y="62.000000000000007" width="143" height="14.333333333333336"/>
-                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="High androgens, ovulation issues and polycystic ovaries" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4aU-eG-XvF">
-                                        <rect key="frame" x="16" y="88.333333333333314" width="143" height="46.666666666666657"/>
+                                        <rect key="frame" x="16" y="88.333333333333371" width="143" height="46.666666666666657"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -745,6 +745,7 @@ Learn, track and heal at your own pace</string>
                                 </subviews>
                                 <color key="backgroundColor" red="0.98823529409999999" green="0.93333333330000001" blue="0.92941176469999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
+                                    <constraint firstItem="9WT-mU-ejc" firstAttribute="top" secondItem="Syy-jW-hMb" secondAttribute="top" constant="28" id="39u-8f-qY1"/>
                                     <constraint firstAttribute="width" constant="175" id="AtI-Bh-diC"/>
                                     <constraint firstItem="4aU-eG-XvF" firstAttribute="leading" secondItem="Syy-jW-hMb" secondAttribute="leading" constant="16" id="B3x-fm-luY"/>
                                     <constraint firstItem="2wy-3E-m7q" firstAttribute="top" secondItem="9WT-mU-ejc" secondAttribute="bottom" constant="4" id="Fxy-9w-mmd"/>
@@ -755,21 +756,20 @@ Learn, track and heal at your own pace</string>
                                     <constraint firstAttribute="trailing" secondItem="4aU-eG-XvF" secondAttribute="trailing" constant="16" id="ocs-Rj-15j"/>
                                     <constraint firstItem="9WT-mU-ejc" firstAttribute="leading" secondItem="Syy-jW-hMb" secondAttribute="leading" constant="16" id="oy8-eO-c0u"/>
                                     <constraint firstItem="4aU-eG-XvF" firstAttribute="top" secondItem="2wy-3E-m7q" secondAttribute="bottom" constant="12" id="rTR-2F-loL"/>
-                                    <constraint firstItem="9WT-mU-ejc" firstAttribute="top" secondItem="Syy-jW-hMb" secondAttribute="top" constant="28" id="s5N-aD-56f"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pFg-BJ-Bb0">
-                                <rect key="frame" x="16" y="464.66666666666674" width="175" height="175"/>
+                                <rect key="frame" x="16" y="496.33333333333326" width="175" height="175"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="TYPE C" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6ht-9p-Fr6">
-                                        <rect key="frame" x="16" y="28" width="143" height="30"/>
+                                        <rect key="frame" x="16" y="28.000000000000057" width="143" height="30"/>
                                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="25"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="Ovulatory" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xwp-cA-B9e">
-                                        <rect key="frame" x="16" y="61.99999999999995" width="143" height="14.333333333333336"/>
-                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
+                                        <rect key="frame" x="16" y="62.000000000000064" width="143" height="14.333333333333336"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
@@ -796,16 +796,16 @@ Learn, track and heal at your own pace</string>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="92n-tA-SQh">
-                                <rect key="frame" x="207" y="273.66666666666669" width="175" height="175"/>
+                                <rect key="frame" x="207" y="305.33333333333331" width="175" height="175"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Non-PCO" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6db-6X-VcQ">
                                         <rect key="frame" x="16" y="62.000000000000007" width="143" height="14.333333333333336"/>
-                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="High androgens and ovulation issues, but no cysts" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2b5-Fy-Utb">
-                                        <rect key="frame" x="20" y="88.333333333333314" width="135" height="46.666666666666657"/>
+                                        <rect key="frame" x="20" y="88.333333333333371" width="135" height="46.666666666666657"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -819,6 +819,7 @@ Learn, track and heal at your own pace</string>
                                 </subviews>
                                 <color key="backgroundColor" red="0.98823529409999999" green="0.93333333330000001" blue="0.92941176469999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
+                                    <constraint firstItem="Rnp-mE-Ail" firstAttribute="top" secondItem="92n-tA-SQh" secondAttribute="top" constant="28" id="2Bf-RD-v4z"/>
                                     <constraint firstAttribute="width" constant="175" id="5Gg-F3-Vre"/>
                                     <constraint firstAttribute="height" constant="175" id="G2X-NJ-c1t"/>
                                     <constraint firstAttribute="trailing" secondItem="2b5-Fy-Utb" secondAttribute="trailing" constant="20" id="RRK-58-VbR"/>
@@ -828,22 +829,21 @@ Learn, track and heal at your own pace</string>
                                     <constraint firstItem="6db-6X-VcQ" firstAttribute="leading" secondItem="92n-tA-SQh" secondAttribute="leading" constant="16" id="dlb-nC-yWI"/>
                                     <constraint firstAttribute="trailing" secondItem="6db-6X-VcQ" secondAttribute="trailing" constant="16" id="r03-gK-03A"/>
                                     <constraint firstItem="6db-6X-VcQ" firstAttribute="top" secondItem="Rnp-mE-Ail" secondAttribute="bottom" constant="4" id="v4e-nj-EvR"/>
-                                    <constraint firstItem="Rnp-mE-Ail" firstAttribute="top" secondItem="92n-tA-SQh" secondAttribute="top" constant="28" id="wEc-UI-V28"/>
                                     <constraint firstAttribute="trailing" secondItem="Rnp-mE-Ail" secondAttribute="trailing" constant="16" id="zIc-Gq-XyZ"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9PO-MR-DCl">
-                                <rect key="frame" x="207" y="464.66666666666674" width="175" height="175"/>
+                                <rect key="frame" x="207" y="496.33333333333326" width="175" height="175"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="TYPE D" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hxC-jF-KdP">
-                                        <rect key="frame" x="16" y="28" width="143" height="30"/>
+                                        <rect key="frame" x="16" y="28.000000000000057" width="143" height="30"/>
                                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="25"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="Non-hyperandrogenic" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="I5z-0V-Uru">
-                                        <rect key="frame" x="16" y="61.99999999999995" width="143" height="14.333333333333336"/>
-                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
+                                        <rect key="frame" x="16" y="62.000000000000064" width="143" height="14.333333333333336"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
@@ -884,51 +884,39 @@ Learn, track and heal at your own pace</string>
                                     <action selector="nextTapped:" destination="U1m-KY-8ZI" eventType="touchUpInside" id="TBB-HM-YF0"/>
                                 </connections>
                             </button>
-                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ygX-C9-YnD">
-                                <rect key="frame" x="15" y="655.66666666666663" width="365" height="60"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="I Don't Know" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OSk-tj-eQh">
-                                        <rect key="frame" x="111" y="15" width="143" height="30"/>
-                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="25"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                                <color key="backgroundColor" red="0.98823529409999999" green="0.93333333330000001" blue="0.92941176469999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="365" id="GPT-CU-37Z"/>
-                                    <constraint firstItem="OSk-tj-eQh" firstAttribute="centerY" secondItem="ygX-C9-YnD" secondAttribute="centerY" id="Gna-uS-rOo"/>
-                                    <constraint firstItem="OSk-tj-eQh" firstAttribute="centerX" secondItem="ygX-C9-YnD" secondAttribute="centerX" id="W2u-qh-JtA"/>
-                                    <constraint firstAttribute="height" constant="60" id="cUO-ta-2vF"/>
-                                </constraints>
-                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Not sure which type you have? That's completely okay — you can skip this for now and continue." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WGD-ry-ACQ">
+                                <rect key="frame" x="30" y="251.66666666666666" width="333" height="33.666666666666657"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" systemColor="secondaryLabelColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6AC-hl-F52"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="6AC-hl-F52" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="psn-Ui-uBg" secondAttribute="trailing" constant="20" id="64A-be-OnL"/>
+                            <constraint firstItem="6AC-hl-F52" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="psn-Ui-uBg" secondAttribute="trailing" constant="30" id="64A-be-OnL"/>
                             <constraint firstItem="Syy-jW-hMb" firstAttribute="leading" secondItem="6AC-hl-F52" secondAttribute="leading" constant="16" id="9Xe-82-TiU"/>
                             <constraint firstItem="6AC-hl-F52" firstAttribute="trailing" secondItem="SDf-nh-KMf" secondAttribute="trailing" constant="16" id="D3p-KF-3wy"/>
                             <constraint firstItem="9PO-MR-DCl" firstAttribute="top" secondItem="92n-tA-SQh" secondAttribute="bottom" constant="16" id="FLr-rR-0Ks"/>
-                            <constraint firstItem="Syy-jW-hMb" firstAttribute="top" secondItem="psn-Ui-uBg" secondAttribute="bottom" constant="30" id="J2z-b9-SHD"/>
-                            <constraint firstItem="92n-tA-SQh" firstAttribute="top" secondItem="psn-Ui-uBg" secondAttribute="bottom" constant="30" id="R6i-L7-Klv"/>
+                            <constraint firstItem="WGD-ry-ACQ" firstAttribute="top" secondItem="psn-Ui-uBg" secondAttribute="bottom" constant="8" id="PX5-hb-dpN"/>
+                            <constraint firstItem="Syy-jW-hMb" firstAttribute="top" secondItem="WGD-ry-ACQ" secondAttribute="bottom" constant="20" id="Qae-x5-91P"/>
+                            <constraint firstItem="92n-tA-SQh" firstAttribute="top" secondItem="WGD-ry-ACQ" secondAttribute="bottom" constant="20" id="S8n-WB-SIX"/>
                             <constraint firstItem="9PO-MR-DCl" firstAttribute="leading" secondItem="pFg-BJ-Bb0" secondAttribute="trailing" constant="16" id="Vdr-zU-9uZ"/>
                             <constraint firstItem="SDf-nh-KMf" firstAttribute="leading" secondItem="6AC-hl-F52" secondAttribute="leading" constant="16" id="ZIk-Ss-Ea6"/>
                             <constraint firstItem="6AC-hl-F52" firstAttribute="bottom" secondItem="SDf-nh-KMf" secondAttribute="bottom" constant="30" id="aG7-zy-pjX"/>
-                            <constraint firstItem="psn-Ui-uBg" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="6AC-hl-F52" secondAttribute="leading" constant="20" id="bgu-Ov-7tT"/>
+                            <constraint firstItem="psn-Ui-uBg" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="6AC-hl-F52" secondAttribute="leading" constant="30" id="bgu-Ov-7tT"/>
                             <constraint firstItem="psn-Ui-uBg" firstAttribute="top" secondItem="6AC-hl-F52" secondAttribute="top" id="cqE-CB-61l"/>
                             <constraint firstItem="92n-tA-SQh" firstAttribute="leading" secondItem="Syy-jW-hMb" secondAttribute="trailing" constant="16" id="hpL-Yj-pO4"/>
-                            <constraint firstItem="ygX-C9-YnD" firstAttribute="top" secondItem="pFg-BJ-Bb0" secondAttribute="bottom" constant="16" id="lbe-nH-Avr"/>
                             <constraint firstItem="pFg-BJ-Bb0" firstAttribute="top" secondItem="Syy-jW-hMb" secondAttribute="bottom" constant="16" id="ne2-kb-XuD"/>
                             <constraint firstItem="pFg-BJ-Bb0" firstAttribute="leading" secondItem="6AC-hl-F52" secondAttribute="leading" constant="16" id="o7G-g4-RLX"/>
+                            <constraint firstItem="6AC-hl-F52" firstAttribute="trailing" secondItem="WGD-ry-ACQ" secondAttribute="trailing" constant="30" id="tDl-tN-geK"/>
+                            <constraint firstItem="WGD-ry-ACQ" firstAttribute="leading" secondItem="6AC-hl-F52" secondAttribute="leading" constant="30" id="tFK-Az-r9p"/>
                             <constraint firstItem="psn-Ui-uBg" firstAttribute="centerX" secondItem="mcy-qA-JLd" secondAttribute="centerX" id="uIx-K1-eNL"/>
-                            <constraint firstItem="ygX-C9-YnD" firstAttribute="leading" secondItem="6AC-hl-F52" secondAttribute="leading" constant="15" id="vTg-bt-llP"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="4We-pd-oLk"/>
                     <connections>
                         <outlet property="continueButton" destination="SDf-nh-KMf" id="rEM-9D-dWO"/>
-                        <outlet property="dontKnowCard" destination="ygX-C9-YnD" id="TIV-ea-1HP"/>
                         <outlet property="typeACard" destination="Syy-jW-hMb" id="RNz-R7-wQL"/>
                         <outlet property="typeBCard" destination="92n-tA-SQh" id="SuS-Tg-M5n"/>
                         <outlet property="typeCCard" destination="pFg-BJ-Bb0" id="lMz-F2-AWU"/>
@@ -1095,6 +1083,9 @@ Learn, track and heal at your own pace</string>
         <image name="waveform.path.ecg" catalog="system" width="128" height="125"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="secondaryLabelColor">
+            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

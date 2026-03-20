@@ -30,6 +30,9 @@ class MovementTypeViewController: UIViewController {
         regularMovementsView.layer.cornerRadius = 20
         veryActiveView.layer.cornerRadius = 20
         
+        // Start at 35% opacity — button stays enabled so iOS never overrides with grey
+        nextButton.alpha = 0.5
+        
         // Add tap gestures to each view (this assigns tags)
         addTapGesture(to: sedentaryView, movementType: "Sedentary Type")
         addTapGesture(to: lightMovementsView, movementType: "Light Movements")
@@ -87,28 +90,19 @@ class MovementTypeViewController: UIViewController {
             tappedView.layer.borderWidth = 3
         tappedView.layer.borderColor = UIColor(hex:"#fe7a96").cgColor
         tappedView.backgroundColor = UIColor(hex:"#fe7a96").withAlphaComponent(0.1)
+            
+            // Restore full opacity now that a selection is made
+            nextButton.alpha = 1.0
         }
 
-    @IBAction func nextButtonTapped(_ sender: UIButton) {
-        if let movementType = selectedMovementType {
-        print("Selected movement type: \(movementType)")
-        
-        // Save to UserDefaults
+    @IBAction func nextButtonTapped(_ sender: UIButton) { }
+
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        guard let movementType = selectedMovementType else { return false }
+        // Save BEFORE the segue fires — IBAction timing is unreliable with button-wired segues
         UserDefaults.standard.set(movementType, forKey: "userWorkoutType")
-        
-        // Navigate to next screen
-        //performSegue(withIdentifier: "toNextScreen", sender: nil)
-    } else {
-        print("No movement type selected")
-        
-        // Show alert to user
-        let alert = UIAlertController(title: "Selection Required",
-                                    message: "Please select a movement type",
-                                    preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
-    }
-        
+        print("Saved movement type: \(movementType)")
+        return true
     }
     
 }

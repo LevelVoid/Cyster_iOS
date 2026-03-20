@@ -159,23 +159,11 @@ class OnboardingPeriodLogViewController: UIViewController {
     // MARK: - Actions
 
     @objc private func continueTapped() {
-        guard !selectedDates.isEmpty else {
-            let alert = UIAlertController(
-                title: "No Dates Selected",
-                message: "Please tap at least one period date, or tap Skip to continue.",
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            alert.addAction(UIAlertAction(title: "Skip", style: .cancel) { [weak self] _ in
-                self?.performSegue(withIdentifier: "showHeight", sender: nil)
-            })
-            present(alert, animated: true)
-            return
+        if !selectedDates.isEmpty {
+            let sortedDates = selectedDates.sorted()
+            savePeriodDates(sortedDates)
+            CycleDataStore.shared.rebuildCycles(from: sortedDates)
         }
-
-        let sortedDates = selectedDates.sorted()
-        savePeriodDates(sortedDates)
-        CycleDataStore.shared.rebuildCycles(from: sortedDates)
         performSegue(withIdentifier: "showHeight", sender: nil)
     }
 

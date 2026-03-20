@@ -400,8 +400,8 @@ let fatiguePCOSSignal = PCOSSignal(
     
     infoHeading: "Why fatigue can occur in PCOS",
     scientificReasons: [
-        "**Insulin resistance**, common in PCOS, can lead to unstable blood sugar levels, contributing to frequent energy crashes.",
-        "**Hormonal imbalances** and **sleep disturbances**, such as poor sleep quality or sleep apnea, often result in chronic tiredness."
+        "Insulin resistance, common in PCOS, can lead to unstable blood sugar levels, contributing to frequent energy crashes.",
+        "Hormonal imbalances and sleep disturbances**, such as poor sleep quality or sleep apnea, often result in chronic tiredness."
     ],
     
     appearanceHeading: "How PCOS fatigue may feel",
@@ -749,7 +749,7 @@ let crampsPCOSSignal = PCOSSignal(
     
     infoHeading: "PCOS and Period Pain",
     scientificReasons: [
-        "In PCOS, **irregular ovulation** can cause the uterine lining to become thicker before shedding, leading to **heavier bleeding** and **stronger contractions**.",
+        "In PCOS, irregular ovulation can cause the uterine lining to become thicker before shedding, leading to heavier bleeding and stronger contractions.",
         "Higher estrogen and lower progesterone levels exacerbate cramping. **Inflammation**, common in PCOS, further increases pain sensitivity."
     ],
     

@@ -108,22 +108,8 @@ class PCOSPhenotypeViewController: UIViewController {
     }
     
     @IBAction func continueButtonTapped(_ sender: UIButton) {
-        // Check if a phenotype was selected
-        guard let phenotype = selectedPhenotype else {
-            // Show alert to user
-            let alert = UIAlertController(title: "Selection Required",
-                                          message: "Please select a PCOS phenotype or skip to continue",
-                                          preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            alert.addAction(UIAlertAction(title: "Skip", style: .cancel) { [weak self] _ in
-                self?.saveProfileAndContinue(phenotypeRawValue: PCOSPhenotype.unknown.rawValue)
-            })
-            present(alert, animated: true)
-            return
-        }
-        
-        // Save selected phenotype and continue
-        saveProfileAndContinue(phenotypeRawValue: phenotype.rawValue)
+        let phenotypeRawValue = selectedPhenotype?.rawValue ?? PCOSPhenotype.unknown.rawValue
+        saveProfileAndContinue(phenotypeRawValue: phenotypeRawValue)
     }
     
     private func saveProfileAndContinue(phenotypeRawValue: String) {

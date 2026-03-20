@@ -46,9 +46,9 @@ class HeightPickerViewController: UIViewController {
     
     private func setupRulerView() {
     let minValue = isMetric ? 100 : 40
-    let maxValue = isMetric ? 220 : 85
+    let maxValue = isMetric ? 220 : 87
     
-    rulerView = HeightRulerPickerView(frame: rulerContainerView.bounds, minValue: minValue, maxValue: maxValue)
+    rulerView = HeightRulerPickerView(frame: rulerContainerView.bounds, minValue: minValue, maxValue: maxValue, isMetric: isMetric)
     rulerView.translatesAutoresizingMaskIntoConstraints = false
     rulerView.backgroundColor = .clear
     rulerView.delegate = self
@@ -73,7 +73,7 @@ class HeightPickerViewController: UIViewController {
                 unitLabel.text = "cm"
             } else {
                 currentValue = Int(Double(currentValue) / 2.54)
-                unitLabel.text = "inches"
+                unitLabel.text = "ft + in"
             }
             
             // Recreate ruler with new range
@@ -92,7 +92,17 @@ class HeightPickerViewController: UIViewController {
         }
         
         private func updateValueDisplay() {
-            valueLabel.text = "\(currentValue)"
+            valueLabel.textAlignment = .center
+            if isMetric {
+                valueLabel.font = .systemFont(ofSize: 72, weight: .bold)
+                valueLabel.text = "\(currentValue)"
+            } else {
+                let feet = currentValue / 12
+                let inches = currentValue % 12
+                
+                valueLabel.font = .systemFont(ofSize: 72, weight: .bold)
+                valueLabel.text = "\(feet)' \(inches)\""
+            }
         }
 }
 
@@ -120,14 +130,16 @@ class HeightRulerPickerView: UIView, UIScrollViewDelegate {
     private var minValue: Int
     private var maxValue: Int
     private var currentValue: Int
+    private var isMetric: Bool
     private let spacing: CGFloat = 8
     private let majorTickHeight: CGFloat = 30
     private let minorTickHeight: CGFloat = 15
     
-    init(frame: CGRect, minValue: Int, maxValue: Int) {
+    init(frame: CGRect, minValue: Int, maxValue: Int, isMetric: Bool = true) {
         self.minValue = minValue
         self.maxValue = maxValue
         self.currentValue = minValue
+        self.isMetric = isMetric
         super.init(frame: frame)
         setupView()
     }
@@ -136,6 +148,7 @@ class HeightRulerPickerView: UIView, UIScrollViewDelegate {
         self.minValue = 100
         self.maxValue = 220
         self.currentValue = 170
+        self.isMetric = true
         super.init(coder: coder)
         setupView()
     }
@@ -224,8 +237,14 @@ class HeightRulerPickerView: UIView, UIScrollViewDelegate {
             // Add label for major ticks
             if isMajorTick {
                 let label = UILabel()
-                label.text = "\(value)"
-                label.font = .systemFont(ofSize: 14, weight: .regular)
+                if isMetric {
+                    label.text = "\(value)"
+                } else {
+                    let feet = value / 12
+                    let inches = value % 12
+                    label.text = "\(feet)'\(inches)\""
+                }
+                label.font = .systemFont(ofSize: 11, weight: .regular)
                 label.textColor = .secondaryLabel
                 label.textAlignment = .center
                 label.translatesAutoresizingMaskIntoConstraints = false
@@ -234,7 +253,7 @@ class HeightRulerPickerView: UIView, UIScrollViewDelegate {
                 NSLayoutConstraint.activate([
                     label.centerXAnchor.constraint(equalTo: tick.centerXAnchor),
                     label.bottomAnchor.constraint(equalTo: tick.topAnchor, constant: -4),
-                    label.widthAnchor.constraint(equalToConstant: 40)
+                    label.widthAnchor.constraint(equalToConstant: 44)
                 ])
             }
         }

@@ -31,6 +31,9 @@ class DietTypeViewController: UIViewController {
         irregularMealView.layer.cornerRadius = 20
         noDataView.layer.cornerRadius = 20
         
+        // Start at 35% opacity — button stays enabled so iOS never overrides with grey
+        nextButton.alpha = 0.5
+        
         // Add tap gestures to each view (this assigns tags)
        addTapGesture(to: balancedDietView, dietType: "Balanced Diet")
        addTapGesture(to: frequentsugarView, dietType: "Frequent Sugar")
@@ -90,27 +93,19 @@ class DietTypeViewController: UIViewController {
             tappedView.layer.borderWidth = 3
         tappedView.layer.borderColor = UIColor(hex: "fe7a96").cgColor
         tappedView.backgroundColor = UIColor(hex:"#fe7a96").withAlphaComponent(0.1)
+            
+            // Restore full opacity now that a selection is made
+            nextButton.alpha = 1.0
         }
     
-    @IBAction func nextButtonTapped(_ sender: UIButton) {
-        if let dietType = selectedDietType {
-                    print("Selected diet type: \(dietType)")
-                    
-                    // Save to UserDefaults
-                    UserDefaults.standard.set(dietType, forKey: "userDietType")
-                    
-                    // Navigate to next screen
-                    //performSegue(withIdentifier: "toNextScreen", sender: nil)
-                } else {
-                    print("No diet type selected")
-                    
-                    // Show alert to user
-                    let alert = UIAlertController(title: "Selection Required",
-                                                message: "Please select a diet type",
-                                                preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default))
-                    present(alert, animated: true)
-                }
+    @IBAction func nextButtonTapped(_ sender: UIButton) { }
+
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        guard let dietType = selectedDietType else { return false }
+        // Save BEFORE the segue fires — IBAction timing is unreliable with button-wired segues
+        UserDefaults.standard.set(dietType, forKey: "userDietType")
+        print("Saved diet type: \(dietType)")
+        return true
     }
     
 }

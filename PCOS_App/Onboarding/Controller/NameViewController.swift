@@ -18,9 +18,19 @@ class NameViewController: UIViewController, UITextFieldDelegate {
         nameField.delegate = self
         nextButton.tintColor = UIColor(hex: "FE7A96")
 
+        nextButton.alpha = 0.5
+
+        // Listen for text changes
+        nameField.addTarget(self, action: #selector(nameFieldChanged), for: .editingChanged)
+
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
+    }
+
+    @objc private func nameFieldChanged() {
+        let hasText = !(nameField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+        nextButton.alpha = hasText ? 1.0 : 0.5
     }
 
     // Fallback: always dismiss keyboard when touching the view
@@ -40,15 +50,8 @@ class NameViewController: UIViewController, UITextFieldDelegate {
     }
 
     @IBAction func NextButtonTapped(_ sender: UIButton) {
-        guard let name = nameField.text, !name.isEmpty else {
-            let alert = UIAlertController(title: "No name entered",
-                                          message: "Please enter your name",
-                                          preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            present(alert, animated: true)
-            return
-        }
-
+        let name = nameField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        guard !name.isEmpty else { return }
         UserDefaults.standard.set(name, forKey: "userName")
         performSegue(withIdentifier: "showDOB", sender: nil)
     }
