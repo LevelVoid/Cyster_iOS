@@ -34,13 +34,7 @@ class SymptomPatternsCollectionViewCell:
     // Empty state overlay (built in code — no XIB changes)
     private var emptyStateContainer: UIView!
     
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        currentInsightTask?.cancel()
-        insightLabel?.text = "Analyzing pattern..."
-        insightLabel?.textColor = .systemGray
-        emptyStateContainer?.isHidden = true
-    }
+
 
 
         
@@ -49,7 +43,7 @@ class SymptomPatternsCollectionViewCell:
             super.awakeFromNib()
 
             contentView.layer.cornerRadius = 20
-            contentView.backgroundColor = UIColor.systemGray6
+            contentView.backgroundColor = UIColor.systemBackground
             contentView.layer.masksToBounds = true
 
             // Legend colors
@@ -90,7 +84,7 @@ class SymptomPatternsCollectionViewCell:
         emptyStateContainer = UIView()
         emptyStateContainer.translatesAutoresizingMaskIntoConstraints = false
         emptyStateContainer.isHidden = true
-        emptyStateContainer.backgroundColor = UIColor.systemGray6
+        emptyStateContainer.backgroundColor = UIColor.systemBackground
         contentView.addSubview(emptyStateContainer)
         
         NSLayoutConstraint.activate([
@@ -235,11 +229,32 @@ class SymptomPatternsCollectionViewCell:
     func configureEmptyState() {
         currentInsightTask?.cancel()
         emptyStateContainer.isHidden = false
+        // Hide all XIB data views so nothing bleeds through
+        setDataViewsHidden(true)
+    }
+    
+    /// Hides or shows all the XIB-defined data subviews (the first child of contentView)
+    private func setDataViewsHidden(_ hidden: Bool) {
+        // The XIB's root wrapper view is the first subview of contentView
+        // (emptyStateContainer was added after it, so it's the second subview)
+        if let dataContainer = contentView.subviews.first {
+            dataContainer.isHidden = hidden
+        }
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        // Reset to default hidden state for both data and empty state
+        setDataViewsHidden(true)
+        emptyStateContainer.isHidden = true
+        currentInsightTask?.cancel()
+        insightLabel.text = nil
+    }
 
         func configure(cycles: [CycleData], symptom: SymptomItem) {
             emptyStateContainer.isHidden = true
+            // Show all XIB data views
+            setDataViewsHidden(false)
             
             self.symptom = symptom
             
