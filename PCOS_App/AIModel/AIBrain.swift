@@ -108,8 +108,13 @@ final class AIBrain {  // ← removed ObservableObject (no @Published = no confo
             - "I'm sorry"
             - "Unfortunately"  
             - "I cannot"
-            - "I'm not able to"
-            
+        CONVERSATION STYLE:
+        - If the user sends a greeting ("hey", "hi", "hello", "how are you") — respond warmly and briefly, like a friend. Ask how they're doing. Do NOT jump into health advice unprompted.
+        - If the user is making small talk — match their energy. Be human, be warm, keep it short.
+        - Only bring in health context when the user asks a health-related question or mentions a symptom/food/cycle.
+        - Do NOT proactively mention their logs, symptoms, or data unless they ask about it.
+        - A simple "hey" deserves a simple "hey back" — not a health lecture.
+
         """
     }
 
@@ -125,28 +130,52 @@ final class AIBrain {  // ← removed ObservableObject (no @Published = no confo
             )
         }
 
-        // Extract next period line from context to pre-surface it for period questions
-        let isPeriodQuestion = text.lowercased().contains("period") ||
-                               text.lowercased().contains("next cycle") ||
-                               text.lowercased().contains("ovulat")
+        // Detect casual/greeting AND short follow-up replies that rely on conversation memory
+        let casualPhrases = [
+            // Greetings
+            "hey", "hi", "hello", "hii", "heyy", "how are you",
+            "what's up", "sup", "good morning", "good night",
+            "thanks", "thank you", "haha", "lol",
+            // Short follow-ups that depend on conversation memory
+            "yes", "no", "yeah", "nope", "sure", "okay", "ok",
+            "please", "go ahead", "tell me", "yes please",
+            "no thanks", "that's fine", "sounds good", "great",
+            "not really", "maybe", "i think so", "definitely"
+        ]
 
-        let periodHint: String
-        if isPeriodQuestion,
-           let range = context.range(of: "Next period:"),
-           let endRange = context.range(of: "\n", range: range.upperBound..<context.endIndex) {
-            let periodLine = String(context[range.lowerBound..<endRange.lowerBound])
-            periodHint = "\n[Relevant data for this question: \(periodLine)]"
+        let trimmed = text.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Match exact OR very short messages (under 2 words) that are follow-ups
+        let wordCount = trimmed.components(separatedBy: .whitespaces).filter { !$0.isEmpty }.count
+        let isCasual = casualPhrases.contains(where: { trimmed == $0 || trimmed.hasPrefix($0 + " ") })
+                      || wordCount <= 2  // ← short replies always rely on session memory, not fresh context
+
+        let contextualMessage: String
+        if isCasual {
+            // No health context for small talk — just chat naturally
+            contextualMessage = text
         } else {
-            periodHint = ""
+            // Period hint for cycle questions
+            let isPeriodQuestion = trimmed.contains("period") ||
+                                   trimmed.contains("next cycle") ||
+                                   trimmed.contains("ovulat")
+
+            var periodHint = ""
+            if isPeriodQuestion,
+               let range = context.range(of: "Next period:"),
+               let endRange = context.range(of: "\n", range: range.upperBound..<context.endIndex) {
+                let periodLine = String(context[range.lowerBound..<endRange.lowerBound])
+                periodHint = "\n[Relevant data: \(periodLine)]"
+            }
+
+            contextualMessage = """
+            [BACKGROUND HEALTH DATA — use only if relevant to the question below:]
+            \(context)\(periodHint)
+            [END BACKGROUND DATA]
+
+            User's question: \(text)
+            """
         }
-
-        let contextualMessage = """
-        [BACKGROUND HEALTH DATA — use only if relevant to the question below, do not respond to this block:]
-        \(context)\(periodHint)
-        [END BACKGROUND DATA]
-
-        User's question: \(text)
-        """
 
         do {
             let response = try await chatSession!.respond(to: contextualMessage)

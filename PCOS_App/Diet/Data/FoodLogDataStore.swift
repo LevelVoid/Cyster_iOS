@@ -191,7 +191,11 @@ struct FoodLogDataStore {
                 servingSize: serving, proteinContent: protein, carbsContent: carbs,
                 fatsContent: fats, customCalories: customCal, tags: tags, ingredients: ingredients
             )
-            let _ = CDFoodLog.from(food, context: context)
+            let cdFood = CDFoodLog.from(food, context: context)
+            
+            // Link to CDDailyContext (Fix for Problem 4)
+            let dailyContext = DailyActivityDataStore.shared.getOrCreateContext(for: food.timeStamp)
+            cdFood.dailyContext = dailyContext
         }
         
         saveContext()

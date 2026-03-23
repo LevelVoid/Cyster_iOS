@@ -86,6 +86,10 @@ class ProfileService {
         user.activityLevel = activityLevel
         user.pcosPhenotype = pcosPhenotype
         
+        // Ensure UserDefaults is kept in sync for old keys
+        UserDefaults.standard.set(dob, forKey: "userDOB")
+        UserDefaults.standard.set(name, forKey: "userName")
+        
         saveContext()
     }
     

@@ -232,13 +232,32 @@ final class SharedContextEngine {
         let cycleDataArray: [CycleData] = cycles.compactMap { cd in
             guard let id = cd.value(forKey: "id") as? UUID,
                   let startDate = cd.value(forKey: "startDate") as? Date else { return nil }
+            let endDate = cd.value(forKey: "endDate") as? Date
+            let storedCycleLength = Int(cd.value(forKey: "cycleLength") as? Int16 ?? 0)
+
+            // For ongoing cycle, compute actual length from startDate to today
+            let actualLength: Int
+            if endDate == nil {
+                actualLength = Calendar.current.dateComponents(
+                    [.day], from: Calendar.current.startOfDay(for: startDate),
+                    to: Calendar.current.startOfDay(for: Date())
+                ).day ?? 0
+            } else {
+                actualLength = storedCycleLength
+            }
+
+            // Build enough stub days so cycleLength computed property returns correct value
+            let stubDays = (0..<max(1, actualLength)).map { i in
+                CycleDay(dayIndex: i, phase: .follicular, symptoms: [])
+            }
+
             return CycleData(
                 id: id,
                 month: DateFormatter.monthYear.string(from: startDate),
                 startDate: startDate,
-                endDate: cd.value(forKey: "endDate") as? Date,
+                endDate: endDate,
                 isOvulationConfirmed: cd.value(forKey: "isOvulationConfirmed") as? Bool ?? false,
-                days: []
+                days: stubDays  // ← gives cycleLength = actualLength
             )
         }
 
