@@ -1,31 +1,12 @@
-//
-//  DietViewController.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 24/11/25.
-//
-
 import UIKit
 
 class DietViewController: UIViewController {
 
     var todaysFoods: [Food] = []
 
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var collectionView: UICollectionView!  // ← was tableView
     @IBOutlet weak var AddMealButton: UIButton!
-    private var headerView: NutritionHeader?
-
-    // The quote card — added directly as a subview of the tableView, not a cell
-    private var quoteCardView: UIView?
-
-    private let quotes = [
-        "Nourish your body — log a wholesome meal to get started.",
-        "Healthy eating begins with one mindful meal. Start today.",
-        "Your body works hard for you. Feed it something good today.",
-        "A balanced meal is the best thing you can do for yourself right now.",
-        "Small steps lead to big change. Log your first meal today."
-    ]
-    private var currentQuote = ""
+    private var nutritionCell: NutritionHeaderCollectionViewCell?  // ← was headerView
 
     // MARK: - Lifecycle
 
@@ -33,149 +14,91 @@ class DietViewController: UIViewController {
         super.viewDidLoad()
         title = "Diet"
         setupNavigation()
-        setupTableView()
+        setupCollectionView()
         setupAddButtonStyle()
     }
 
     override func viewWillAppear(_ animated: Bool) {
-            super.viewWillAppear(animated)
-            navigationController?.navigationBar.prefersLargeTitles = true
-            currentQuote = quotes.randomElement() ?? quotes[0]
-            filterTodaysFoods()
-            for i in FoodLogDataStore.todaysMeal {
-                print(i.name)
-            }
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.prefersLargeTitles = true
+        filterTodaysFoods()
+    }
+
+    // MARK: - Setup
+
+    private func setupNavigation() {
+        let calendar = UIBarButtonItem(
+            image: UIImage(systemName: "calendar"),
+            style: .plain,
+            target: self,
+            action: #selector(calendarTapped)
+        )
+        navigationItem.rightBarButtonItem = calendar
+    }
+
+    private func setupCollectionView() {
+        
+        collectionView.register(
+            NutritionHeaderCollectionViewCell.nib(),
+            forCellWithReuseIdentifier: NutritionHeaderCollectionViewCell.identifier
+        )
+        collectionView.register(
+            FoodSuggestionsCollectionViewCell.nib(),
+            forCellWithReuseIdentifier: FoodSuggestionsCollectionViewCell.identifier
+        )
+        collectionView.register(
+            MealLogsCollectionViewCell.nib(),
+            forCellWithReuseIdentifier: MealLogsCollectionViewCell.identifier
+        )
+        collectionView.register(
+            SectionHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: SectionHeaderView.identifier
+        )
+        collectionView.register(
+            NoFoodCollectionViewCell.nib(),
+            forCellWithReuseIdentifier: NoFoodCollectionViewCell.identifier
+        )
+
+
+        collectionView.dataSource = self
+        collectionView.delegate = self
+
+        // Background colour #FCEEED
+        let bgColor = UIColor(red: 252/255, green: 238/255, blue: 237/255, alpha: 1)
+        collectionView.backgroundColor = bgColor
+        view.backgroundColor = bgColor
+
+        // Use a simple flow layout
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumLineSpacing = 0       // per-section insets handle all spacing
+        layout.minimumInteritemSpacing = 0
+        collectionView.collectionViewLayout = layout
+    }
+
+    private func setupAddButtonStyle() {
+        AddMealButton.backgroundColor = UIColor.systemPink
+        AddMealButton.setTitle("Add", for: .normal)
+        AddMealButton.setTitleColor(.white, for: .normal)
+        AddMealButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+        AddMealButton.layer.cornerRadius = 25
+        AddMealButton.addTarget(self, action: #selector(addButtonTapped(_:)), for: .touchUpInside)
+    }
+
+    // MARK: - Actions
+
+    @objc func calendarTapped() {
+        if let vc = storyboard?.instantiateViewController(withIdentifier: "dietLogs")
+            as? DietCalendarLogsViewController {
+            navigationController?.pushViewController(vc, animated: true)
         }
-
-        // viewDidLayoutSubviews ensures the quote card Y is always correct
-        // even after the navigation bar / safe area finishes settling
-        override func viewDidLayoutSubviews() {
-            super.viewDidLayoutSubviews()
-            updateQuoteCardFrame()
-        }
-
-        // MARK: - Setup
-
-        private func setupNavigation() {
-            let calendar = UIBarButtonItem(
-                image: UIImage(systemName: "calendar"),
-                style: .plain,
-                target: self,
-                action: #selector(calendarTapped)
-            )
-            navigationItem.rightBarButtonItem = calendar
-        }
-
-        private func setupTableView() {
-            // Register both cells
-            tableView.register(LogsTableViewCell.nib(), forCellReuseIdentifier: LogsTableViewCell.identifier)
-            tableView.register(FoodSuggestionsTableViewCell.nib(), forCellReuseIdentifier: FoodSuggestionsTableViewCell.identifier)
-            
-            tableView.dataSource = self
-            tableView.delegate = self
-//            tableView.estimatedRowHeight = 100
-            tableView.rowHeight = UITableView.automaticDimension
-            tableView.separatorStyle = .none
-            tableView.register(NutritionHeader.nib(), forHeaderFooterViewReuseIdentifier: NutritionHeader.identifier)
-        }
-
-        private func setupAddButtonStyle() {
-            AddMealButton.backgroundColor = UIColor.systemPink
-            AddMealButton.setTitle("Add", for: .normal)
-            AddMealButton.setTitleColor(.white, for: .normal)
-            AddMealButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
-            AddMealButton.layer.cornerRadius = 25
-            AddMealButton.addTarget(self, action: #selector(addButtonTapped(_:)), for: .touchUpInside)
-        }
-
-        // MARK: - Quote Card (custom UIView, not a cell)
-
-        private func showQuoteCard() {
-            removeQuoteCard()
-
-            let tableWidth = tableView.bounds.width
-            let sideInset: CGFloat = 12
-            let verticalGap: CGFloat = 6
-            let cardHeight: CGFloat = 100
-            let wrapperHeight = cardHeight + (verticalGap * 2)
-
-            // Y position: right after the section header (250pt)
-            // We use the actual rendered header bottom if available, else fall back to 250
-            let headerBottom: CGFloat = {
-                if let hf = tableView.headerView(forSection: 0) {
-                    return hf.frame.maxY
-                }
-                return 250
-            }()
-
-            let wrapper = UIView(frame: CGRect(
-                x: 0,
-                y: headerBottom,
-                width: tableWidth,
-                height: wrapperHeight
-            ))
-            wrapper.backgroundColor = .clear
-            wrapper.tag = 9999   // tag so we can find and remove it later
-
-            let card = UIView(frame: CGRect(
-                x: sideInset,
-                y: verticalGap,
-                width: tableWidth - (sideInset * 2),
-                height: cardHeight
-            ))
-            card.backgroundColor = .white
-            card.layer.cornerRadius = 16
-            card.layer.masksToBounds = false
-            card.layer.shadowColor = UIColor.black.cgColor
-            card.layer.shadowOpacity = 0.06
-            card.layer.shadowOffset = CGSize(width: 0, height: 2)
-            card.layer.shadowRadius = 6
-
-            let label = UILabel(frame: CGRect(
-                x: 16,
-                y: 0,
-                width: card.bounds.width - 32,
-                height: cardHeight
-            ))
-            label.text = currentQuote
-            label.font = .systemFont(ofSize: 14, weight: .regular)
-            label.textColor = .systemGray
-            label.textAlignment = .center
-            label.numberOfLines = 0
-
-            card.addSubview(label)
-            wrapper.addSubview(card)
-            tableView.addSubview(wrapper)
-            quoteCardView = wrapper
-        }
-
-        private func removeQuoteCard() {
-            quoteCardView?.removeFromSuperview()
-            quoteCardView = nil
-            // Also remove any lingering tagged views from previous sessions
-            tableView.subviews.filter { $0.tag == 9999 }.forEach { $0.removeFromSuperview() }
-        }
-
-        /// Called from viewDidLayoutSubviews to keep the card flush with the header bottom
-        private func updateQuoteCardFrame() {
-            guard let card = quoteCardView else { return }
-            let headerBottom: CGFloat = tableView.headerView(forSection: 0)?.frame.maxY ?? 250
-            if card.frame.origin.y != headerBottom {
-                card.frame.origin.y = headerBottom
-            }
-        }
-
-        // MARK: - Actions
-
-        @objc func calendarTapped() {
-            if let vc = storyboard?.instantiateViewController(withIdentifier: "dietLogs") as? DietCalendarLogsViewController {
-                navigationController?.pushViewController(vc, animated: true)
-            }
-        }
+    }
 
     @IBAction func addButtonTapped(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: "Diet", bundle: nil)
-        guard let addVC = storyboard.instantiateViewController(withIdentifier: "AddMealViewController") as? AddMealViewController else {
+        guard let addVC = storyboard.instantiateViewController(withIdentifier: "AddMealViewController")
+            as? AddMealViewController else {
             let addVC = AddMealViewController()
             addVC.delegate = self
             addVC.dietDelegate = self
@@ -190,215 +113,258 @@ class DietViewController: UIViewController {
     // MARK: - Data
 
     private func filterTodaysFoods() {
-            todaysFoods = FoodLogDataStore.todaysMeal.sorted { $0.timeStamp > $1.timeStamp }
-
-            tableView.reloadData()
-
-            if todaysFoods.isEmpty {
-                DispatchQueue.main.async {
-                    self.showQuoteCard()
-                }
-            } else {
-                removeQuoteCard()
-            }
-
-            print("DietVC — found \(todaysFoods.count) foods for today")
-        }
-
-        // MARK: - Delete
-
-        private func deleteMeal(at indexPath: IndexPath) {
-            // Adjust index because first row is suggestions cell
-            let foodIndex = indexPath.row - 1
-            guard foodIndex >= 0 && foodIndex < todaysFoods.count else { return }
-            
-            let mealToDelete = todaysFoods[foodIndex]
-
-            let alert = UIAlertController(
-                title: "Delete Meal",
-                message: "Are you sure you want to delete '\(mealToDelete.name)'?",
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-            alert.addAction(UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
-                guard let self else { return }
-
-                self.headerView?.subtractValues(mealToDelete)
-                FoodLogDataStore.removeFood(mealToDelete)
-                self.todaysFoods.remove(at: foodIndex)
-
-                if self.todaysFoods.isEmpty {
-                    // ✅ Crash fix: reloadData instead of deleteRows when last item deleted
-                    self.tableView.reloadData()
-                    DispatchQueue.main.async {
-                        self.showQuoteCard()
-                    }
-                } else {
-                    self.tableView.deleteRows(at: [indexPath], with: .fade)
-                }
-            })
-
-            present(alert, animated: true)
-        }
+        todaysFoods = FoodLogDataStore.todaysMeal.sorted { $0.timeStamp > $1.timeStamp }
+        collectionView.reloadData()
+        print("DietVC — found \(todaysFoods.count) foods for today")
     }
 
-    // MARK: - UITableViewDataSource & UITableViewDelegate
+    // MARK: - Delete
 
-    extension DietViewController: UITableViewDataSource, UITableViewDelegate {
+    private func deleteMeal(at foodIndex: Int) {
+        guard foodIndex >= 0 && foodIndex < todaysFoods.count else { return }
+        let mealToDelete = todaysFoods[foodIndex]
 
-        func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            // +1 for the FoodSuggestionsTableViewCell at the top
-            return todaysFoods.count + 1
-        }
+        let alert = UIAlertController(
+            title: "Delete Meal",
+            message: "Are you sure you want to delete '\(mealToDelete.name)'?",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+            guard let self else { return }
+            self.nutritionCell?.subtractValues(mealToDelete)
+            FoodLogDataStore.removeFood(mealToDelete)
+            self.todaysFoods.remove(at: foodIndex)
+            self.collectionView.reloadData()
+        })
+        present(alert, animated: true)
+    }
+}
 
-        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            // First row is always the suggestions cell
-            if indexPath.row == 0 {
-                let cell = tableView.dequeueReusableCell(
-                    withIdentifier: FoodSuggestionsTableViewCell.identifier,
+// MARK: - UICollectionViewDataSource & UICollectionViewDelegateFlowLayout
+
+extension DietViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 3
+    }
+
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 1  // Each section has exactly 1 cell
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
+
+        switch indexPath.section {
+        case 0:
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: NutritionHeaderCollectionViewCell.identifier,
+                for: indexPath
+            ) as! NutritionHeaderCollectionViewCell
+            cell.configure()
+            cell.delegate = self
+            cell.layer.cornerRadius = 16
+            cell.layer.masksToBounds = true
+            cell.backgroundColor = .white
+            self.nutritionCell = cell
+            return cell
+
+        case 1:
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: FoodSuggestionsCollectionViewCell.identifier,
+                for: indexPath
+            ) as! FoodSuggestionsCollectionViewCell
+            cell.layer.cornerRadius = 16
+            cell.layer.masksToBounds = true
+            cell.backgroundColor = .white
+            return cell
+
+        case 2:
+            if todaysFoods.isEmpty {
+                // Show the NoFood quote cell
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: NoFoodCollectionViewCell.identifier,
                     for: indexPath
-                ) as! FoodSuggestionsTableViewCell
-                // Configure your suggestions cell here if needed
-                // cell.configure(with: yourData)
+                ) as! NoFoodCollectionViewCell
+                cell.refreshQuote()
+                cell.layer.cornerRadius = 16
+                cell.layer.masksToBounds = true
+                cell.backgroundColor = .white
+                return cell
+            } else {
+                // Show the MealLogs cell with embedded table
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: MealLogsCollectionViewCell.identifier,
+                    for: indexPath
+                ) as! MealLogsCollectionViewCell
+                cell.configure(with: todaysFoods, quote: "")
+                cell.delegate = self
+                cell.layer.cornerRadius = 16
+                cell.layer.masksToBounds = true
+                cell.backgroundColor = .white
                 return cell
             }
-            
-            // All other rows are food logs
-            let foodIndex = indexPath.row - 1
-            let cell = tableView.dequeueReusableCell(
-                withIdentifier: LogsTableViewCell.identifier,
-                for: indexPath
-            ) as! LogsTableViewCell
-            cell.configure(with: todaysFoods[foodIndex])
-            return cell
-        }
 
-        func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-            if indexPath.row == 0 {
-                // Height for FoodSuggestionsTableViewCell
-                return 239
-            }
-            return 100
-        }
-
-        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            tableView.deselectRow(at: indexPath, animated: true)
-            
-            // Don't handle tap on suggestions cell
-            if indexPath.row == 0 {
-                return
-            }
-            
-            guard !todaysFoods.isEmpty else { return }
-            let foodIndex = indexPath.row - 1
-            FoodLogIngredientViewController.present(from: self, with: todaysFoods[foodIndex])
-        }
-
-        func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-            let header = tableView.dequeueReusableHeaderFooterView(
-                withIdentifier: NutritionHeader.identifier
-            ) as! NutritionHeader
-            header.configure()
-            header.delegate = self
-            self.headerView = header
-            return header
-        }
-
-        func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-            return 250
-        }
-
-        func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-            // Cannot edit the suggestions cell (row 0)
-            return indexPath.row != 0 && !todaysFoods.isEmpty
-        }
-
-        func tableView(
-            _ tableView: UITableView,
-            trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
-        ) -> UISwipeActionsConfiguration? {
-            // No swipe actions for suggestions cell
-            if indexPath.row == 0 {
-                return nil
-            }
-            
-            guard !todaysFoods.isEmpty else { return nil }
-
-            let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, done in
-                self?.deleteMeal(at: indexPath)
-                done(true)
-            }
-            deleteAction.backgroundColor = .systemRed
-            deleteAction.image = UIImage(systemName: "trash.fill")
-
-            let config = UISwipeActionsConfiguration(actions: [deleteAction])
-            config.performsFirstActionWithFullSwipe = false
-            return config
+        default:
+            fatalError("Unexpected section")
         }
     }
 
-    // MARK: - AddMealDelegate
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+        let width = collectionView.bounds.width - 32  // 16 left + 16 right
 
-    extension DietViewController: AddMealDelegate {
-        func didAddMeal(_ food: Food) {
-            FoodLogDataStore.addFoodBarCode(food)
-            let startOfToday = Calendar.current.startOfDay(for: Date())
-            let startOfTomorrow = Calendar.current.date(byAdding: .day, value: 1, to: startOfToday)!
-            if food.timeStamp >= startOfToday && food.timeStamp < startOfTomorrow {
-                headerView?.updateValues(food)
+        switch indexPath.section {
+        case 0:  return CGSize(width: width, height: 195)  // nutrition header
+        case 1:
+            return CGSize(width: width, height: 200)  // food suggestions
+
+        case 2:
+            if todaysFoods.isEmpty {
+                return CGSize(width: width, height: 112)  // NoFood quote cell
             }
-            filterTodaysFoods()
-            print("Added food: \(food.name)")
+            return CGSize(width: width, height: CGFloat(todaysFoods.count) * 100)
+
+        default: return CGSize(width: width, height: 0)
+        }
+    }
+    
+    // Return the header view
+    func collectionView(
+        _ collectionView: UICollectionView,
+        viewForSupplementaryElementOfKind kind: String,
+        at indexPath: IndexPath
+    ) -> UICollectionReusableView {
+        guard kind == UICollectionView.elementKindSectionHeader else {
+            return UICollectionReusableView()
+        }
+        let header = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: SectionHeaderView.identifier,
+            for: indexPath
+        ) as! SectionHeaderView
+
+        switch indexPath.section {
+        case 1:  header.configure(title: "Suggestions")
+        case 2:  header.configure(title: "Today's Meals")
+        default: break
+        }
+        return header
+    }
+
+    // Return header size (0 for section 0, 40pt for sections 1 and 2)
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        referenceSizeForHeaderInSection section: Int
+    ) -> CGSize {
+        switch section {
+        case 1, 2:  return CGSize(width: collectionView.bounds.width, height: 40)
+        default:    return .zero
         }
     }
 
-    // MARK: - AddDescribedMealDelegate
-
-    extension DietViewController: AddDescribedMealDelegate {
-        func didConfirmMeal(_ food: Food) {
-            print("🎉 didConfirmMeal called with: \(food.name)")
-            FoodLogDataStore.addFoodBarCode(food)
-            if presentedViewController != nil {
-                dismiss(animated: true) { [weak self] in
-                    self?.navigationController?.popToRootViewController(animated: true)
-                }
-            } else {
-                navigationController?.popToRootViewController(animated: true)
-            }
-            filterTodaysFoods()
-            let startOfToday = Calendar.current.startOfDay(for: Date())
-            let startOfTomorrow = Calendar.current.date(byAdding: .day, value: 1, to: startOfToday)!
-            if food.timeStamp >= startOfToday && food.timeStamp < startOfTomorrow {
-                headerView?.updateValues(food)
-            }
-            print("Meal added successfully")
+    // Per-section insets matching Today tab pattern
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        insetForSectionAt section: Int
+    ) -> UIEdgeInsets {
+        switch section {
+        case 0:
+            // No header — give a top gap of 12
+            return UIEdgeInsets(top: 12, left: 16, bottom: 4, right: 16)
+        default:
+            // Sections with headers: top 4 (gap between header & cell), bottom 16
+            return UIEdgeInsets(top: 4, left: 16, bottom: 16, right: 16)
         }
     }
 
-    // MARK: - NutritionHeaderDelegate
+}
 
-    extension DietViewController: NutritionHeaderDelegate {
-        func didTapProteinView() {
-            let storyboard = UIStoryboard(name: "Diet", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "ChartViewController") as? ChartViewController {
-                vc.macroType = .protein
-                navigationController?.pushViewController(vc, animated: true)
-            }
-        }
+// MARK: - MealLogsCellDelegate
 
-        func didTapCarbsView() {
-            let storyboard = UIStoryboard(name: "Diet", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "ChartViewController") as? ChartViewController {
-                vc.macroType = .carbs
-                navigationController?.pushViewController(vc, animated: true)
-            }
-        }
+extension DietViewController: MealLogsCellDelegate {
+    func didSelectMeal(_ food: Food) {
+        FoodLogIngredientViewController.present(from: self, with: food)
+    }
 
-        func didTapFatsView() {
-            let storyboard = UIStoryboard(name: "Diet", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "ChartViewController") as? ChartViewController {
-                vc.macroType = .fats
-                navigationController?.pushViewController(vc, animated: true)
-            }
+    func didRequestDeleteMeal(at index: Int) {
+        deleteMeal(at: index)
+    }
+}
+
+// MARK: - NutritionCellDelegate
+
+extension DietViewController: NutritionCellDelegate {
+    func didTapProteinView() {
+        let storyboard = UIStoryboard(name: "Diet", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ChartViewController")
+            as? ChartViewController {
+            vc.macroType = .protein
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
+
+    func didTapCarbsView() {
+        let storyboard = UIStoryboard(name: "Diet", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ChartViewController")
+            as? ChartViewController {
+            vc.macroType = .carbs
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    func didTapFatsView() {
+        let storyboard = UIStoryboard(name: "Diet", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ChartViewController")
+            as? ChartViewController {
+            vc.macroType = .fats
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+}
+
+// MARK: - AddMealDelegate
+
+extension DietViewController: AddMealDelegate {
+    func didAddMeal(_ food: Food) {
+        FoodLogDataStore.addFoodBarCode(food)
+        let startOfToday = Calendar.current.startOfDay(for: Date())
+        let startOfTomorrow = Calendar.current.date(byAdding: .day, value: 1, to: startOfToday)!
+        if food.timeStamp >= startOfToday && food.timeStamp < startOfTomorrow {
+            nutritionCell?.updateValues(food)
+        }
+        filterTodaysFoods()
+        print("Added food: \(food.name)")
+    }
+}
+
+// MARK: - AddDescribedMealDelegate
+
+extension DietViewController: AddDescribedMealDelegate {
+    func didConfirmMeal(_ food: Food) {
+        print("🎉 didConfirmMeal called with: \(food.name)")
+        FoodLogDataStore.addFoodBarCode(food)
+        if presentedViewController != nil {
+            dismiss(animated: true) { [weak self] in
+                self?.navigationController?.popToRootViewController(animated: true)
+            }
+        } else {
+            navigationController?.popToRootViewController(animated: true)
+        }
+        filterTodaysFoods()
+        let startOfToday = Calendar.current.startOfDay(for: Date())
+        let startOfTomorrow = Calendar.current.date(byAdding: .day, value: 1, to: startOfToday)!
+        if food.timeStamp >= startOfToday && food.timeStamp < startOfTomorrow {
+            nutritionCell?.updateValues(food)
+        }
+        print("Meal added successfully")
+    }
+}

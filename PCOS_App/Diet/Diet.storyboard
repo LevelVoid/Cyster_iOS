@@ -5,6 +5,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="collection view cell content view" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -16,11 +17,26 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="YNy-e6-oic">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Spd-4x-Qtp">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                                <color key="backgroundColor" red="0.98823529409999999" green="0.93333333330000001" blue="0.92941176469999998" alpha="1" colorSpace="calibratedRGB"/>
-                                <sections/>
-                            </tableView>
+                                <color key="backgroundColor" red="0.9882352941176471" green="0.93333333333333335" blue="0.92941176470588238" alpha="1" colorSpace="calibratedRGB"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="rlH-g7-sdj">
+                                    <size key="itemSize" width="128" height="128"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="WIV-ha-D5U">
+                                        <rect key="frame" x="0.0" y="0.0" width="127.99999999999997" height="128"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="cE6-5Q-hEw">
+                                            <rect key="frame" x="0.0" y="0.0" width="127.99999999999997" height="128"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </collectionViewCellContentView>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
                             <button opaque="NO" alpha="0.80000000000000004" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NAg-IL-1Sm">
                                 <rect key="frame" x="288" y="704" width="80" height="55"/>
                                 <constraints>
@@ -35,18 +51,18 @@
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" red="0.9882352941176471" green="0.93333333333333335" blue="0.92941176470588238" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="NAg-IL-1Sm" secondAttribute="bottom" constant="25" id="JZ0-6Z-1uc"/>
-                            <constraint firstAttribute="bottom" secondItem="YNy-e6-oic" secondAttribute="bottom" id="R3o-Lb-u70"/>
-                            <constraint firstItem="YNy-e6-oic" firstAttribute="top" secondItem="53V-fh-DWV" secondAttribute="top" id="iZx-V2-qdf"/>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="NAg-IL-1Sm" secondAttribute="trailing" constant="25" id="jmV-5o-fYY"/>
-                            <constraint firstItem="YNy-e6-oic" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="pty-cQ-Abe"/>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="YNy-e6-oic" secondAttribute="trailing" id="rSl-Wg-BRw"/>
+                            <constraint firstAttribute="bottom" secondItem="NAg-IL-1Sm" secondAttribute="bottom" constant="93" id="JZ0-6Z-1uc"/>
+                            <constraint firstItem="Spd-4x-Qtp" firstAttribute="leading" secondItem="53V-fh-DWV" secondAttribute="leading" id="URS-dk-INO"/>
+                            <constraint firstAttribute="trailing" secondItem="Spd-4x-Qtp" secondAttribute="trailing" id="YW1-9s-0J4"/>
+                            <constraint firstAttribute="bottom" secondItem="Spd-4x-Qtp" secondAttribute="bottom" id="hbz-hF-pmo"/>
+                            <constraint firstAttribute="trailing" secondItem="NAg-IL-1Sm" secondAttribute="trailing" constant="25" id="jmV-5o-fYY"/>
+                            <constraint firstItem="Spd-4x-Qtp" firstAttribute="top" secondItem="53V-fh-DWV" secondAttribute="top" id="sBc-f9-jzJ"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="mqP-4F-yMP"/>
                     <connections>
                         <outlet property="AddMealButton" destination="NAg-IL-1Sm" id="S4Y-Q3-J2u"/>
-                        <outlet property="tableView" destination="YNy-e6-oic" id="0QQ-1L-zgk"/>
+                        <outlet property="collectionView" destination="Spd-4x-Qtp" id="48O-N5-kha"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="35h-3y-IKN" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
