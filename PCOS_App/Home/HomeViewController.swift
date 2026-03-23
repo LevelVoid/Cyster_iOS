@@ -8,6 +8,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     private var recommendationCards: [Recommendation] = recommendations
     private var allSymptoms: [SymptomItem] = []
     private var aboutPCOSArticles: [AboutPCOSSection] = []
+    private var chatbotButton: UIButton!
     /// Cached sleep data fetched from HealthKit — nil until first fetch or if not available
     private var sleepData: SleepData? = nil
     // MARK: - Sleep state
@@ -70,6 +71,45 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         buildDisplaySignals()
         loadTodaySleepLog()
         aboutPCOSArticles = AboutPCOSDataStore.shared.fetchSections()
+        setupChatbotButton()
+    }
+    
+    private func setupChatbotButton() {
+        // Create button
+        chatbotButton = UIButton(type: .system)
+        chatbotButton.translatesAutoresizingMaskIntoConstraints = false
+
+        // Style
+        let config = UIImage.SymbolConfiguration(pointSize: 22, weight: .medium)
+        let icon = UIImage(systemName: "message.fill", withConfiguration: config)
+        chatbotButton.setImage(icon, for: .normal)
+        chatbotButton.tintColor = .white
+        chatbotButton.backgroundColor = UIColor(hex: "#FE7A96") // deep pink
+        chatbotButton.layer.cornerRadius = 28
+        chatbotButton.layer.shadowColor = UIColor.black.cgColor
+        chatbotButton.layer.shadowOpacity = 0.25
+        chatbotButton.layer.shadowOffset = CGSize(width: 0, height: 4)
+        chatbotButton.layer.shadowRadius = 6
+        chatbotButton.addTarget(self, action: #selector(ChatbotButtonTapped(_:)), for: .touchUpInside)
+
+        view.addSubview(chatbotButton)
+
+        // Pin to bottom-right, just above the tab bar
+        let tabBarHeight: CGFloat = tabBarController?.tabBar.frame.height ?? 83
+        NSLayoutConstraint.activate([
+            chatbotButton.widthAnchor.constraint(equalToConstant: 56),
+            chatbotButton.heightAnchor.constraint(equalToConstant: 56),
+            chatbotButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            chatbotButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -(tabBarHeight + 16))
+        ])
+    }
+
+    @objc private func ChatbotButtonTapped(_ sender: UIButton) {
+        let homeStoryboard = UIStoryboard(name: "Home", bundle: nil)
+        guard let chatbotVC = homeStoryboard.instantiateViewController(
+            withIdentifier: "ChatbotViewController"
+        ) as? ChatbotViewController else { return }
+        navigationController?.pushViewController(chatbotVC, animated: true)
     }
     
     override func viewWillAppear(_ animated: Bool) {

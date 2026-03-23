@@ -1,0 +1,1957 @@
+[
+  {
+    "id": "szczuko_2021_low_gi_diet_core",
+    "topic": "low glycemic index diet PCOS insulin resistance testosterone fasting insulin HOMA-IR",
+    "source": "Szczuko et al., Nutrients 2021 (PMC8308732)",
+    "content": "Low-GI diets in PCOS significantly decreased fasting insulin, HOMA-IR, total and LDL cholesterol, triglycerides, waist circumference, and total testosterone compared to high-GI diets. They did not negatively affect fasting glucose or HDL cholesterol. Adding omega-3 alongside a low-GI diet further increased SHBG and reduced body fat. A meta-analysis confirmed LGI diet is an effective, acceptable, and safe intervention for relieving insulin resistance in PCOS.",
+    "action": "When the user's food log contains high-GI or insulin-spiking tags, recommend switching to low-GI alternatives. Suggest: bajra roti over maida, brown rice over white, oats over cornflakes, rajma over potato. If omega-3 intake appears low across 7-day logs, mention flaxseed or walnuts as an add-on.",
+    "triggers": [
+      "highGlycemic",
+      "insulinSpiking",
+      "highInsulinLoad",
+      "highCarb"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "szczuko_2021_saturated_fat_inflammation",
+    "topic": "saturated fat inflammation TNF-alpha oxidative stress PCOS hyperandrogenism processed food",
+    "source": "Szczuko et al., Nutrients 2021 (PMC8308732)",
+    "content": "Saturated fat ingestion in PCOS stimulates increases in circulating TNF-alpha and causes oxidative stress independent of obesity. This oxidative stress is directly linked to insulin resistance and hyperandrogenism. Eliminating saturated fatty acids from the diet is considered imperative for PCOS management. A diet rich in simple sugars and saturated fatty acids enhances ROS production through multiple mechanisms including gut microbiota disruption.",
+    "action": "When processed, ultra-processed, or unhealthy fat tags appear in food logs, flag this clearly. Recommend replacing saturated fat sources (fried snacks, full-fat dairy, red meat) with unsaturated sources: walnuts, flaxseed, groundnuts, sunflower seeds. Keep the recommendation specific to what the user actually logged.",
+    "triggers": [
+      "unhealthyFats",
+      "proInflammatory",
+      "ultraProcessed",
+      "processed"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "szczuko_2021_dietary_fiber_microbiome_scfa",
+    "topic": "dietary fibre gut microbiome SCFA short chain fatty acids insulin PCOS dysbiosis probiotic",
+    "source": "Szczuko et al., Nutrients 2021 (PMC8308732)",
+    "content": "Fermentable dietary fibre produces short-chain fatty acids (SCFAs) including acetate and butyrate through gut fermentation. SCFAs influence glycemia through GLP-1 and PYY — intestinal hormones that regulate insulin secretion and satiety. Bifidobacteria growth correlates with improved insulin sensitivity and reduced inflammation. Low dietary fibre is directly linked to gut dysbiosis which worsens PCOS metabolic outcomes. The role of dietary fiber was demonstrated to modulate gut microbiota dysbiosis in patients with type 2 diabetes.",
+    "action": "When the user's food logs show consistently low fibre intake or gut symptoms (bloating, constipation, gas), recommend fermentable fibre sources: isabgol, oats, flaxseed, rajma, moong dal. Also recommend probiotic foods — homemade dahi, kanji — to support Bifidobacteria. Do not recommend raw cruciferous vegetables if bloating is currently logged.",
+    "triggers": [
+      "lowFibre",
+      "constipated",
+      "bloating",
+      "gasForming",
+      "gutFriendly"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "szczuko_2021_high_fructose_endocrine",
+    "topic": "fructose sugar PCOS endocrine androgen hormonal worsening sweet drinks",
+    "source": "Szczuko et al., Nutrients 2021 (PMC8308732)",
+    "content": "High fructose consumption synergistically worsens endocrine changes in PCOS — specifically worsening androgenic and hormonal imbalances — even without worsening metabolic markers. This makes sugary foods particularly harmful for symptoms like hirsutism, acne, and irregular cycles.",
+    "action": "When the user logs sugary foods or foods tagged artificial sweetener or sugary, flag the specific androgenic risk beyond just calories. Recommend: replace fruit juice with whole fruit, avoid packaged sweets and cold drinks, choose jaggery over refined sugar only in very small quantities. Especially important for users with acne or hirsutism symptoms logged.",
+    "triggers": [
+      "sugary",
+      "artificialSweetener",
+      "highGlycemic",
+      "acne",
+      "hirsutism"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "szczuko_2021_exercise_insulin_resistance",
+    "topic": "exercise vigorous aerobic resistance training insulin resistance PCOS HOMA-IR cardiorespiratory",
+    "source": "Szczuko et al., Nutrients 2021 (PMC8308732)",
+    "content": "A meta-analysis found health improvements in PCOS are more dependent on exercise intensity than volume. Vigorous intensity exercise had the greatest impact on cardiorespiratory fitness, insulin resistance, and body composition. HOMA-IR showed significant decrease with moderate and high certainty. Minimum aerobic activity per week should be 120 minutes. Vigorous aerobic exercise and resistance training are specifically warranted for improving insulin sensitivity and androgen levels.",
+    "action": "When workout logs show no strength training in 4+ days, recommend adding resistance exercises — bodyweight squats, resistance band work, or dumbbell exercises from the app's library. When total weekly workout duration is below 120 minutes, note this gap specifically. For Type A users, prioritise suggesting HIIT or strength sessions over yoga-only routines.",
+    "triggers": [
+      "strength",
+      "cardio",
+      "sedentary"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "follicular",
+      "ovulation"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "szczuko_2021_sleep_insulin_mental_health",
+    "topic": "sleep deprivation insulin resistance obesity anxiety depression PCOS cortisol mental health",
+    "source": "Szczuko et al., Nutrients 2021 (PMC8308732)",
+    "content": "Mental health disorders including anxiety and depression are significantly more prevalent in PCOS and are strongly associated with sleep disorders. Sleep deprivation is directly linked to increased insulin resistance, obesity risk, and type 2 diabetes risk. Sleep fragmentation causes white adipose tissue inflammation and worsens insulin resistance through gut microbiome disruption. Sleep disorders should be treated as an integral part of PCOS management, not a secondary concern.",
+    "action": "When sleep logs show duration below target or disturbed/light quality rating on 2+ consecutive nights, make sleep the primary goal recommendation for that day — ahead of exercise or diet suggestions. Recommend: consistent bedtime, avoiding caffeine after 2pm, no screen time 30 minutes before bed. If fatigue is also logged alongside poor sleep, combine both in the recommendation.",
+    "triggers": [
+      "fatigue",
+      "anxiety",
+      "depressed",
+      "moodSwings"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "szczuko_2021_melatonin_follicular_sleep",
+    "topic": "melatonin sleep PCOS follicular fluid ovarian antioxidant circadian rhythm egg quality",
+    "source": "Szczuko et al., Nutrients 2021 (PMC8308732)",
+    "content": "Melatonin levels in follicular fluid are reduced in PCOS patients. Melatonin receptors in the ovary adjust sex steroid secretion during follicular maturation. Melatonin is a strong antioxidant that protects ovarian follicles during maturation. Disrupted circadian rhythm from poor sleep reduces melatonin and directly impairs ovarian function.",
+    "action": "When sleep is consistently poor and the user is in the follicular or ovulation phase, mention that poor sleep affects melatonin — the hormone that protects the developing egg. Recommend sleep-supporting foods in the evening: warm turmeric milk (haldi doodh), cherries, walnuts. Keep this recommendation phase-specific.",
+    "triggers": [
+      "disturbed",
+      "light",
+      "fatigue"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "follicular",
+      "ovulation"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "szczuko_2021_myo_inositol_insulin_ovulation",
+    "topic": "myo-inositol inositol insulin sensitivity ovulation FSH androgen PCOS food sources",
+    "source": "Szczuko et al., Nutrients 2021 (PMC8308732)",
+    "content": "Myo-inositol is as effective as metformin in improving clinical and metabolic profiles in PCOS without side effects. It increases insulin sensitivity, normalises androgens, improves glycemia, and restores ovulation. PCOS involves increased conversion of myo-inositol to D-chiro-inositol in the ovary driven by insulin — depleting myo-inositol and disturbing FSH signalling and oocyte quality. Food sources of inositol include citrus fruits, legumes, and whole grains.",
+    "action": "When the user has Type A or B phenotype and consistently logs low inositol-source foods, recommend: rajma, chickpeas, moong dal, oranges, kiwi, brown rice. Frame this as 'these foods contain inositol — the same compound that helps normalise insulin and androgens in PCOS.' Do not recommend as a supplement — keep it food-based.",
+    "triggers": [
+      "insulinSpiking",
+      "insulinBalancing",
+      "pcosFriendly"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "szczuko_2021_zinc_deficiency_pcos",
+    "topic": "zinc deficiency PCOS insulin glucose tolerance lipid inflammation androgen acne hair loss",
+    "source": "Szczuko et al., Nutrients 2021 (PMC8308732)",
+    "content": "Serum zinc levels are significantly lower in PCOS patients compared to healthy controls. Zinc deficiency in obese PCOS is associated with hyperinsulinemia, low-grade inflammation, and worsened lipid profile. Zinc plays an insulin-mimetic role in adipocytes — stimulating glucose transport through GLUT4. Lower zinc is specifically associated with impaired glucose tolerance in PCOS. Zinc also plays a role in fertility through intracellular signalling.",
+    "action": "Recommend zinc-rich Indian foods regularly for Type A and B users: pumpkin seeds (kaddu ke beej), til (sesame), chana, rajma, dahi. If acne or hirsutism symptoms are logged, specifically mention zinc's role in reducing DHT — the androgen responsible for these symptoms. A small handful of pumpkin seeds daily is an easy habit to suggest.",
+    "triggers": [
+      "acne",
+      "hirsutism",
+      "highInsulinLoad",
+      "insulinSpiking"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "szczuko_2021_vitamin_d_insulin_menstrual",
+    "topic": "vitamin D insulin sensitivity menstrual frequency androgen PCOS sunlight deficiency",
+    "source": "Szczuko et al., Nutrients 2021 (PMC8308732)",
+    "content": "Vitamin D increases insulin synthesis and release, increases insulin receptor expression, and improves insulin response to glucose transport. It reduces pro-inflammatory cytokine synthesis, contributing to reduced insulin resistance. Women with PCOS on vitamin D showed improved menstrual frequency and decreased fasting glucose and triglycerides. Combined magnesium, zinc, calcium, and vitamin D reduced hirsutism and total testosterone significantly.",
+    "action": "When hirsutism, irregular cycle tracking, or fatigue are logged, recommend vitamin D food sources: egg yolk, mushrooms (especially sun-dried), fortified milk. Mention that outdoor morning sunlight for 20 minutes is the most effective source. Do not recommend supplements — keep this food and lifestyle-based.",
+    "triggers": [
+      "hirsutism",
+      "fatigue",
+      "acne",
+      "moodSwings"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "szczuko_2021_omega3_reproductive_inflammation",
+    "topic": "omega-3 PUFA reproductive performance ovarian steroidogenesis inflammation PCOS flaxseed walnut",
+    "source": "Szczuko et al., Nutrients 2021 (PMC8308732)",
+    "content": "Polyunsaturated fatty acids (PUFAs), especially alpha-linolenic acid from flaxseed, enhance reproductive performance in PCOS by increasing steroidogenesis enzyme expression related to hormone secretion and ovarian function. Flaxseed oil acts through the sex steroid hormone-microbiota-inflammation axis. Omega-3 combined with vitamin D reduces inflammation markers and total testosterone and has beneficial effects on mental health.",
+    "action": "Recommend 1 tablespoon ground flaxseed daily as the easiest omega-3 intervention — add to dahi, roti dough, or dal. For users logging mood swings, anxiety, or depression alongside PCOS symptoms, specifically mention the mental health benefit of omega-3. Also recommend walnuts (5-6 daily) as a whole-food omega-3 source.",
+    "triggers": [
+      "proInflammatory",
+      "moodSwings",
+      "anxiety",
+      "depressed",
+      "hirsutism"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "luteal",
+      "menstrual"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "szczuko_2021_spearmint_antiandrogenic",
+    "topic": "spearmint pudina mint anti-androgen testosterone hirsutism PCOS herbal tea",
+    "source": "Szczuko et al., Nutrients 2021 (PMC8308732)",
+    "content": "Spearmint (Mentha spicata) has significant anti-androgenic effects in PCOS. A randomised controlled trial showed twice-daily spearmint herbal tea significantly reduced free testosterone within 30 days. It also restores follicular development in ovarian tissue. Specifically indicated for women with biochemical evidence of elevated androgens.",
+    "action": "When hirsutism or acne symptoms are logged, recommend pudina (spearmint) chai twice daily — morning and afternoon. Frame it practically: 'Brew 5-6 fresh pudina leaves in hot water for 5 minutes. Drink without milk or sugar.' This is direct, evidence-backed action for androgenic symptoms that fits naturally into Indian daily habits.",
+    "triggers": [
+      "hirsutism",
+      "acne",
+      "androgenBoosting"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "szczuko_2021_turmeric_curcumin_inflammation",
+    "topic": "turmeric curcumin anti-inflammatory oxidative stress PCOS NF-kB blood glucose androgen",
+    "source": "Szczuko et al., Nutrients 2021 (PMC8308732)",
+    "content": "Curcumin (active compound in turmeric) is an efficient reducer of oxidative stress complications in PCOS. It attenuates pro-angiogenic and pro-inflammatory factors through the NF-kB signalling pathway. Curcumin supplementation improved blood glucose, reduced insulin resistance, and reduced androgens in a randomised double-blind placebo-controlled trial. Bioavailability increases significantly when combined with black pepper (piperine).",
+    "action": "Recommend adding haldi (turmeric) with a pinch of kali mirch (black pepper) to at least one meal daily — in dal, khichdi, or warm milk. Frame this specifically: 'Adding black pepper activates the curcumin in haldi — your body absorbs up to 20x more.' When cramps, bloating, or fatigue are logged alongside inflammatory food tags, prioritise this recommendation.",
+    "triggers": [
+      "proInflammatory",
+      "cramps",
+      "bloating",
+      "fatigue",
+      "antiInflammatory"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "menstrual",
+      "luteal"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "szczuko_2021_flaxseed_lignans_estrogen",
+    "topic": "flaxseed lignans estrogen aromatase SHBG androgen sex hormone PCOS alsi DHT",
+    "source": "Szczuko et al., Nutrients 2021 (PMC8308732)",
+    "content": "Flaxseed lignans alter the activity of key enzymes involved in estrogen synthesis including aromatase to modulate circulating sex hormone levels. Lignan-rich flaxseed decreases DHT by increasing SHBG — the protein that binds free testosterone and makes it inactive. This directly reduces androgenic symptoms like acne and hirsutism.",
+    "action": "When acne or hirsutism are logged, recommend ground flaxseed (alsi) specifically for its androgen-lowering effect through SHBG increase. Suggest 1 tablespoon ground flaxseed in morning dahi or lassi. Emphasise ground over whole — whole seeds pass undigested. Keep seeds refrigerated after grinding.",
+    "triggers": [
+      "hirsutism",
+      "acne",
+      "androgenBoosting",
+      "androgenLowering"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "szczuko_2021_calorie_reduction_gi_priority",
+    "topic": "calorie reduction low GI diet PCOS weight loss ovulation testosterone SHBG combination",
+    "source": "Szczuko et al., Nutrients 2021 (PMC8308732)",
+    "content": "Caloric reduction combined with low-GI diet is the most evidence-backed dietary intervention for PCOS. Even 5-10% body weight reduction in overweight PCOS restores ovulation and reduces androgens. Strict caloric restriction alone without GI reduction does not produce expected long-term effects. The combination of caloric reduction, low-GI eating, and omega-3 increased SHBG and reduced body fat simultaneously.",
+    "action": "When the user consistently logs calorie intake above their daily target AND high-GI foods in the same window, address both together in one recommendation. Suggest: 'Reducing your overall intake AND choosing lower-GI foods works better than either alone for PCOS.' Avoid framing this as 'eat less' — frame it as 'choose foods that do more work per calorie for your hormones.'",
+    "triggers": [
+      "highGlycemic",
+      "insulinSpiking",
+      "highCarb"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "jain_2025_low_gi_food_table_indian",
+    "topic": "low glycemic index food list Indian vegetables fruits dairy legumes carbohydrates",
+    "source": "Jain et al., Biomedical Pharmacology Journal 2025",
+    "content": "Low-GI Indian foods by category: Vegetables — asparagus, broccoli, cucumber, cabbage, eggplant (baingan), green beans, tomatoes, raw carrots (low-moderate). Fruits — apples, dried apricots, cherries, guava, kiwi, oranges, pomegranate, strawberries. Dairy — buttermilk (chaas), curd (dahi), skim milk, whole milk, paneer, yogurt. Legumes — chickpea (chana), red and green lentils (masoor, moong), kidney beans (rajma). Grains — barley (jau), quinoa, popcorn, sweet corn, rice bran. Moderate GI: basmati rice, brown rice, banana, mango, raisins, instant oats, sweet potato. High GI: white rice, white bread, maida, potato, watermelon, dates.",
+    "action": "When the user asks what to eat or logs high-GI foods, use this list to make specific Indian food swaps. Replace white rice with barley or bajra. Replace potato with sweet corn or sweet potato. Replace sugary snacks with guava, pomegranate, or amla. Always give an Indian food name with the Hindi name in brackets for clarity.",
+    "triggers": [
+      "highGlycemic",
+      "insulinSpiking",
+      "lowGlycemic",
+      "mediumGlycemic"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "jain_2025_vitamin_d_deficiency_pcos",
+    "topic": "vitamin D deficiency PCOS 67 85 percent ovarian reserve AMH insulin resistance immune",
+    "source": "Jain et al., Biomedical Pharmacology Journal 2025",
+    "content": "Vitamin D deficiency has been reported in about 67-85% of individuals with PCOS. Higher serum 25(OH)D concentrations are associated with improved markers of ovarian reserve, including higher levels of anti-Mullerian hormone (AMH), suggesting that sufficient vitamin D could support ovarian function and protect against premature ovarian depletion. Vitamin D deficiency can trigger inflammatory reactions that result in insulin resistance through its immunomodulatory function. Vitamin D deficiency is also correlated with elevated androgen levels including testosterone and DHEA-S, contributing to hirsutism.",
+    "action": "Given 67-85% of PCOS women are deficient, mention vitamin D proactively — especially when hirsutism, fatigue, or irregular cycles are logged. Recommend: egg yolk, sun-dried mushrooms (rakhne se khidki pe), fortified milk. 20 minutes of morning sunlight on arms and legs before 10am is the most effective source. This applies to all phenotypes, not just Type A.",
+    "triggers": [
+      "hirsutism",
+      "fatigue",
+      "hairLoss",
+      "acne"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "jain_2025_calcium_vitamin_d_androgen_insulin",
+    "topic": "calcium vitamin D insulin secretion beta cell androgen oocyte maturation PCOS",
+    "source": "Jain et al., Biomedical Pharmacology Journal 2025",
+    "content": "1,25-Dihydroxyvitamin D enhances insulin secretion by increasing intracellular calcium levels in pancreatic beta-cells. Calcium and vitamin D metabolism directly influences androgen production and oocyte maturation. A positive association between serum calcium levels and insulin sensitivity was found. Combined vitamin D-K-calcium supplementation for 8 weeks improved free testosterone, MDA levels, and total antioxidant capacity in vitamin D-deficient women with PCOS.",
+    "action": "Recommend calcium-rich Indian foods alongside vitamin D sources — they work together. Good combinations: ragi (highest calcium grain) with a glass of milk, palak with dahi, til ladoo. Frame this as a duo: 'Calcium and Vitamin D work as a team for insulin and hormone balance in PCOS.'",
+    "triggers": [
+      "insulinSpiking",
+      "fatigue",
+      "hirsutism"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 3
+  },
+  {
+    "id": "jain_2025_prebiotics_gut_microbiome_pcos",
+    "topic": "prebiotics gut microbiome PCOS hyperandrogenism inflammation intestinal permeability dysbiosis",
+    "source": "Jain et al., Biomedical Pharmacology Journal 2025",
+    "content": "Women with PCOS have less diverse gut microbiota and higher intestinal permeability than women without PCOS. Hyperandrogenism and elevated systemic inflammation are associated with this decrease in gut bacteria diversity. Gut microbiota dysbiosis activates the immune system, disrupting insulin receptor function, leading to hyperinsulinemia which impacts ovarian androgen production and impedes follicle development. Probiotics, prebiotics, and synbiotics represent novel PCOS therapeutic alternatives.",
+    "action": "When the user logs gut symptoms (bloating, constipation, gas, diarrhea) repeatedly across the week, recommend a gut-restoration approach: homemade dahi daily, add sabja seeds (soaked) to water, include 1 portion of fermented food like kanji or idli. Avoid antibiotics-adjacent dietary choices. Frame as: 'A healthier gut means lower androgen production in PCOS.'",
+    "triggers": [
+      "bloating",
+      "constipated",
+      "diarrhea",
+      "gas",
+      "gutFriendly"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "jain_2025_omega3_fertility_insulin",
+    "topic": "omega-3 fatty acids PCOS fertility conception insulin resistance dyslipidaemia vascular",
+    "source": "Jain et al., Biomedical Pharmacology Journal 2025",
+    "content": "Consuming appropriate quantities of dietary polyunsaturated fatty acids (PUFAs) benefits individuals with PCOS who have insulin resistance, lowered vascular endothelial function, and dyslipidaemia. Research from the American Society of Reproductive Medicine revealed omega-3s are advantageous for enhancing fertility and conception chances in women with PCOS. Six months of omega-3 consumption considerably dropped insulin levels in PCOS. Consuming unsaturated fats lowers chronic disease risk; saturated and trans-fatty acids impair insulin sensitivity.",
+    "action": "When fertility concern is mentioned in chat or when omega-3 intake looks low from food logs, recommend: 1 tbsp ground alsi (flaxseed) in morning dahi, 5-6 akhrot (walnuts) as snack, chia seeds in water. Frame: 'Omega-3 from plant sources like alsi has been shown to improve PCOS fertility outcomes.' Avoid recommending fish to vegetarian users.",
+    "triggers": [
+      "proInflammatory",
+      "healthyFats",
+      "insulinSpiking"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "follicular",
+      "ovulation"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "johnson_2025_intrinsic_ir_lean_pcos",
+    "topic": "insulin resistance lean PCOS intrinsic IR not overweight obesity independent BMI",
+    "source": "Johnson et al., Current Nutrition Reports 2025",
+    "content": "A meta-analysis including 1193 participants found that 75% of lean women and 95% of obese women with PCOS have insulin resistance. Women with PCOS are 27% less insulin sensitive than controls, independent of BMI, age, diagnostic criteria and ethnicity — this is intrinsic IR. BMI independently exacerbates IR by 15% in PCOS on top of the intrinsic component. This means dietary interventions for insulin management should target ALL women with PCOS, not just those who are overweight.",
+    "action": "Never frame low-GI or insulin-management recommendations as 'weight loss' advice. Frame them as hormone management for any user regardless of BMI. When a user's profile shows normal BMI, still recommend low-GI eating. Say: 'Even at a healthy weight, most women with PCOS have some level of insulin resistance — low-GI eating supports your hormones directly, not just your weight.'",
+    "triggers": [
+      "insulinSpiking",
+      "highGlycemic",
+      "insulinBalancing",
+      "lowGlycemic"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "johnson_2025_dash_mediterranean_diet_pcos",
+    "topic": "DASH diet Mediterranean diet PCOS insulin sensitivity HOMA-IR whole grains legumes",
+    "source": "Johnson et al., Current Nutrition Reports 2025",
+    "content": "The DASH diet (50-55% of total daily energy from whole grain carbohydrates, high fruit, vegetables, nuts, legumes, low sodium and saturated fat) was effective for improving insulin sensitivity measured using HOMA-IR scores, especially compared to lower carbohydrate diets (30-40% total daily intake). The Mediterranean diet, similar to DASH but with fewer absolute restrictions, was strongly associated with reduced IR and better glycaemic control. Lower intake of fibre, fruit, vegetables and monounsaturated fat contributed to more severe IR and hyperandrogenism. Diet was found more effective than exercise AND metformin for improving metabolic and reproductive parameters in a meta-analysis of 1193 participants.",
+    "action": "When building a daily goals card or meal suggestion, frame towards DASH/Mediterranean principles in an Indian context: whole grains (bajra, jowar, ragi) over refined grains, 3-5 portions of vegetables daily, legumes at least once daily, nuts/seeds as snack. Avoid recommending very low-carb approaches for lean users — moderate whole-grain carbohydrates are supported by evidence for all PCOS types.",
+    "triggers": [
+      "highCarb",
+      "lowFibre",
+      "highGlycemic"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "johnson_2025_fibre_gi_menstrual_regularity",
+    "topic": "fibre glycemic index GI menstrual regularity ovulation insulin PCOS satiation weight",
+    "source": "Johnson et al., Current Nutrition Reports 2025",
+    "content": "High fibre intake helps reduce GI and glycaemic load of food, leading to reduced blood sugar spikes and therefore less circulating insulin and subsequent IR. Soluble fibre is most effective in controlling glycaemic responses and IR. A trial found that women assigned to a low-GI diet lost more weight and gained menstrual cycle regularity compared to conventional healthy diet. The low-GI diet provided a threefold greater improvement in whole-body insulin sensitivity. 95% of women in the low-GI group reported menstrual cycle regularity and ovulation versus 63% in the conventional group. Increased fibre intake was a strong predictor of decreased BMI in overweight women with PCOS.",
+    "action": "When the user has logged irregular cycles in recent symptoms or has low fibre intake across the week, directly link fibre to cycle regularity. Say: 'Research shows women eating more fibre had nearly 3x better insulin sensitivity — and 95% restored regular cycles. Adding isabgol to water, rajma to lunch, or oats to breakfast are easy starts.' Aim to recommend 25-30g fibre daily across meals.",
+    "triggers": [
+      "lowFibre",
+      "highGlycemic",
+      "bloating",
+      "constipated"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "johnson_2025_inositol_mi_dci_ratio",
+    "topic": "myo-inositol DCI d-chiro-inositol 40:1 ratio ovulation fertility PCOS metformin",
+    "source": "Johnson et al., Current Nutrition Reports 2025",
+    "content": "Myo-inositol (MI) and d-chiro-inositol (DCI) are two stereoisomers with key therapeutic roles in PCOS. Inositol supplementation has been found to reduce ovulatory dysfunction, IR, hyperinsulinemia and hyperandrogenism with fewer side effects than metformin. One study found MI plus 400mcg folic acid restored spontaneous ovulation in 65% of patients over 6 months versus 50% with metformin. A meta-analysis of 601 women found inositol treatment significantly increased ovulation rate and menstrual cycle frequency sixfold. A ratio of 40:1 MI:DCI improves ovarian function and hormonal and metabolic state more efficiently than either alone. MI mechanisms improve ovulatory function while DCI mechanisms improve glycaemic parameters.",
+    "action": "Recommend inositol food sources (not supplements) when the user asks about fertility or has logged cycle irregularity: citrus fruits (oranges, mosambi), rajma, chickpeas, moong, brown rice. Frame: 'These foods are rich in myo-inositol — the same compound that research shows can restore ovulation in PCOS, as effectively as metformin in some studies.' If user asks about inositol supplements specifically, tell them to discuss with their doctor.",
+    "triggers": [
+      "insulinSpiking",
+      "pcosFriendly",
+      "insulinBalancing"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "follicular",
+      "ovulation"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "johnson_2025_keto_vlcd_overweight_only",
+    "topic": "ketogenic diet VLCD very low carb weight loss PCOS overweight obese short term",
+    "source": "Johnson et al., Current Nutrition Reports 2025",
+    "content": "Very low carbohydrate diets (VLCD) and keto diets (KD) have clinical relevance for women with overweight or obesity and PCOS due to their ability to induce short-term weight loss and improve body composition. A 12-week keto trial in overweight PCOS women showed significant BMI, body fat, and visceral fat reduction plus reduction in free testosterone and DHEAS. However, the practicality, satiety, enjoyment and social aspect of the KD must be considered. KDs are not recommended for long-term use. For lean women with PCOS, Mediterranean-style dietary patterns with high fibre and low-GI carbs are more appropriate than keto.",
+    "action": "Do NOT recommend ketogenic or very low carb diets for lean users (BMI < 25). For overweight/obese users asking about keto, acknowledge the short-term evidence but note: 'Keto can help with short-term weight loss in PCOS, but it's hard to maintain and not recommended long-term. A high-fibre, low-GI approach gives similar hormone benefits and is much more sustainable — especially with Indian eating patterns.' Focus on whole grain + legume-based eating instead.",
+    "triggers": [
+      "highCarb",
+      "highCalorie"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 3
+  },
+  {
+    "id": "johnson_2025_gut_microbiome_androgen_butyrate",
+    "topic": "gut microbiome PCOS androgen testosterone lactobacillus bifidobacterium butyrate SCFA",
+    "source": "Johnson et al., Current Nutrition Reports 2025",
+    "content": "The concept of 'microgenderome' describes the bidirectional interaction between intestinal microbiota and sex hormones. Gut microbiota of individuals with PCOS is associated with insulin resistance, hyperandrogenism, chronic inflammation, and metabolic syndrome. Women with obesity and PCOS have elevated enterobacteria and decreased lactobacilli and bifidobacteria. Butyrate (a SCFA) modulates progesterone and estradiol production in granulosa cells. Faecal microbiota transplantation with Lactobacillus in PCOS rats decreased serum testosterone, improved estrous cycles, and normalised ovarian function.",
+    "action": "When acne, hirsutism, or androgen-related symptoms appear alongside gut symptoms, connect the gut-hormone link explicitly: 'Your gut bacteria directly affect your androgen levels in PCOS. Feeding good bacteria with fibre and fermented foods can help reduce symptoms like acne and excess hair growth.' Recommend: dahi with flaxseed, fermented foods, and fibre-rich pulses daily.",
+    "triggers": [
+      "acne",
+      "hirsutism",
+      "bloating",
+      "constipated",
+      "gutFriendly"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "gautam_2025_anti_inflammatory_diet_pcos",
+    "topic": "anti-inflammatory diet PCOS TNF-alpha IL-6 CRP cytokines fruits vegetables whole grains",
+    "source": "Gautam et al., Nutrients 2025 (ICMR/AIIMS)",
+    "content": "Systemic inflammation plays a role in PCOS etiology. Adipocytes in obese individuals release pro-inflammatory cytokines that activate macrophages, leading to chronic low-grade inflammation. Anti-inflammatory diets rich in fruits, vegetables, whole grains, and omega-3 fatty acids can mitigate inflammation. An anti-inflammatory diet improved total antioxidant capacity, IL-1, IL-6, TNF-alpha, and androstenedione levels in PCOS. Green cardamom supplementation significantly declined TNF-alpha, IL-6, and CRP serum levels.",
+    "action": "When inflammatory impact tags appear repeatedly in food logs (proInflammatory, processed, ultraProcessed), recommend a daily anti-inflammatory habit: 1 tsp haldi in food or warm water, 1 tbsp ground alsi, 5 akhrot, and at least 2 portions of colourful vegetables. Mention that reducing inflammation directly lowers androgen production in PCOS.",
+    "triggers": [
+      "proInflammatory",
+      "ultraProcessed",
+      "processed",
+      "acne"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "gautam_2025_antioxidant_diet_oxidative_stress",
+    "topic": "antioxidant diet PCOS oxidative stress vitamin D vitamin C vitamin E MDA selenium",
+    "source": "Gautam et al., Nutrients 2025 (ICMR/AIIMS)",
+    "content": "Oxidative stress plays a vital role in PCOS pathogenesis, leading to insulin resistance, androgen excess, and chronic inflammation. Women with PCOS have an imbalance in total serum antioxidant content. A diet high in antioxidant capacity (alpha-tocopherol, vitamin C, vitamin D, polyphenols, beta-carotene) decreases the odds of PCOS. Vitamin D supplementation for 4 weeks in vitamin D-deficient PCOS women showed beneficial effects on glucose homeostasis, hs-CRP, and MDA levels. Combined omega-3 and vitamin D for 12 weeks showed beneficial effects on total testosterone and plasma antioxidant capacity.",
+    "action": "Recommend antioxidant-rich Indian foods proactively when inflammatory or processed food tags are frequent: amla (highest natural vitamin C), tomatoes, haldi, green leafy vegetables, til. For users with acne or skin darkening symptoms, frame antioxidants specifically: 'These foods protect your cells from the oxidative stress that PCOS causes — which worsens acne and insulin resistance.'",
+    "triggers": [
+      "proInflammatory",
+      "acne",
+      "skinDarkening",
+      "fatigue"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "gautam_2025_high_fibre_protein_insulin_androgen",
+    "topic": "high fibre high protein diet insulin sensitivity androgen blood glucose slow absorption PCOS",
+    "source": "Gautam et al., Nutrients 2025 (ICMR/AIIMS)",
+    "content": "High-fibre, high-protein foods (preferably lean protein sources) slow absorption of sugar into the bloodstream, preventing blood glucose spikes and insulin level rises. Improved insulin sensitivity helps reduce androgen levels and improves menstrual irregularities. High-fibre foods include: vegetables (broccoli, spinach, carrots, palak, gajar), fruits (apples, berries, pears, oranges), whole grains (brown rice, quinoa, whole oats, jau), legumes (lentils, chickpeas, black beans, moong, rajma), nuts and seeds (almonds, flaxseeds, chia seeds). Studies show fibre intake in women with PCOS was negatively correlated with IR, fasting insulin, glucose tolerance, and androgen levels.",
+    "action": "When protein intake is below target in today's logs, suggest high-protein Indian foods: moong dal chilla, paneer, dahi, boiled chana, eggs (if non-vegetarian). When fibre is low, suggest: oats upma, palak dal, rajma salad, sabja seeds in water. Frame together: 'Protein + fibre together slow down glucose absorption — this directly reduces the insulin spike that drives androgen production in PCOS.'",
+    "triggers": [
+      "lowProtein",
+      "lowFibre",
+      "highGlycemic",
+      "insulinSpiking"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "gautam_2025_exercise_guidelines_pcos",
+    "topic": "exercise guidelines PCOS aerobic resistance HIIT minutes per week insulin BMI hormones",
+    "source": "Gautam et al., Nutrients 2025 (ICMR/AIIMS)",
+    "content": "International guidelines for PCOS management recommend adults (18-64 years) aim for minimum 250 min/week of moderate-intensity activity or 150 min/week of vigorous-intensity activity, or equivalent combination, plus muscle-strengthening activities on two non-consecutive days/week. HIIT includes short bursts of intense activity followed by rest. MICT is moderate-intensity exercise like jogging, cycling. Aerobic exercise improves insulin sensitivity and may regulate menstrual periods by lowering insulin and improving ovarian function. Physical exercise helped improve reproductive functions, hormonal balance, and menstrual cycle regularity in a systematic review. A minimum of 120 min/week of vigorous-intensity exercise produces beneficial health effects for women with PCOS.",
+    "action": "When weekly workout logs show total duration below 120 minutes, flag this specifically with the guideline number: 'Research recommends at least 120 minutes of vigorous activity per week for PCOS benefits — you've logged X minutes this week.' Suggest the specific workout type from the user's library that is most appropriate for their phase and symptom state. Never recommend high-intensity for Type B users in the luteal phase.",
+    "triggers": [
+      "strength",
+      "cardio",
+      "yoga"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "follicular",
+      "ovulation"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "gautam_2025_yoga_meditation_pcos_stress",
+    "topic": "yoga meditation mindfulness PCOS stress cortisol anxiety depression mental health quality of life",
+    "source": "Gautam et al., Nutrients 2025 (ICMR/AIIMS)",
+    "content": "Yoga (breathing, asana, mudras, and meditation), acupuncture, and naturopathy help manage hormone levels, menstrual cycles, and reduce stress and anxiety in women with PCOS. Two months of mindfulness stress management training resulted in significant decrease in anxiety, depression, and stress and increase in quality of life compared to control. Cognitive behavioral therapy helps reduce anxiety and improve quality of life, compliance, and pregnancy rate in PCOS patients. Mental health issues like depression, anxiety, body image concerns, and sleep disorders are associated with PCOS.",
+    "action": "When anxiety, depression, or mood swings are logged — especially if sleep is also poor — recommend yoga or breathing exercises from the app's library as the workout of the day. Frame: 'Yoga reduces cortisol — the stress hormone that drives adrenal androgen production in PCOS. Even 20 minutes daily can reduce anxiety measurably within 8 weeks.' For Type B users especially, prioritise yoga over HIIT.",
+    "triggers": [
+      "anxiety",
+      "depressed",
+      "moodSwings",
+      "fatigue"
+    ],
+    "phenotypes": [
+      "typeB",
+      "typeD"
+    ],
+    "phase": [
+      "luteal",
+      "menstrual"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "gautam_2025_microbiome_diet_probiotic_pcos",
+    "topic": "microbiome probiotic synbiotic PCOS insulin triglyceride HDL fermented food gut bacteria",
+    "source": "Gautam et al., Nutrients 2025 (ICMR/AIIMS)",
+    "content": "PCOS patients show reduced diversity in gut microbiota with changes in composition, damaging the intestinal mucosal barrier. Healthy gut microbiota can be restored by switching to a healthy diet rich in fermented foods, whole grains, fruits/seeds, and fibre. A meta-analysis of 7 RCTs revealed that probiotic/symbiotic supplementation decreased insulin and triglyceride levels and increased HDL levels in PCOS. Another meta-analysis showed probiotic/symbiotic treatment can effectively improve hormonal, glucose homeostasis, and inflammatory outcomes of PCOS.",
+    "action": "Recommend homemade dahi as a non-negotiable daily food for all PCOS users — it is the easiest, cheapest, and most culturally accessible probiotic. Additionally recommend: idli/dosa (fermented), kanji (if available), and fibre-rich foods (rajma, oats) as prebiotic fuel for good gut bacteria. When gut symptoms are present alongside high androgen symptoms, make the gut-androgen link explicit.",
+    "triggers": [
+      "gutFriendly",
+      "bloating",
+      "constipated",
+      "proInflammatory"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "mahalingaiah_2023_food_timing_circadian",
+    "topic": "food timing circadian rhythm PCOS blood glucose insulin active time meal planning",
+    "source": "Mahalingaiah, Mass General Brigham 2023",
+    "content": "Health optimization in PCOS is sensitive to the timing of food and the sleep-wake cycle. Eating largest meals just before the most active times of day allows the body to use glucose for energy when it is most needed. Eating a heavy meal right before sleep causes blood glucose to rise without being used as fuel. Many people with PCOS eat their heaviest meal at night — reversing this pattern improves blood glucose management and insulin response. Fad diets, intermittent fasting extremes, and binge eating can be counterproductive.",
+    "action": "When the user logs a heavy dinner or no activity after a large meal, mention meal timing. Say: 'Your biggest meal should come before your most active part of the day. If dinner was your heaviest meal but you were mostly resting afterward, try shifting the larger portion to lunch tomorrow — your body will process glucose better when it's active.' This applies especially if high-calorie or heavy tags are logged in the evening.",
+    "triggers": [
+      "heavy",
+      "highCalorie",
+      "proInflammatory"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "mahalingaiah_2023_protein_fibre_pairing_glucose",
+    "topic": "protein fibre pairing carbohydrate blood glucose insulin spike snack meal planning PCOS",
+    "source": "Mahalingaiah, Mass General Brigham 2023",
+    "content": "Pairing carbohydrates and sugars with protein and fibre slows the release of glucose into the bloodstream, lessening the insulin response. People with PCOS who have insulin resistance cannot process blood glucose effectively — the pancreas makes more and more insulin in response. A balanced diet with protein-fibre pairing can help level out energy, reduce PCOS symptoms, and improve long-term health. Foods to limit: refined flour (maida, white bread, pizza), fried foods, red and processed meats, saturated fats, sugary drinks, white rice.",
+    "action": "When the user logs high-carb foods without protein (e.g. plain white rice, bread, biscuits, juice), suggest pairing: 'Add a small bowl of dahi, a handful of chana, or a spoon of peanut butter alongside. Pairing protein and fibre with carbs is one of the most effective ways to prevent the insulin spike that worsens PCOS symptoms.' This is a practical, meal-by-meal intervention.",
+    "triggers": [
+      "highCarb",
+      "highGlycemic",
+      "lowProtein",
+      "insulinSpiking"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "mahalingaiah_2023_foods_to_avoid_pcos",
+    "topic": "foods to avoid PCOS refined flour processed fried sugar white rice maida spikes insulin",
+    "source": "Mahalingaiah, Mass General Brigham 2023",
+    "content": "Foods that spike blood glucose and should be limited in PCOS: packaged processed foods like chips and namkeen (if ingredients are unrecognizable, the food is highly processed). Refined flour (maida) products such as white bread, pizza crust, pasta, pav. Fried foods. Red meat and processed meats. Saturated fats such as butter and margarine in excess. Sugary drinks including cold drinks, packaged fruit juice, sports drinks. Sugary snacks, sweets, mithai, cookies. White rice as a staple. These foods all cause rapid blood glucose spikes followed by large insulin releases, which worsens androgen production in PCOS.",
+    "action": "When any of these foods appear in the user's log with insulin-spiking or high-GI tags, be specific but non-judgmental: 'One thing I noticed — [food name] tends to spike blood glucose quickly. For PCOS, this triggers more androgen production. Tomorrow, try [specific Indian low-GI alternative] instead — it'll give you similar satisfaction with a much gentler effect on your hormones.' Never shame the user; always offer a direct substitute.",
+    "triggers": [
+      "insulinSpiking",
+      "highGlycemic",
+      "ultraProcessed",
+      "processed",
+      "sugary"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "shang_2021_diet_pregnancy_ovulation_meta",
+    "topic": "diet clinical pregnancy rate ovulation menstrual regularity PCOS meta-analysis RCT fertility",
+    "source": "Shang et al., Frontiers in Endocrinology 2021 (20 RCTs, 1113 participants)",
+    "content": "Meta-analysis of 20 RCTs with 1113 participants showed diet significantly improved fertility outcomes in PCOS: increased clinical pregnancy rate (RR=2.87), increased ovulation rate (RR=1.30), reduced miscarriage rate (RR=0.03), and improved menstrual regularity. Diet also reduced AMH, free androgen index (FAI), and total testosterone while increasing SHBG. Effects were associated with dietary patterns and treatment duration — the longer the duration, the greater the improvement. Diet was more effective than the meta-analysis comparator treatments.",
+    "action": "When the user asks about diet and fertility, pregnancy, or cycle regularity, reference this with confidence: 'Research involving over 1000 women with PCOS shows that consistent dietary changes nearly tripled pregnancy rates and significantly restored ovulation. The key is consistency over months, not days.' Use this to encourage long-term dietary habit changes rather than short-term fixes.",
+    "triggers": [
+      "pcosFriendly",
+      "lowGlycemic",
+      "highProtein"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "follicular",
+      "ovulation"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "shang_2021_low_carb_diet_pregnancy_ovulation",
+    "topic": "low carbohydrate diet PCOS pregnancy rate ovulation menstrual regularity fertility superior",
+    "source": "Shang et al., Frontiers in Endocrinology 2021",
+    "content": "Subgroup analyses from the meta-analysis showed low-carbohydrate diets were superior in improving pregnancy rate, reducing miscarriage risk, and optimising ovulation function. High-carbohydrate diets with high glycemic index were associated with increased risk of infertility from ovulatory disorders, while reducing carbohydrate consumption positively influenced fertility and ovulation. The type of carbohydrate (low-GI) was more important than total amount consumed. Low-carbohydrate diets also significantly increased SHBG (reducing free testosterone) and reduced the free androgen index.",
+    "action": "When the user is in the follicular or ovulation phase and has been logging high-carb meals, frame the recommendation with the fertility data: 'During the follicular phase, reducing refined carbs and choosing low-GI foods has been shown in multiple trials to improve ovulation rates in PCOS. Try replacing [logged food] with [low-GI alternative] this week.' Keep it time-bound and phase-specific.",
+    "triggers": [
+      "highCarb",
+      "highGlycemic",
+      "insulinSpiking"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "follicular",
+      "ovulation"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "shang_2021_calorie_restriction_hyperandrogenism",
+    "topic": "calorie restriction PCOS hyperandrogenism testosterone SHBG free androgen index FAI weight",
+    "source": "Shang et al., Frontiers in Endocrinology 2021",
+    "content": "Calorie restriction was found more critical in ameliorating hyperandrogenism in subgroup analyses. Calorie-restricted diets reduce fat mass while preserving lean body mass, increasing SHBG production by the liver and reducing free testosterone levels. However, dietary benefits for ovulation and pregnancy rates were more pronounced in groups without calorie restriction — indicating benefits of diet go beyond just weight loss and are relevant even for normal-weight PCOS. Dietary management should go beyond weight loss since not all PCOS patients with IR are overweight.",
+    "action": "For overweight/obese users (BMI ≥ 25), mention calorie awareness alongside food quality: 'For PCOS with higher BMI, keeping overall intake near your daily target AND eating lower-GI foods works better together than either alone for reducing androgens.' For normal-weight users, never frame as calorie restriction — focus purely on food quality and GI.",
+    "triggers": [
+      "highCalorie",
+      "highGlycemic",
+      "hirsutism",
+      "acne"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "shang_2021_dash_diet_pcos",
+    "topic": "DASH diet PCOS insulin hormones testosterone AMH whole grains fruits vegetables low sodium",
+    "source": "Shang et al., Frontiers in Endocrinology 2021",
+    "content": "The DASH diet evaluated in 4 RCTs improved hormonal profiles in PCOS — specifically reducing testosterone and improving SHBG over 3-6 months. DASH diet composition: 52% carbohydrates, 18% protein, 30% fat; rich in fruits, vegetables, whole grains, low-fat dairy; low in saturated fats, cholesterol, refined grains, and sweets; sodium less than 2400 mg/day. DASH diet showed more reduction in weight compared to usual diet but was not superior to low-carbohydrate diet for pregnancy rate.",
+    "action": "When building a long-term dietary framework for the daily goals card, recommend DASH principles in Indian terms: 'Try building your plate with half vegetables (palak, lauki, tinda), one quarter whole grain (bajra roti or oats), one quarter protein (dal or dahi), and a small portion of fruit. Keep salt moderate — excess sodium worsens blood pressure risk in PCOS.' This is especially suitable for users who find low-GI advice too restrictive.",
+    "triggers": [
+      "highCarb",
+      "lowFibre",
+      "proInflammatory"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "shang_2021_amh_reduction_diet",
+    "topic": "AMH anti-mullerian hormone PCOS diet reduction follicle ovarian reserve ovulation",
+    "source": "Shang et al., Frontiers in Endocrinology 2021",
+    "content": "Meta-analysis revealed dietary interventions resulted in a greater decrease in AMH in PCOS (MD = -2.20 ug/L). AMH levels are higher in women with PCOS than healthy women, related to severity of hyperandrogenism and oligo-anovulation. Excess AMH slows initial follicular growth, decreases apoptosis of granulosa cells, and causes follicular arrest. Declining AMH levels account for reduced follicle excess, elevated ovulation rate, and ameliorative hyperandrogenism, thus improving fertility outcomes.",
+    "action": "When the user asks about AMH or ovarian cysts in chat, connect diet directly: 'A consistent low-GI diet has been shown to significantly reduce AMH levels in PCOS — which is important because high AMH is what causes follicles to arrest instead of ovulating. This is why dietary changes can restore ovulation even without medication.' Keep this for chatbot responses — not for food card or goals card.",
+    "triggers": [
+      "pcosFriendly",
+      "lowGlycemic"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "follicular"
+    ],
+    "priority": 3
+  },
+  {
+    "id": "shang_2021_mediterranean_diet_pregnancy",
+    "topic": "Mediterranean diet PCOS pregnancy fertility menstrual cycle regularity vegetables legumes olive oil",
+    "source": "Shang et al., Frontiers in Endocrinology 2021",
+    "content": "Mediterranean diet evaluated in 1 RCT showed the highest pregnancy rate improvement (RR=19.00) and significantly improved menstrual regularity. Mediterranean diet composition: high intake of vegetables, legumes, fruits, nuts, cereals; low intake of saturated lipids and meat; moderate fish; low to moderate dairy; no calorie restriction. Subgroup analysis showed Mediterranean diet led to more improvement in menstrual regularity than control groups.",
+    "action": "Frame a Mediterranean-style Indian eating pattern: 'Think of this as an Indian Mediterranean plate — lots of vegetables, a good portion of rajma/chana/moong, small portions of whole grains, and healthy fats from nuts and flaxseed. This pattern showed the highest pregnancy rates in PCOS research.' Recommend for users who are trying to conceive or have cycle irregularity.",
+    "triggers": [
+      "pcosFriendly",
+      "highProtein",
+      "highFibre"
+    ],
+    "phenotypes": [
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "follicular",
+      "ovulation"
+    ],
+    "priority": 3
+  },
+  {
+    "id": "combined_cramps_phase_nutrition",
+    "topic": "cramps menstrual pain low GI ginger turmeric warm food menstrual phase PCOS",
+    "source": "Synthesized from Szczuko 2021, Jain 2025, Gautam 2025",
+    "content": "During active cramping in PCOS, prostaglandin activity drives pain. Low-GI foods stabilise insulin and reduce prostaglandin-driven inflammation. Ginger (adrak) has clinically validated anti-cramping effect comparable to ibuprofen in mild-moderate pain. Turmeric with black pepper activates curcumin absorption and attenuates pro-inflammatory NF-kB signalling. Avoid cold foods, sugar, processed foods, and excess salt which worsen water retention and cramp severity. Iron-rich foods (ragi, palak, dates) replenish menstrual losses. Magnesium (banana, pumpkin seeds, dark leafy greens) reduces uterine muscle tension.",
+    "action": "When cramps are logged today: make meal suggestion an immediate priority. Recommend warm, low-GI, anti-inflammatory foods only. Specific suggestions: adrak chai (no sugar), moong khichdi with haldi and kali mirch, palak dal, banana. Explicitly avoid in food suggestions: raw cruciferous vegetables, excess legumes (gas-forming worsens cramp discomfort), cold drinks, sweets. Frame: 'Today your body needs warm, easy-to-digest foods that reduce inflammation rather than add to it.'",
+    "triggers": [
+      "cramps",
+      "periodPainReducer",
+      "crampReducer",
+      "antiInflammatory"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "menstrual"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "combined_bloating_gut_nutrition",
+    "topic": "bloating gas gut PCOS food avoid reduce fennel ginger warm cooked vegetables",
+    "source": "Synthesized from Szczuko 2021, Jain 2025",
+    "content": "For bloating in PCOS: avoid gas-forming foods — raw cabbage, cauliflower, broccoli, kidney beans in excess, carbonated drinks. Fennel seeds (saunf) after meals reduce gut gas. Ginger tea stimulates gastric motility. Cooked vegetables digest better than raw. Small, frequent meals reduce stomach distension. Probiotic foods (homemade curd) improve gut microbiome balance which reduces bloating. Bloating in PCOS is compounded by gut dysbiosis common in the condition.",
+    "action": "When bloating is logged: immediately avoid recommending any gas-forming foods in the meal suggestion card. Recommend only easy-to-digest foods: moong dal khichdi, cooked lauki or tinda, warm ginger water, saunf after meals. Flag if the user has been logging raw salads or excess rajma alongside the bloating. Say: 'Today, cooked and warm foods will be gentler on your gut. Save the salads for when the bloating clears.'",
+    "triggers": [
+      "bloating",
+      "gasForming",
+      "bloatingReducer"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "combined_fatigue_iron_energy_nutrition",
+    "topic": "fatigue low energy iron deficiency B12 PCOS food ragi palak dates horse gram",
+    "source": "Synthesized from Szczuko 2021, Gautam 2025, Mahalingaiah 2023",
+    "content": "Fatigue in PCOS is driven by insulin dysregulation, iron deficiency, or poor sleep. Iron-rich foods (ragi, palak, dates, horse gram, rajma) paired with vitamin C sources (lemon, amla) improve non-haem iron absorption. B12 (dairy, eggs) supports energy metabolism. Avoid high-carb, high-GI breakfasts which cause a post-meal energy crash. Protein-rich meals maintain stable blood glucose and sustained energy. Antioxidant-rich foods support cellular energy production by reducing oxidative stress.",
+    "action": "When fatigue is logged alongside poor sleep or low energy rating: make energy support the focus. Recommend: ragi porridge or bajra roti with dahi for breakfast (iron + protein + calcium), amla juice in morning (vitamin C for iron absorption), and a protein-rich mid-morning snack. Specifically avoid: poha, upma without protein, white bread, biscuits, sweet chai — all cause energy crash. Ask if sleep was also poor last night and address both.",
+    "triggers": [
+      "fatigue",
+      "energyBoost",
+      "moodBoost"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "menstrual",
+      "luteal"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "combined_acne_hirsutism_androgen_diet",
+    "topic": "acne hirsutism hair growth androgen DHT SHBG diet spearmint flaxseed zinc dairy insulin",
+    "source": "Synthesized from Szczuko 2021, Johnson 2025, Jain 2025",
+    "content": "Acne and hirsutism in PCOS are driven by androgens and insulin. Dairy (especially skim milk) raises IGF-1 which stimulates sebum. High-GI foods spike insulin which directly triggers androgen production. Zinc (pumpkin seeds, chickpeas) reduces sebum by inhibiting 5-alpha reductase. Flaxseed increases SHBG which binds free testosterone. Spearmint tea reduces free testosterone within 30 days in RCT. Green tea has anti-androgenic properties. High fructose consumption worsens endocrine androgenic changes. Gut microbiome improvement also reduces androgen production via the gut-hormone axis.",
+    "action": "When acne OR hirsutism are logged, activate a combined three-pronged approach in the suggestion: (1) food to add — pudina chai twice daily, 1 tbsp ground alsi in dahi, kaddu ke beej as snack; (2) food to reduce — avoid high-GI foods, reduce skim milk, cut sugary snacks; (3) gut support — add homemade dahi daily. Never tell the user to avoid all dairy — only flag skim milk specifically and suggest full-fat dahi as a replacement.",
+    "triggers": [
+      "acne",
+      "hirsutism",
+      "androgenBoosting",
+      "dairySensitive"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "combined_constipation_fibre_gut",
+    "topic": "constipation fibre isabgol psyllium husk ghee warm water lemon gut PCOS",
+    "source": "Synthesized from Szczuko 2021, Jain 2025, Gautam 2025",
+    "content": "Constipation is common in PCOS due to slower gut motility and low fibre intake. Soluble fibre (oats, psyllium husk/isabgol, flaxseed, sabja seeds) draws water into stool and eases passage. Adequate water intake (2-2.5L/day) is equally important. Warm water with lemon in the morning stimulates the gastrocolic reflex. Ghee in small amounts lubricates the intestinal tract. Avoid cheese, bananas, and white rice in excess during constipation. Probiotic foods support gut bacteria that improve motility. Gut dysbiosis (common in PCOS) is a contributing factor to constipation.",
+    "action": "When constipation is logged on 2+ days in the past week, make gut-targeted goal the priority. Recommend a constipation-clearing morning routine: warm water with lemon on waking, then 1 tsp isabgol in warm water 30 minutes before breakfast. Daily: oats or ragi for breakfast (soluble fibre), rajma or moong in lunch, and homemade dahi with flaxseed. Flag if the user is eating too much paneer, white rice, or maida — these slow digestion.",
+    "triggers": [
+      "constipated",
+      "gutFriendly"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "combined_sleep_poor_next_day_goals",
+    "topic": "poor sleep next day food exercise recommendation cortisol insulin PCOS gentle activity",
+    "source": "Synthesized from Szczuko 2021, Gautam 2025, Johnson 2025",
+    "content": "Even one night of poor sleep impairs insulin sensitivity by 20-25% the following day. Sleep fragmentation causes gut microbiome disruption and adipose tissue inflammation. Poor sleep disrupts cortisol rhythm — affecting androgen production and ovarian function. Mental health in PCOS is more strongly related to sleep disorders than disease status itself. After a poor night of sleep, cortisol is already elevated — high-intensity exercise further spikes cortisol, especially in Type B PCOS.",
+    "action": "When last night's sleep log shows disturbed or light quality, OR duration was below target: (1) make today's workout goal gentle — yoga, walking, or rest rather than HIIT; (2) make today's nutrition priority low-GI, easy-to-digest meals to compensate for the reduced insulin sensitivity; (3) mention that going to bed 30 minutes earlier tonight is the single highest-impact action. For Type B users especially, explicitly recommend against HIIT on poor sleep days.",
+    "triggers": [
+      "fatigue",
+      "anxiety",
+      "moodSwings"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "combined_heavy_meal_recovery",
+    "topic": "heavy meal recovery next meal light protein low GI digestion insulin spike after eating",
+    "source": "Synthesized from Szczuko 2021, Mahalingaiah 2023, Shang 2021",
+    "content": "After a heavy or high-GI meal, insulin levels remain elevated for several hours, increasing androgen production during that window. The next meal is an opportunity to stabilise blood glucose and support insulin clearance. Light, protein-rich, low-GI foods after a heavy meal avoid compounding the insulin load. Walking 10-15 minutes post-meal reduces postprandial glucose spike by approximately 30%. Cold foods slow gastric motility — warm foods are preferable after a large meal.",
+    "action": "When the user's last logged meal has 'heavy' impact tag or exceeded their calorie target: immediately surface this in the meal suggestion card with the observation: 'Your last meal was heavier than usual.' Suggest the next meal as something light, protein-rich, and low-GI: curd with flaxseed, moong dal chilla, sprouted chana chaat, or a small bowl of palak dal. Also suggest: 'A 10-15 minute walk after your next meal will cut the blood sugar impact in half.' Never shame the previous meal — focus entirely on the next positive action.",
+    "triggers": [
+      "heavy",
+      "highCalorie",
+      "highGlycemic",
+      "insulinSpiking"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "bda_2022_glycaemic_load_balanced_meals",
+    "topic": "glycaemic load balanced meals protein fat carbohydrate blood sugar insulin PCOS",
+    "source": "British Dietetic Association (BDA), PCOS Food Fact Sheet, May 2022",
+    "content": "Adding protein and fats to low-GI carbohydrates reduces the impact of the whole meal on blood sugar levels — this is called glycaemic load (GL). Having balanced meals means including protein-rich foods, healthy fats, and lots of low-GI fruits or vegetables alongside high-fibre, low-GI carbohydrates. This keeps blood sugar levels more stable than eating any macronutrient in isolation and also helps keep you fuller for longer, reducing cravings. Eating regularly throughout the day helps keep blood sugar levels stable and reduces insulin resistance.",
+    "action": "When the user logs a carbohydrate-only meal (plain rice, plain roti, fruit alone, bread alone) with no protein or fat logged alongside it, flag the pairing opportunity: 'This meal will be gentler on your blood sugar if you add a protein source — a small bowl of dahi, a handful of chana, or some peanuts will reduce the overall GI impact of the meal.' Frame this as glycaemic load reduction, not calorie counting.",
+    "triggers": [
+      "highGlycemic",
+      "insulinSpiking",
+      "highCarb",
+      "lowProtein"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "bda_2022_regular_eating_cravings_pcos",
+    "topic": "regular meals eating pattern blood sugar cravings insulin PCOS snacking skipping meals",
+    "source": "British Dietetic Association (BDA), PCOS Food Fact Sheet, May 2022",
+    "content": "Eating regularly helps keep blood sugar levels stable, reducing insulin resistance. Having regular, varied, and balanced meals or snacks is a key principle for PCOS management. Up to 80% of people with PCOS are insulin resistant and thus have more insulin in their blood to compensate. Food cravings, particularly for carbohydrate or sugary foods, are a direct symptom of PCOS linked to insulin and androgen levels. Irregular eating patterns worsen insulin resistance and increase cravings.",
+    "action": "When the user has not logged any food for 5+ hours (or it's past midday with nothing logged), flag a gentle reminder in the goals card: 'Long gaps between meals can spike insulin when you do eat next. A small balanced snack — like a handful of pumpkin seeds or a cup of dahi — keeps blood sugar steadier through the day.' Never tell the user to eat less; always reframe as eating smarter and more regularly.",
+    "triggers": [
+      "insulinSpiking",
+      "energyBoost",
+      "moodBoost"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "bda_2022_folic_acid_conception_pcos",
+    "topic": "folic acid conception fertility pregnancy PCOS nutrients preconception",
+    "source": "British Dietetic Association (BDA), PCOS Food Fact Sheet, May 2022",
+    "content": "If trying to conceive with PCOS, it is particularly important to have enough nutrients in the diet. Folic acid supplement is specifically recommended when trying to conceive. Good nutrition supports reproductive outcomes in PCOS — diet combined with folic acid is important preconception preparation. A dietitian or doctor should be consulted about supplementation before conception.",
+    "action": "When the user mentions trying to conceive in the chatbot, or if they are in a tracked fertile window and have asked fertility-related questions, include in the response: 'If you are trying to conceive, a folic acid supplement (400mcg daily) is specifically recommended alongside dietary changes — please discuss this with your doctor.' This is the one supplement the chatbot should recommend discussing with a doctor, given the clear clinical consensus.",
+    "triggers": [
+      "pcosFriendly"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "follicular",
+      "ovulation"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "ghafari_2025_breakfast_timing_insulin_androgen",
+    "topic": "breakfast timing meal size insulin sensitivity androgen PCOS larger breakfast smaller dinner",
+    "source": "Ghafari et al., Endocrine and Metabolic Science 2025",
+    "content": "Eating smaller, more frequent meals throughout the day and having a larger breakfast followed by a smaller dinner enhances insulin sensitivity and lowers androgen levels in PCOS. This is particularly significant because women with PCOS often skip breakfast or eat their breakfast and lunch later in the day. Front-loading caloric intake earlier in the day aligns with circadian insulin sensitivity — the body handles glucose more efficiently in the morning than in the evening.",
+    "action": "When the user logs no breakfast by 10am but logs a large lunch or dinner, flag meal timing in the daily goals card: 'Women with PCOS show better insulin and androgen control when the largest meal is breakfast or lunch rather than dinner. Try eating a protein-rich breakfast (moong chilla, eggs, dahi with flaxseed) within an hour of waking — this one change can reduce androgen levels over time.' This is different from the existing Mahalingaiah timing chunk — this specifically focuses on breakfast as the largest meal.",
+    "triggers": [
+      "insulinSpiking",
+      "highGlycemic",
+      "heavy"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "ghafari_2025_cinnamon_insulin_oxidative_stress",
+    "topic": "cinnamon dalchini insulin sensitivity NF-kB oxidative stress PI3K PCOS antioxidant",
+    "source": "Ghafari et al., Endocrine and Metabolic Science 2025",
+    "content": "Cinnamon offers therapeutic benefits for managing oxidative stress in PCOS through multiple signaling pathways. It enhances antioxidant enzyme activity (superoxide dismutase and catalase), which neutralize reactive oxygen species and protect cells from oxidative damage. Cinnamon improves insulin sensitivity via the PI3K pathway, promoting glucose uptake and reducing oxidative stress. It inhibits the NF-kB pathway, reducing pro-inflammatory cytokine expression. Cinnamon supplementation also decreases malondialdehyde (MDA) levels — a marker of lipid peroxidation — reducing oxidative damage to cellular membranes.",
+    "action": "Recommend adding a small amount of cinnamon (dalchini) to daily food as a practical anti-oxidant and insulin-sensitising habit. Practical suggestions: sprinkle on oats or ragi porridge, add a pinch to morning chai (without sugar), mix into dahi. Frame: 'Dalchini works on the same insulin-signalling pathway as some medications, helping your cells respond to insulin better. Half a teaspoon daily in food is sufficient.' Do not suggest capsule supplements — keep it food-based only.",
+    "triggers": [
+      "insulinSpiking",
+      "highGlycemic",
+      "proInflammatory",
+      "antiInflammatory"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "ghafari_2025_quercetin_LH_testosterone_antioxidant",
+    "topic": "quercetin LH testosterone androgen antioxidant SOD catalase CYP17A1 PCOS",
+    "source": "Ghafari et al., Endocrine and Metabolic Science 2025",
+    "content": "Quercetin decreases serum levels of luteinizing hormone (LH) and testosterone in PCOS models by downregulating the PI3K/Akt pathway, which reduces CYP17A1 gene expression and 17-alpha-hydroxylase activity — enzymes directly involved in androgen biosynthesis. Quercetin also enhances the body's antioxidant defense mechanisms by increasing the activity of superoxide dismutase (SOD), catalase (CAT), and glutathione peroxidase (GPx). Food sources of quercetin include onions, apples, green tea, amla, and dark leafy vegetables.",
+    "action": "When hirsutism or acne are logged alongside high androgen indicators, recommend quercetin-rich Indian foods: raw pyaaz (onion) daily in salads or raita, green or herbal tea, amla, fresh coriander, methi (fenugreek leaves). Frame the mechanism simply: 'These foods contain quercetin, which research shows directly reduces the enzyme responsible for making excess testosterone in PCOS.' Keep this as a secondary recommendation after spearmint and flaxseed, which have stronger direct evidence.",
+    "triggers": [
+      "hirsutism",
+      "acne",
+      "androgenBoosting"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 3
+  },
+  {
+    "id": "ghafari_2025_mediterranean_ovary_morphology",
+    "topic": "Mediterranean diet ovary morphology follicle count ovarian volume PCOS insulin hyperandrogenism",
+    "source": "Ghafari et al., Endocrine and Metabolic Science 2025",
+    "content": "Recent research suggests that following the Mediterranean diet improves ovarian morphology — including reducing the number of follicles per ovary and ovarian volume — by addressing obesity, insulin resistance, and hyperandrogenism. The Mediterranean diet's effectiveness is attributed to its capacity to modulate inflammatory and oxidative stress pathways, improve lipid profiles, enhance insulin sensitivity and endothelial performance, and display antithrombotic and antiatherosclerotic effects. A negative correlation was found between Mediterranean diet adherence and PCOS symptom severity.",
+    "action": "When the user asks about ovarian cysts or follicle count in the chatbot, link diet directly to ovary structure: 'Following a Mediterranean-style diet — rich in vegetables, legumes, nuts, and healthy fats — has been shown in research to actually reduce ovarian cyst count and ovarian volume in PCOS over time. This works by reducing insulin and androgen levels that drive follicle accumulation.' An Indian Mediterranean plate: vegetables + rajma/chana + bajra roti + dahi + a teaspoon of cold-pressed oil.",
+    "triggers": [
+      "pcosFriendly",
+      "insulinBalancing",
+      "lowGlycemic"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "follicular"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "ghafari_2025_inositol_meta_specific_numbers",
+    "topic": "myo-inositol inositol BMI cycle normalization PCOS meta-analysis relative risk placebo",
+    "source": "Ghafari et al., Endocrine and Metabolic Science 2025",
+    "content": "A meta-analysis of myo-inositol in PCOS found it specifically lowered BMI (mean difference of 0.45 kg/m2) and increased cycle normalization (relative risk 1.79) compared to placebo, with minimal side effects. Myo-inositol plays a role in FSH and insulin signalling pathways and may enhance insulin sensitivity. Combined vitamin D and probiotics showed significant improvements in mental health, hormonal balance, and inflammatory markers including reduced testosterone levels, hirsutism, and inflammation alongside enhanced antioxidant capacity in a 12-week randomized trial.",
+    "action": "When users ask specifically about inositol supplements, provide the evidence-based context: 'Research shows myo-inositol increased the chance of a regular cycle by 79% compared to placebo, with almost no side effects. For food sources, rajma, chickpeas, oranges, and brown rice are naturally rich in inositol. If you want to discuss supplementation, bring this evidence to your doctor.' Always recommend food sources first; direct supplement questions to their doctor.",
+    "triggers": [
+      "insulinBalancing",
+      "pcosFriendly"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "xenou_2021_pcos_diet_comprehensive_food_list",
+    "topic": "PCOS diet food list non-starchy vegetables berries citrus low GI fruits legumes whole grains nuts seeds",
+    "source": "Xenou & Gourounti, Mater Sociomed 2021 (PMC8643565)",
+    "content": "A systematic review of 7 studies concluded that the diet most beneficial for PCOS clinical and laboratory outcomes contains: Vegetables (non-starchy, low GI) — artichokes, asparagus, bean sprouts, broccoli, cabbage, cauliflower, celery, cucumber, eggplant, mushrooms, onions, peppers, spinach, tomato, zucchini. Fruits — berries (strawberries, raspberries, blackberries, blueberries), citrus (oranges, tangerines, grapefruit), peaches, plums, apricots, cherries, pears, melons. Proteins — fish rich in omega-3, lean poultry (chicken, turkey), eggs, legumes. Fats — olive oil, avocados, vegetable oils, nuts (almonds), seeds (pumpkin, sunflower, sesame, poppy). Whole grains and low-fat dairy in moderate quantities. Six out of seven studies reported a decrease in fasting insulin and free testosterone. Most showed decrease in hyperandrogenism, cholesterol, triglycerides, LDL, and menstrual irregularities.",
+    "action": "Use this list as the master reference for recommending specific vegetables and fruits in the meal suggestion card. Always choose from these validated categories. When the user asks 'what should I eat', frame around these groupings. Indian equivalents: spinach → palak, eggplant → baingan, berries → amla/jamun, citrus → mosambi/orange, pumpkin seeds → kaddu ke beej, sesame → til, legumes → rajma/chana/moong. Always translate to Indian names.",
+    "triggers": [
+      "lowGlycemic",
+      "pcosFriendly",
+      "highFibre",
+      "antiInflammatory"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "xenou_2021_mediterranean_pcos_barrea_findings",
+    "topic": "Mediterranean diet PCOS adherence olive oil legumes fish nuts fibre unsaturated fat n-3",
+    "source": "Xenou & Gourounti 2021 citing Barrea et al. 2019 (case control, 112 PCOS women)",
+    "content": "A case-control study of 112 women with PCOS versus 112 controls found that women with PCOS consumed significantly less virgin olive oil, legumes, fish, and nuts than controls. They also consumed fewer complex carbohydrates, fibre, unsaturated fatty acids, monounsaturated fatty acids, and n-3 polyunsaturated fatty acids — and more simple carbohydrates, total fat, saturated fatty acids, and n-6 PUFA. There is a direct correlation between lower adherence to a Mediterranean-style diet and worse body composition and more severe PCOS clinical presentation. PHAs (specific metabolic markers) were an indicator of PCOS clinical severity.",
+    "action": "This finding is critical for the pattern detection in the daily goals card. When the user's 7-day logs consistently show low legume intake, low nut/seed intake, and high processed food tags — flag this specific Mediterranean gap: 'Your logs show you've had very few legumes and nuts this week. Research shows women with PCOS who eat more legumes and nuts consistently have less severe symptoms than those who don't — even when other factors are controlled. Try adding rajma or chana to one meal daily, and a small handful of akhrot or kaddu ke beej as a snack.'",
+    "triggers": [
+      "lowFibre",
+      "unhealthyFats",
+      "proInflammatory",
+      "processed"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "xenou_2021_amed_dash_ovarian_morphology_kazemi",
+    "topic": "aMED Mediterranean DASH diet ovary morphology follicle FSH ovarian steroidogenesis PCOS",
+    "source": "Xenou & Gourounti 2021 citing Kazemi et al. 2020 (111 PCOS women, 4 diet plans)",
+    "content": "A study of 111 women with PCOS comparing four dietary plans found that the alternative Mediterranean diet (aMED) and DASH diets improved the appearance of the ovaries compared to other dietary patterns. These diets are characterised by high dietary fibre, processed composition and ratio of macronutrients, vitamins, minerals, and antioxidant properties. They were shown to reduce insulin resistance, dysglycemia, hyperandrogenism, and obesity, while also causing satiety and weight loss. They appear to improve ovarian steroidogenesis and affect ovarian development by regulating FSH. Both diets indicate a decrease in red meat intake and increased protein from fish and dairy. Reduced sodium intake in DASH increases glucose regulation, reduces insulin resistance, and improves abdominal fat deposition.",
+    "action": "When building daily goals and the user has been diagnosed with polycystic ovaries or mentions follicle count in chat, reference diet-to-ovary-morphology link specifically: 'Both Mediterranean and DASH-style diets have been shown to physically improve ovary appearance in PCOS — fewer follicles, smaller ovary volume — by reducing insulin resistance and inflammation. Your daily food choices directly affect your ovarian health.' This is a powerful motivational frame for users who understand their PCOS through their ovarian appearance.",
+    "triggers": [
+      "pcosFriendly",
+      "insulinBalancing",
+      "lowGlycemic",
+      "highFibre"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "follicular",
+      "ovulation"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "xenou_2021_high_sugar_gut_dysbiosis_pcos",
+    "topic": "sugar gut microbiome dysbiosis PCOS insulin resistance androgen inflammation intestinal flora",
+    "source": "Xenou & Gourounti, Mater Sociomed 2021 (PMC8643565)",
+    "content": "High-sugar foods may be one of the inducers of PCOS by causing intestinal flora imbalance and triggering chronic inflammation, insulin resistance, and androgen production. Gut microbiota dysbiosis can cause insulin resistance which is closely linked to PCOS occurrence. Changes in the relative abundances of specific gut bacteria have been associated with clinical manifestations of PCOS. Dietary changes can rapidly change the relative abundance of species making up the intestinal flora — meaning diet acts as a mediator between microbiota and PCOS clinical and laboratory appearance.",
+    "action": "When the user logs sugary foods AND gut symptoms together (bloating, constipation, gas), make the sugar-gut-androgen connection explicit: 'Sugary foods don't just spike insulin — they also disrupt the gut bacteria that help control your androgen levels in PCOS. This is why cutting back on sweets AND adding probiotic foods like dahi works better together than either alone.' This combined framing is particularly motivating for users who have struggled to understand why sugar affects their PCOS symptoms so directly.",
+    "triggers": [
+      "sugary",
+      "bloating",
+      "gasForming",
+      "constipated",
+      "artificialSweetener"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "jeanes_2016_binge_eating_pcos_prevalence",
+    "topic": "binge eating PCOS emotional eating food cravings carbohydrate sugar insulin androgen weight",
+    "source": "Jeanes et al., Appetite 2016 (n=583 women with PCOS)",
+    "content": "The largest validated study to date found that 60% of obese women with PCOS exhibited binge eating behaviour, with 39% presenting clinically significant behaviour. Even among lean women with PCOS, binge eating scores were significantly higher than healthy lean women without PCOS. Obese women with PCOS had significantly higher food cravings than lean or overweight women with PCOS. Multiple regression showed food cravings were the strongest predictor of binge eating in PCOS (beta=0.53), followed by emotional eating, BMI, and uncontrolled eating. Binge eating is positively associated with hyperandrogenism, and elevated testosterone may promote bulimic behaviours by influencing food cravings and impulse control.",
+    "action": "This is critical context for the chatbot when a user mentions cravings, difficulty stopping eating, or emotional eating. The chatbot should NOT shame or judge these patterns. Respond with: 'Food cravings and strong urges to eat — especially sugar and carbs — are extremely common in PCOS and are directly tied to insulin and androgen levels, not willpower. Research shows 60% of women with PCOS experience this. The good news is that stabilising blood sugar with regular, protein-rich meals throughout the day genuinely reduces these cravings over time.' Frame cravings as a PCOS symptom to be addressed, not a personal failure.",
+    "triggers": [
+      "insulinSpiking",
+      "moodSwings",
+      "anxiety",
+      "energyBoost"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "luteal",
+      "menstrual"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "jeanes_2016_androgen_cravings_impulse_pcos",
+    "topic": "testosterone androgen food cravings impulse control appetite PCOS binge eating hormonal",
+    "source": "Jeanes et al., Appetite 2016",
+    "content": "Raised androgens and menstrual disturbances are associated with greater food cravings in women. Circulating testosterone has been shown to stimulate appetite and is associated with impaired impulse control, irritability, and depression. Elevated levels of androgens may promote food cravings. Binge eating may in turn increase insulin levels which via decreased SHBG increase free circulating testosterone — creating a vicious cycle between binge eating and androgen elevation. Anti-androgenic treatment reduces bulimic behaviour. Recurrent binge eating may ultimately negatively impact follicular maturation and ovulation.",
+    "action": "When the user logs multiple high-GI or sugary meals in a single day alongside mood symptoms like irritability or mood swings, connect the androgen-appetite cycle gently: 'Craving sugar and feeling irritable often go together in PCOS because elevated androgens directly stimulate appetite and reduce impulse control. Eating a protein-fibre balanced meal now can break this cycle — it will reduce the androgen spike and calm cravings within an hour or two. Try moong dal chilla or dahi with flaxseed.' Never use the word 'binge' in responses — use 'strong cravings' or 'urge to eat more'.",
+    "triggers": [
+      "moodSwings",
+      "sugary",
+      "insulinSpiking",
+      "highGlycemic"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC"
+    ],
+    "phase": [
+      "luteal",
+      "menstrual"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "alur_gupta_2019_body_image_depression_anxiety_pcos",
+    "topic": "body image distress depression anxiety PCOS prevalence quality of life hirsutism acne weight BMI",
+    "source": "Alur-Gupta et al., Fertility and Sterility 2019 (n=189 PCOS, n=225 controls)",
+    "content": "Women with PCOS have significantly worse body image scores across all five dimensions assessed — including Appearance Evaluation, Appearance Orientation, Overweight Preoccupation, Self-Classified Weight, and Body Areas Satisfaction — independent of BMI and race. The prevalence of abnormal depression scores was 28% in PCOS vs 19.2% in controls, and anxiety was 76.5% vs 56.5% in controls. The association between PCOS and both depression and anxiety was completely mediated by how women evaluated their appearance and satisfaction with their body areas — meaning body image is the pathway through which PCOS causes psychological distress. Higher Ferriman-Gallwey (hirsutism) scores and higher BMI were associated with significantly worse body image. Therapeutic interventions targeting body image improvement specifically decrease depressive and anxiety symptoms.",
+    "action": "When the user logs depression, anxiety, or body image-related concerns in the chatbot: respond with warmth and validation first, before any practical advice. Say: 'What you are feeling is extremely common in PCOS — research shows 76% of women with PCOS experience anxiety, and body image is a real and documented part of the condition, not just feelings. Symptoms like excess hair growth and acne that PCOS causes directly affect how you feel about yourself. The dietary and lifestyle changes in this app address the underlying androgen levels causing those symptoms — that is the most direct path to feeling better in your body over time.' Never minimize psychological distress with exercise or food suggestions alone.",
+    "triggers": [
+      "depressed",
+      "anxiety",
+      "moodSwings",
+      "hirsutism",
+      "acne"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "alur_gupta_2019_hirsutism_body_image_depression",
+    "topic": "hirsutism acne body image depression self esteem PCOS quality of life psychological distress",
+    "source": "Alur-Gupta et al., Fertility and Sterility 2019",
+    "content": "Higher Ferriman-Gallwey score (hirsutism severity) was statistically significantly associated with lower Appearance Evaluation, lower Body Areas Satisfaction, and higher Overweight Preoccupation in women with PCOS. Body image dissatisfaction mediates both anxiety and depression in PCOS — meaning reducing the physical symptoms of PCOS (hirsutism, acne, weight changes) directly reduces psychological distress. CBT combined with lifestyle interventions resulted in improved weight loss and quality of life compared with lifestyle interventions alone. Screening for body image distress at PCOS diagnosis is recommended as it predicts depression and anxiety risk.",
+    "action": "When the user logs hirsutism or acne symptoms and any mood-related symptoms in the same period, acknowledge the connection explicitly but constructively: 'Skin and hair changes from PCOS are genuinely linked to emotional wellbeing — this is well-documented in research, not just how you feel. The most effective approach is addressing the androgen levels causing these symptoms. Pudina chai twice daily, ground flaxseed in dahi, and reducing high-GI foods directly target the androgens responsible. These take 4-8 weeks to show effect — consistency matters more than perfection.' Do not suggest cosmetic solutions; address the root hormonal cause.",
+    "triggers": [
+      "hirsutism",
+      "acne",
+      "depressed",
+      "anxiety",
+      "moodSwings"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "shang_2020_jcem_dash_best_ir_meta",
+    "topic": "DASH diet HOMA-IR fasting insulin PCOS meta-analysis best diet insulin resistance 19 trials",
+    "source": "Shang et al., Journal of Clinical Endocrinology and Metabolism 2020 (19 RCTs, 1193 participants)",
+    "content": "A meta-analysis of 19 RCTs (1193 participants) found diet significantly improves insulin resistance and body composition in PCOS. The DASH diet was the optimal choice for reducing insulin resistance — significantly decreasing HOMA-IR and fasting insulin compared to low-carbohydrate diets. Although the DASH diet has no strict carbohydrate restriction, it functions as a low-GI diet by emphasising fruits, vegetables, whole grains, nuts, legumes, and low-fat dairy, while eliminating saturated fat, processed meat, and refined sugars. Calorie-restricted diets were optimal for weight loss and BMI reduction. Diet was comparable to metformin for improving insulin regulation and superior to metformin for weight loss — specifically reducing BMI by 2.49 kg/m2 more than metformin. Effects were associated with treatment duration — the longer the duration, the greater the improvement.",
+    "action": "When the user asks whether diet or medication is better for PCOS, or when they ask about metformin in the chatbot: 'Research comparing diet directly to metformin across nearly 1,200 women found diet was equally effective for insulin control and significantly better for weight management. The DASH-style diet — rich in vegetables, legumes, whole grains, and nuts, low in sugar and processed food — is the most evidence-backed eating pattern for PCOS insulin resistance.' This gives the user confidence that dietary changes are genuinely powerful, not just a lifestyle suggestion.",
+    "triggers": [
+      "insulinSpiking",
+      "highGlycemic",
+      "insulinBalancing"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "shang_2020_jcem_diet_duration_effect",
+    "topic": "diet duration PCOS insulin resistance longer treatment greater improvement sustained consistency",
+    "source": "Shang et al., Journal of Clinical Endocrinology and Metabolism 2020 (JCEM)",
+    "content": "Across 19 trials, the effects of diet on PCOS insulin resistance were consistently associated with the course of treatment — the longer the duration, the greater the improvement. Fasting plasma glucose improved significantly within 12 weeks. Fasting insulin reduction was greater in long-duration trials (>12 weeks) than short-duration trials. BMI reduction was significant at both short and long durations. The meta-analysis specifically found that PCOS is a lifelong condition and treatment should be long-term, dynamic, and adapted to the individual's changing circumstances and needs. Dietary improvements from consistent adherence compound over time.",
+    "action": "Use this specifically for motivational messaging when the user has been consistent for 2+ weeks: 'Research across nearly 1,200 women with PCOS shows that the longer you maintain consistent dietary changes, the greater the hormonal improvement — effects compound over weeks and months. You are building something that pays off long-term.' Also use this when a user seems discouraged about slow progress: 'PCOS dietary changes show their full effects after 3-6 months of consistency. Even small, sustainable changes over that time outperform dramatic short-term restrictions.' Keep tone warm and encouraging.",
+    "triggers": [
+      "pcosFriendly",
+      "lowGlycemic",
+      "insulinBalancing"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 3
+  },
+  {
+    "id": "shang_2020_jcem_calorie_restriction_bmi_weight",
+    "topic": "calorie restriction weight loss BMI PCOS diet optimal macronutrient independent composition",
+    "source": "Shang et al., Journal of Clinical Endocrinology and Metabolism 2020 (JCEM)",
+    "content": "In the meta-analysis of 19 trials, calorie-restricted diets were the most advantageous dietary pattern for weight loss and BMI reduction in PCOS, regardless of the macronutrient composition. Long-term weight loss and metabolic improvement may be independent of macronutrient composition — what matters more is overall energy balance. Weight reduction from low-calorie diets is associated with reduced fat mass and preserved lean body mass, which increases SHBG production by the liver and reduces free testosterone levels. Calorie-restricted diets positively affect glycaemic control by enhancing insulin sensitivity. Diet was more beneficial for quick BMI decline within 12 weeks compared to metformin (MD = -2.49 kg/m2 greater than metformin).",
+    "action": "For overweight or obese users where BMI is above 25 and the daily goals card is being generated: include awareness of their calorie target alongside food quality guidance. Use gently: 'For PCOS with higher BMI, staying near your daily calorie target is more important than any specific diet type — research shows this reduces testosterone and improves insulin more reliably than any particular food pattern alone. Focus on eating enough of the right foods to feel satisfied within your daily target, rather than restricting.' Never use 'eat less' framing — always 'eat the right amount of the right foods.'",
+    "triggers": [
+      "highCalorie",
+      "highCarb",
+      "insulinSpiking"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "shang_2020_jcem_diet_vs_metformin_weight",
+    "topic": "diet superior to metformin weight loss BMI PCOS HOMA-IR comparable insulin fasting glucose",
+    "source": "Shang et al., Journal of Clinical Endocrinology and Metabolism 2020 (JCEM)",
+    "content": "Direct head-to-head comparison of diet versus metformin across 4 trials (340 participants) found diet was superior to metformin for weight loss — producing 5.46 kg more weight reduction and 2.49 kg/m2 greater BMI reduction. Diet was comparable to metformin for HOMA-IR, fasting insulin, and fasting plasma glucose reduction, without metformin's side effects (nausea, diarrhea, vitamin B12 depletion). The low-carbohydrate diet was more effective than calorie-restricted or low-fat diets when compared to metformin for BMI. Diet represents an effective option for patients who cannot tolerate metformin's gastrointestinal side effects.",
+    "action": "If a user mentions they are taking metformin or asks about it in chat, respond with: 'Metformin is commonly prescribed for PCOS insulin resistance. What research shows is that consistent dietary changes produce equal insulin improvements and actually better weight results than metformin — without the stomach upset side effects. The two work well together, but diet alone is powerful. If you are currently on metformin, continue as prescribed by your doctor — dietary changes will compound its benefits.' Always respect medical treatment; never suggest stopping medication.",
+    "triggers": [
+      "insulinBalancing",
+      "pcosFriendly"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 3
+  },
+  {
+    "id": "shang_2020_jcem_fibre_insulin_PCOS_mechanism",
+    "topic": "dietary fibre insulin sensitivity HOMA-IR fasting insulin PCOS whole grains legumes nuts satiety",
+    "source": "Shang et al., Journal of Clinical Endocrinology and Metabolism 2020 (JCEM)",
+    "content": "Studies indicate that consumption of dietary fibre is inversely correlated with fasting insulin, HOMA-IR, and the Matsuda insulin index in PCOS. Fibre from whole grains, legumes, and nuts produces superior insulin and glucose responses. The DASH diet's success in PCOS is largely attributed to its high fibre content from fruits, vegetables, whole grains, nuts, and legumes — rich sources of dietary fibre and micronutrients. Diets with low GI improve insulin sensitivity and lower blood glucose by increasing satiety and producing less hypoglycaemia. High fibre is an essential part of the diet for insulin resistance. The type of carbohydrate consumed is more important than the ratio of carbohydrates in the diet.",
+    "action": "When building the daily goals card and fibre intake has been consistently low across the week (calculated from low-fibre food tags and absence of legume/whole grain logs), make fibre the primary goal for the day with a concrete number: 'Your logs this week show low fibre intake. Aim for 25-30g fibre today: a bowl of oats or ragi (8g) + rajma in lunch (7g) + 2 rotis of bajra (4g) + raw vegetables (5g) = ~24g fibre. This directly reduces the insulin spikes that drive PCOS symptoms.' Make it measurable and food-specific.",
+    "triggers": [
+      "lowFibre",
+      "insulinSpiking",
+      "highGlycemic"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "phy_pohlmeier_2015_dairy_insulinemic_pcos",
+    "topic": "dairy milk whey insulinemic insulin spike PCOS beyond glycemic index starch",
+    "source": "Phy et al. 2015 (PMC4516387) & Pohlmeier et al. 2014 (PMC4211969), n=24 PCOS women, 8-week RCT",
+    "content": "Carbohydrates from dairy products and starch-based foods cause greater postprandial insulin secretion than carbohydrates from non-starchy vegetables and fruits — independently of their glycemic index. This dissociation between glycemic response and insulinemic response is even greater in insulin-resistant populations like PCOS. The insulinemic properties of dairy come primarily from the whey protein fraction, which triggers insulin secretion directly regardless of blood sugar response. Therefore, low-GI dairy products like yogurt and skim milk can still spike insulin significantly in PCOS women. This is distinct from the glycemic index, which measures blood sugar only.",
+    "action": "When the user logs dairy products (milk, skim milk, yogurt, buttermilk, paneer in large quantities), flag the insulinemic effect beyond GI: 'Dairy products — especially milk — cause a significant insulin spike in PCOS even when their glycemic index is low. This is because dairy's whey protein directly triggers insulin release. Homemade dahi (curd) is much less insulinemic than milk because most whey is removed during fermentation, and is the best dairy choice for PCOS. Limit plain milk and skim milk; choose dahi or paneer in moderate amounts instead.' This is a critical distinction most users don't know.",
+    "triggers": [
+      "dairySensitive",
+      "insulinSpiking",
+      "highInsulinLoad"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "phy_2015_low_starch_dairy_testosterone_results",
+    "topic": "low starch dairy diet testosterone hirsutism HOMA-IR weight loss PCOS 8 weeks results",
+    "source": "Phy et al. 2015 (PMC4516387), n=24 overweight/obese PCOS women, 8-week RCT",
+    "content": "An 8-week diet eliminating insulinemic foods (starches, dairy, added sugars) — while allowing ad libitum intake of lean proteins, non-starchy vegetables, low-sugar fruits, nuts and seeds — produced significant improvements in PCOS women without calorie counting: weight reduced by 8.6 kg, HOMA-IR reduced by 51%, fasting insulin reduced by 52%, total testosterone reduced by 19%, free testosterone reduced by 23%, Ferriman-Gallwey hirsutism scores reduced, triglycerides reduced by 35%, and VLDL reduced by 29%. Vitamin D levels increased by 22% without supplementation. Women naturally ate approximately 1400 kcal/day without any calorie restriction instruction.",
+    "action": "When the user asks about managing hirsutism, insulin, or testosterone through food, or when 7-day logs show high starch and dairy intake: 'Research on PCOS specifically found that removing insulinemic foods — especially starches like white rice, maida, and breads, plus dairy milk — for 8 weeks reduced testosterone by nearly 20% and visibly improved hirsutism scores without any calorie counting or medication. The key foods were replaced with vegetables, fruits, eggs, lean meat, nuts, and dahi (which is much less insulinemic than milk). This is a structured 8-week approach worth discussing with your doctor.' Give the specific numbers to build confidence.",
+    "triggers": [
+      "hirsutism",
+      "acne",
+      "insulinSpiking",
+      "highCarb",
+      "dairySensitive"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "pohlmeier_2014_metabolic_inflexibility_pcos",
+    "topic": "metabolic inflexibility fat oxidation impaired PCOS hyperinsulinemia RER respiratory exchange ratio",
+    "source": "Pohlmeier et al. 2014 (PMC4211969), n=10 overweight/obese PCOS women",
+    "content": "Women with PCOS have metabolic inflexibility — an impaired ability to switch between fat and glucose oxidation. At baseline, PCOS women had elevated fasting respiratory exchange ratios (0.85), indicating they were burning mostly glucose even while fasting overnight, rather than fat. This is driven by hyperinsulinemia: persistently elevated insulin suppresses lipoprotein lipase in skeletal muscle (reducing fat burning) while increasing it in adipose tissue (increasing fat storage). After 8 weeks on a low-insulinemic diet, fasting RER dropped to 0.77 — a significant improvement in the ability to burn fat. This metabolic inflexibility explains why weight loss is particularly difficult in PCOS and why reducing insulinemic foods can facilitate weight loss even without calorie restriction.",
+    "action": "When the user reports difficulty losing weight despite dietary efforts, or when they express frustration that 'everything turns to fat': 'This is a real and documented feature of PCOS — your body is in a state called metabolic inflexibility, where high insulin levels physically prevent you from burning stored fat, even when you're not eating. This isn't about willpower. Reducing the foods that spike insulin the most — especially starches and dairy milk — is the most direct way to break this cycle. Research showed PCOS women's fat-burning ability significantly improved just from removing these foods over 8 weeks.' Validate the experience, explain the mechanism, give the practical action.",
+    "triggers": [
+      "insulinSpiking",
+      "highCarb",
+      "dairySensitive",
+      "fatigue"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "mccartney_2016_5_10_percent_weight_loss_pcos",
+    "topic": "5 percent 10 percent weight loss PCOS menstrual function androgens cardiometabolic ovulation restore",
+    "source": "McCartney & Marshall, NEJM 2016 (PMC5301909)",
+    "content": "Weight loss of as little as 5 to 10% can reduce cardiometabolic risk factors and androgen levels and improve menstrual function and possibly fertility in women with PCOS. This is one of the most evidence-backed and clinically significant thresholds in PCOS management — a relatively modest weight reduction produces disproportionately large hormonal improvements. Available treatments do not reverse the underlying disorder, although sustained weight loss may be an exception in some obese women with PCOS. This 5-10% threshold is achievable through consistent dietary changes without extreme restriction.",
+    "action": "When a user with overweight or obese BMI logs food consistently and asks about goals or progress, frame the 5-10% threshold concretely: 'Research published in the New England Journal of Medicine shows that losing just 5-10% of your body weight — for someone at 80kg, that is only 4-8kg — is enough to meaningfully reduce your testosterone levels and restore more regular cycles in PCOS. This is a realistic, achievable goal that produces hormonal changes most people don't expect from such a modest change.' This makes weight-related goals feel achievable rather than overwhelming.",
+    "triggers": [
+      "pcosFriendly",
+      "insulinBalancing",
+      "highCalorie"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "mccartney_2016_endometrial_cancer_anovulation_protection",
+    "topic": "endometrial cancer risk PCOS anovulation prolonged estrogen progestin protection irregular cycles",
+    "source": "McCartney & Marshall, NEJM 2016 (PMC5301909)",
+    "content": "The risk of endometrial cancer is estimated to be 2.7 times as high among women with PCOS as among women without the syndrome, and the lifetime risk has been estimated as high as 9%. Risk factors include anovulation, obesity, and insulin resistance. The risk related to chronic anovulation reflects prolonged estrogen-mediated stimulation of the endometrium without adequate progesterone exposure — when ovulation does not occur, progesterone is not produced, and the endometrium is continuously stimulated by estrogen without protection. Women with PCOS who have prolonged amenorrhea or persistently abnormal vaginal bleeding should be referred to a gynecologist. Endometrial protection may be achieved with hormonal contraceptives, progestin therapy, or a levonorgestrel-releasing IUD.",
+    "action": "This is a safety-critical chunk for the chatbot. When a user mentions in chat that they have not had a period for 3+ months (or describes amenorrhea, very irregular cycles), include this safety note clearly but warmly: 'When periods are very infrequent or absent, the lining of the uterus can build up over time without being shed — this is a real health consideration in PCOS and one reason doctors recommend ensuring a bleed at least every 3 months. Please mention this to your doctor at your next visit so they can discuss options for protecting your uterine lining.' Do NOT alarm the user about cancer risk — focus on the protective action. Never diagnose.",
+    "triggers": [
+      "pcosFriendly"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "mccartney_2016_hirsutism_6_months_expectation",
+    "topic": "hirsutism hair growth treatment timeline 6 months expectation slow improvement hair shaft",
+    "source": "McCartney & Marshall, NEJM 2016 (PMC5301909)",
+    "content": "Changes in hirsutism take a minimum of 6 months to become visible, regardless of whether the treatment is dietary, hormonal, or pharmacological. This is because changes in the quality of terminal hair begin at the hair root — altered hair shafts may not become visible for up to 6 months. New terminal hair growth is reduced by treatments that lower androgens, but existing thick dark hairs do not become thinner until they naturally cycle out and are replaced by finer growth. This timeline applies to all interventions including dietary androgen reduction.",
+    "action": "When the user logs hirsutism symptoms and asks about dietary changes or is frustrated that changes haven't helped their hair: 'Hair growth from PCOS responds to androgen reduction very slowly — clinical research shows it takes at least 6 months before visible improvement occurs, even when androgens are genuinely falling. This is because the hair itself grows from the root, and the existing dark hairs need to complete their natural cycle before being replaced by finer growth. The dietary changes for reducing androgens (spearmint tea, flaxseed, low-GI eating) are working at the root level right now — you just cannot see it yet. Consistency over 6 months is what produces visible results.' This directly addresses one of the most common frustrations and reasons for giving up.",
+    "triggers": [
+      "hirsutism",
+      "hairLoss"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 1
+  },
+  {
+    "id": "mccartney_2016_impaired_glucose_tolerance_prevalence",
+    "topic": "impaired glucose tolerance type 2 diabetes PCOS prevalence 30 35 percent 8 10 percent screening",
+    "source": "McCartney & Marshall, NEJM 2016 (PMC5301909)",
+    "content": "Impaired glucose tolerance is reported in 30 to 35% of US women with classic PCOS (hyperandrogenism + ovulatory dysfunction), and type 2 diabetes in 8 to 10%. More than half of all women with PCOS develop type 2 diabetes by age 40. The risk is influenced by age, adiposity, and family history of diabetes. These rates are dramatically higher than in women without PCOS. Screening for impaired glucose tolerance and type 2 diabetes with a 2-hour oral glucose tolerance test is recommended, repeated every 1-5 years depending on patient characteristics. Measurement of fasting blood glucose alone is NOT recommended for diabetes screening in PCOS — it misses impaired glucose tolerance.",
+    "action": "When the user asks about diabetes risk in the chatbot or mentions family history of diabetes: 'PCOS significantly increases the risk of diabetes — research shows over 30% of women with PCOS already have impaired glucose tolerance, and more than half develop type 2 diabetes by age 40. The good news is that this risk is highly modifiable through diet. The same low-GI, high-fibre eating approach that helps your PCOS symptoms also specifically protects against diabetes progression. If you have not had a 2-hour glucose tolerance test recently, ask your doctor for one — fasting glucose alone misses many cases in PCOS.' Direct them to get properly screened without alarming them.",
+    "triggers": [
+      "insulinSpiking",
+      "highGlycemic",
+      "insulinBalancing",
+      "pcosFriendly"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "giampaolino_2021_bacteroides_vulgatus_IL22_mechanism",
+    "topic": "Bacteroides vulgatus bile acid GDCA TUDCA IL-22 interleukin insulin resistance ovary PCOS mechanism",
+    "source": "Giampaolino et al., PMC7922491 (Microbiome and PCOS review)",
+    "content": "A key mechanism linking gut microbiome to PCOS has been identified: women with PCOS have significantly increased Bacteroides vulgatus bacteria, which carry bile salt hydrolase genes that break down bile acids. This reduces levels of glycodeoxycholic acid (GDCA) and tauroursodeoxycholic acid (TUDCA). Low GDCA then reduces interleukin-22 (IL-22) production. IL-22 is critical because it improves insulin resistance, regulates disrupted oestrous cycles, reverses ovary morphological changes, and improves infertility. When IL-22 is depleted, these PCOS features worsen. Crucially, transplanting faecal microbiota from women with PCOS into healthy mice causes those mice to develop PCOS-like insulin resistance, disrupted oestrous cycles, and hormonal abnormalities — proving gut microbiome has a causal role in PCOS pathogenesis.",
+    "action": "When the user asks why gut health matters for PCOS in the chatbot, or when they are sceptical about the gut-PCOS connection: 'The connection between gut bacteria and PCOS is not just correlational — researchers transplanted gut bacteria from women with PCOS into healthy mice, and those mice developed insulin resistance and hormone imbalances typical of PCOS. The mechanism involves specific bacteria reducing a compound that controls insulin and ovarian function. This is why supporting good gut bacteria through fermented foods, fibre, and plant-based eating has direct effects on your PCOS symptoms, not just your digestion.' Make the causal mechanism concrete and compelling.",
+    "triggers": [
+      "gutFriendly",
+      "bloating",
+      "constipated",
+      "proInflammatory"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "giampaolino_2021_plant_vs_animal_protein_gut_microbiome",
+    "topic": "plant protein animal protein gut microbiome Bifidobacterium Lactobacillus Bacteroides inflammation SCFA PCOS diet",
+    "source": "Giampaolino et al., PMC7922491 (Microbiome and PCOS review)",
+    "content": "Plant proteins increase Bifidobacterium and Lactobacillus in the gut and decrease Bacteroides fragilis and Clostridium perfringens — this increases short-chain fatty acid (SCFA) production and decreases inflammation. Animal-based proteins increase Bacteroides, Alistipes, and Bilophila, and reduce Bifidobacterium adolescentis — these changes increase cardiovascular and inflammatory risk. A high-fat diet specifically correlates with less Lactobacillus and more Clostridiales, Bacteroides, and Enterobacteriales — all associated with inflammation. For PCOS specifically, both Lactobacilli and Bifidobacteria are significantly reduced compared to healthy women, and increasing them improves PCOS outcomes.",
+    "action": "When the user's food logs show consistently low legume/plant protein intake and high animal protein or processed meat intake: 'The balance of your protein sources affects your gut bacteria significantly for PCOS. Plant proteins from rajma, chana, moong, and lentils directly feed the beneficial bacteria (Lactobacillus and Bifidobacterium) that are depleted in PCOS. Animal proteins tend to feed different bacteria that increase inflammation. This does not mean avoiding meat entirely — but aiming for plant protein as the primary source at least once a day makes a measurable difference to your gut health and PCOS symptoms over time.' Give the practical action without being prescriptive.",
+    "triggers": [
+      "gutFriendly",
+      "proInflammatory",
+      "antiInflammatory",
+      "highProtein"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "giampaolino_2021_probiotic_strains_specific_pcos",
+    "topic": "probiotic strains Lactobacillus Bifidobacterium PCOS specific effects insulin testosterone SHBG FAI",
+    "source": "Giampaolino et al., PMC7922491 (Microbiome and PCOS review)",
+    "content": "Specific probiotic strains have demonstrated measurable effects in PCOS. Lactobacillus acidophilus, L. casei, and Bifidobacterium bifidum for 12 weeks significantly decreased weight and BMI and improved glycaemia and triglycerides. A combination of L. casei, L. acidophilus, L. rhamnosus, L. bulgaricus, B. breve, B. longum, and Streptococcus thermophiles for 8 weeks significantly decreased plasma glucose and serum insulin. Probiotic therapy has shown significant reduction of Free Androgen Index (FAI) and malondialdehyde (MDA), and increase in SHBG. Transplantation of Lactobacillus from normal rats into PCOS rats improved PCOS phenotypes by reducing androgen biosynthesis. Food-based probiotics from fermented foods support these same bacterial families.",
+    "action": "When the user asks about probiotics for PCOS in the chatbot: 'Research specifically on PCOS has found that probiotic bacteria — particularly Lactobacillus and Bifidobacterium strains — reduce free androgen index (the measure of available testosterone), increase SHBG (the protein that binds and inactivates testosterone), and improve insulin levels. The most practical food-based source is homemade dahi — industrially made dahi often has fewer live cultures. For maximum benefit, eat it fresh, daily, without heating it. If you want to discuss supplement-based probiotics, bring this to your doctor.' Ground the clinical evidence in a practical Indian food recommendation.",
+    "triggers": [
+      "gutFriendly",
+      "bloating",
+      "acne",
+      "hirsutism",
+      "insulinSpiking"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "giampaolino_2021_vaginal_microbiome_pcos_lactobacillus",
+    "topic": "vaginal microbiome PCOS Lactobacillus crispatus reduced Mycoplasma Prevotella infertility pregnancy outcomes",
+    "source": "Giampaolino et al., PMC7922491 (Microbiome and PCOS review)",
+    "content": "Women with PCOS have significantly altered vaginal and cervical canal microbiomes compared to healthy women. Lactobacillus crispatus is significantly reduced in PCOS (p=0.001), while Mycoplasma and Prevotella are elevated. The relative abundance of Mycoplasma showed an AUC of 0.958 as a potential PCOS biomarker. Reduced Lactobacillus in the female reproductive tract is associated with infertility, abortion, stillbirth, preterm labour, recurrent implantation failure, and adverse pregnancy outcomes. The irregular menstruation and abnormal hormone levels in PCOS alter the menstrual cycle environment that normally maintains healthy vaginal microbiome. Irregular cycles mean less periodic cleansing and less regular hormonal cycling of the reproductive tract environment.",
+    "action": "This chunk is for chatbot use only when the user asks about vaginal health, recurrent infections, or fertility concerns in PCOS. Respond: 'PCOS affects not just gut bacteria but also the vaginal microbiome — research shows beneficial bacteria in the reproductive tract are significantly reduced in PCOS, which can affect fertility and increase vulnerability to infections. Maintaining gut health through dietary changes also supports vaginal microbiome indirectly. If you experience recurrent vaginal discomfort or infections, or are trying to conceive, mention this specifically to your gynaecologist — it is an underrecognised aspect of PCOS.' Do not diagnose or suggest supplements for vaginal issues.",
+    "triggers": [
+      "pcosFriendly",
+      "gutFriendly"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 3
+  },
+  {
+    "id": "bellver_2017_pcos_lifecycle_adolescent_perimenopause",
+    "topic": "PCOS lifecycle adolescence perimenopause ageing metabolic complications evolve fetal programming offspring",
+    "source": "Bellver et al., PMC5758469 (PCOS throughout a woman's life)",
+    "content": "PCOS spans the entire life of a woman from in-utero programming through to old age. Fetal programming — androgenic or metabolic imprinting in utero — may represent the beginning of PCOS. In adolescence, irregular cycles and hirsutism emerge. In adulthood, menstrual and fertility problems are dominant. As age advances, metabolic complications (diabetes, cardiovascular disease, dyslipidaemia) become increasingly important. Offspring of PCOS women have increased fetal and post-natal complications and are at higher risk of developing PCOS themselves. Many different phenotypes exist under the same diagnosis, and they may require different treatments and have different consequences. The condition exhibits great metabolic complexity and phenotypes can change over a woman's lifespan.",
+    "action": "When the user asks about long-term consequences of PCOS, or expresses worry about the future, or asks if PCOS gets better or worse: 'PCOS is a lifelong condition that changes its face over time. In your reproductive years, the main concerns are cycle irregularity, hirsutism, and fertility. As you age, the focus shifts to metabolic health — preventing diabetes and cardiovascular disease. The good news is that the dietary and lifestyle changes that help your symptoms now are the same ones that protect your long-term health. Think of them as compounding investments, not just symptom management.' Use this to reframe lifestyle changes as long-term health investments.",
+    "triggers": [
+      "pcosFriendly",
+      "anxiety",
+      "depressed"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 3
+  },
+  {
+    "id": "bellver_2017_pcos_pregnancy_complications",
+    "topic": "PCOS pregnancy complications gestational diabetes preeclampsia miscarriage preterm birth congenital anomalies",
+    "source": "Bellver et al., PMC5758469 & Melo et al., PMC4642490",
+    "content": "Obese women with PCOS have significantly increased risk of pregnancy complications: gestational diabetes (OR 2.94), hypertensive disorders including preeclampsia (OR 3.47), miscarriage, preterm births (OR 1.75), and caesarean delivery (OR 1.74). The risk for preterm births and preeclampsia appears to be associated with maternal hyperandrogenism, not just obesity. Weight reduction before conception is associated with reduced incidence of pregnancy complications. Folic acid is specifically recommended before and during early pregnancy to prevent fetal neural tube defects. Lifestyle change should be the first choice for preconception weight management.",
+    "action": "When the user mentions trying to conceive or asks about pregnancy with PCOS: 'PCOS does increase some pregnancy risks — gestational diabetes and preeclampsia are more common, and miscarriage rates are higher. The most protective steps you can take before pregnancy are: achieve the closest possible to a healthy BMI through sustainable dietary changes, ensure your insulin is well managed through low-GI eating, and start a folic acid supplement (400mcg daily — discuss with your doctor). Research shows even a 5-10% weight reduction significantly reduces these pregnancy risks. Your PCOS does not prevent a healthy pregnancy — it just means preparing more intentionally.' Always end with realistic reassurance.",
+    "triggers": [
+      "pcosFriendly"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "follicular",
+      "ovulation"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "melo_2015_fertility_treatment_pathway_pcos",
+    "topic": "infertility PCOS treatment clomiphene letrozole gonadotropins IVF ovulation induction pathway",
+    "source": "Melo et al., PMC4642490 (Treatment of infertility in PCOS)",
+    "content": "PCOS represents 80% of anovulatory infertility cases. The treatment pathway is: (1) Lifestyle changes and 5-10% weight loss as first step — improving ovulation rate and hormonal environment before medical treatment. (2) Clomiphene citrate — first-line medication, ovulation rate 75-80%, cumulative pregnancy rate 60-70% over 6 cycles. (3) Letrozole — aromatase inhibitor, shown in a major RCT to have higher live birth rate than clomiphene (27.5% vs 19.1%). (4) Gonadotropins or ovarian drilling — second-line for clomiphene-resistant cases. (5) IVF — third-line when previous treatments fail. Metformin alone is not recommended for ovulation induction but may be used alongside gonadotropins in specific cases. Two thirds of women with PCOS have achieved at least one pregnancy without medical assistance.",
+    "action": "When the user asks about fertility or pregnancy with PCOS in the chatbot: 'The majority of women with PCOS can achieve pregnancy, though sometimes with medical support. The evidence-based pathway starts with lifestyle changes — which can restore ovulation independently in many cases — before medical treatment. Research shows two thirds of women with PCOS have achieved pregnancy without fertility treatment. Letrozole and clomiphene are the most used first-line medications for ovulation induction if needed. IVF is available as a further option. Discuss your specific situation with a reproductive endocrinologist who can guide you through the pathway most appropriate for you.' Keep this as general guidance and always direct to a doctor.",
+    "triggers": [
+      "pcosFriendly"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "follicular",
+      "ovulation"
+    ],
+    "priority": 3
+  },
+  {
+    "id": "mccartney_2016_sleep_apnea_pcos_obese",
+    "topic": "obstructive sleep apnea PCOS obesity insulin resistance screening fatigue poor sleep",
+    "source": "McCartney & Marshall, NEJM 2016 (PMC5301909)",
+    "content": "Women with PCOS have increased risk of obstructive sleep apnea, which is at least partly independent of obesity. Sleep apnea independently worsens insulin resistance and disrupts cortisol rhythm. International guidelines recommend screening all women with PCOS for obstructive sleep apnea. In obese PCOS women, sleep apnea rates are particularly high (up to 50%). Snoring, waking unrefreshed despite adequate hours of sleep, and excessive daytime fatigue are key warning signs. Sleep apnea, if untreated, creates a cycle where poor sleep quality worsens insulin resistance, which worsens PCOS, which worsens sleep quality.",
+    "action": "When the user consistently logs poor-quality sleep (disturbed, light) despite logging adequate duration, and also logs fatigue, flag this specifically: 'One thing worth mentioning to your doctor: if you are sleeping for 7-8 hours but still waking up feeling exhausted or unrefreshed, or if you snore, this could be a sign of sleep apnea — which is significantly more common in PCOS and independently worsens insulin resistance. It is a simple thing to check for and very treatable. Bring up your sleep quality symptoms at your next doctor visit.' This is a safety-relevant, medically important referral point that the chatbot can flag without overstepping.",
+    "triggers": [
+      "fatigue",
+      "disturbed"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "phy_2015_low_starch_dairy_indian_adaptation",
+    "topic": "low insulinemic diet Indian food adaptation starch dairy elimination what to eat practically PCOS",
+    "source": "Synthesized from Phy et al. 2015 (PMC4516387) & Pohlmeier et al. 2014 (PMC4211969) — Indian context adaptation",
+    "content": "The low starch/low dairy diet that produced significant PCOS improvements eliminated: all grains (refined and whole), beans and pulses, dairy milk and milk products, and added sugars. It included ad libitum: lean animal protein, non-starchy vegetables, low-sugar fruits (berries, apples, oranges, plums), nuts, seeds, oils, and — importantly — small amounts of full-fat cheese (because cheese is less insulinemic than milk due to low whey content). The diet naturally resulted in approximately 94g protein, 94g carbohydrate from vegetables and fruit, and 72g fat per day. In an Indian dietary context, this approach eliminates roti, rice, dal/beans, and plain milk while retaining vegetables, eggs, paneer (small amounts), dahi, nuts, and low-sugar fruits.",
+    "action": "When a user asks for a structured dietary approach or what to specifically cut for PCOS insulin management: 'A research-backed approach for PCOS specifically eliminates the most insulinemic foods: all grains (roti, rice, bread, oats), plain milk, and added sugars — and replaces them with: unlimited non-starchy vegetables (sabzi), eggs, paneer in small amounts, dahi, nuts (akhrot, badam, kaddu ke beej), and low-sugar fruits (amla, jamun, santara, seb). Legumes like rajma and moong are excluded in the strictest version of this approach due to their starch content, though they are retained in gentler low-GI approaches. This is a significant dietary shift — discuss with your doctor before starting, especially if you have any other health conditions.' Always close with the doctor caveat for a major dietary change.",
+    "triggers": [
+      "highCarb",
+      "insulinSpiking",
+      "dairySensitive",
+      "highGlycemic"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "mccartney_2016_LH_FSH_progesterone_resistance_mechanism",
+    "topic": "LH FSH ratio GnRH pulse progesterone resistance PCOS pathophysiology androgen excess anovulation",
+    "source": "McCartney & Marshall, NEJM 2016 (PMC5301909)",
+    "content": "In PCOS, the GnRH (gonadotropin-releasing hormone) pulse generator in the hypothalamus is relatively resistant to the normal negative feedback effects of progesterone. This resistance appears to be mediated by androgen excess — it can be reversed by androgen-receptor blockers. The result is persistently rapid GnRH pulses, which favour LH production over FSH. Elevated LH stimulates androgen production in ovarian theca cells while insufficient FSH impairs follicle maturation and ovulation. Hyperinsulinemia augments LH-stimulated androgen production, inhibits hepatic SHBG synthesis (increasing free testosterone), and potentiates adrenal androgen production — creating a self-reinforcing cycle where androgens perpetuate their own production.",
+    "action": "Use this for chatbot education when the user asks why PCOS causes irregular cycles or why androgens are high. Frame simply: 'In PCOS, a specific hormonal signalling loop becomes stuck: elevated androgens prevent your brain from releasing the right balance of hormones to trigger ovulation. Insulin makes this worse by further stimulating androgen production. This is why reducing both androgens and insulin through diet has such a direct effect on cycle regularity — you are addressing the two main drivers of the stuck loop.' Use this to explain mechanism without jargon, building understanding and motivation.",
+    "triggers": [
+      "pcosFriendly",
+      "insulinSpiking"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 3
+  },
+  {
+    "id": "giampaolino_2021_SCFA_gut_brain_axis_PCOS",
+    "topic": "SCFA short chain fatty acids gut brain axis ghrelin PYY sex hormones PCOS satiety appetite",
+    "source": "Giampaolino et al., PMC7922491 (Microbiome and PCOS review)",
+    "content": "Lower concentrations of short-chain fatty acids (SCFAs) are found in faecal samples of PCOS patients. Probiotics promote growth of SCFA-producing bacteria (Faecalibacterium prausnitzii, Bifidobacterium, Akkermansia). SCFAs bind to receptors on enteroendocrine cells and directly stimulate release of gut-brain mediators including ghrelin and peptide YY (PYY). The increase in these hormones influences sex hormone secretion via the gut-brain axis, affecting PCOS symptoms. Importantly, women with PCOS have lower levels of ghrelin and PYY than healthy women — possibly due to elevated Bacteroides species that suppress these hormones. Increased SCFA production also strengthens the gut barrier and reduces translocation of endotoxins, reducing inflammation and insulin resistance.",
+    "action": "When the user reports strong hunger, difficulty feeling full, or frequent food cravings alongside gut symptoms: 'Gut bacteria produce compounds called short-chain fatty acids that regulate hunger hormones. In PCOS, these bacteria are often depleted, which means the hunger-regulating signals become weaker — making it genuinely harder to feel satisfied after eating. High-fibre foods (isabgol, oats, rajma, sabja seeds) directly feed the bacteria that produce these fatty acids. Adding these consistently is one of the most targeted ways to improve both gut health and appetite regulation in PCOS.' Connects the gut mechanism to a practical craving/hunger issue the user experiences.",
+    "triggers": [
+      "gutFriendly",
+      "bloating",
+      "constipated",
+      "lowFibre"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC",
+      "typeD"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 2
+  },
+  {
+    "id": "mccartney_2016_lipid_cardiovascular_risk_pcos",
+    "topic": "lipid profile cholesterol triglycerides LDL HDL cardiovascular risk PCOS dyslipidaemia screening",
+    "source": "McCartney & Marshall, NEJM 2016 (PMC5301909)",
+    "content": "Women with PCOS have lower HDL cholesterol and higher triglyceride and LDL cholesterol levels than women without the syndrome, and differences in LDL cholesterol are at least partly independent of BMI. Subclinical vascular disease — impaired endothelial function, increased carotid-artery intima-media thickness, elevated coronary-artery calcium scores — has been reported in PCOS and appears partly independent of adiposity. Fasting lipid levels should be screened every 2 years in PCOS (or sooner if weight gain occurs). The cardiometabolic risk in PCOS is a long-term concern that dietary and lifestyle changes directly address.",
+    "action": "When the user asks about heart health or long-term risk with PCOS, or the daily goals card is being generated for a user who has not logged omega-3, nut, or fibre-rich foods in their 7-day window: 'PCOS independently increases cardiovascular risk through its effects on cholesterol and blood vessel health, separate from weight. The most effective dietary approach for protecting heart health in PCOS overlaps completely with what helps your symptoms: high-fibre foods (bajra, oats, rajma), omega-3 from flaxseed and walnuts, and reducing saturated fats from processed and fried foods. These work on your triglycerides, LDL, and insulin simultaneously.' Frame as convergent benefits — one set of food habits addresses multiple PCOS outcomes.",
+    "triggers": [
+      "proInflammatory",
+      "unhealthyFats",
+      "highCarb"
+    ],
+    "phenotypes": [
+      "typeA",
+      "typeB",
+      "typeC"
+    ],
+    "phase": [
+      "any"
+    ],
+    "priority": 3
+  }
+]
