@@ -344,6 +344,39 @@ class WorkoutPlayerViewController: UIViewController {
 //    }
 
 
+    var exerciseNameLabel: UILabel?
+
+    private func setupExerciseNameLabel() {
+        guard exerciseNameLabel == nil else { return }
+        
+        let lbl = UILabel()
+        lbl.font = .systemFont(ofSize: 22, weight: .bold)
+        lbl.textAlignment = .center
+        lbl.numberOfLines = 0
+        lbl.textColor = .label
+        lbl.translatesAutoresizingMaskIntoConstraints = false
+        SetNumberOutlet.superview?.addSubview(lbl)
+        
+        NSLayoutConstraint.activate([
+            lbl.centerXAnchor.constraint(equalTo: SetNumberOutlet.superview!.centerXAnchor),
+            lbl.topAnchor.constraint(equalTo: SetNumberOutlet.superview!.topAnchor, constant: 14),
+            lbl.leadingAnchor.constraint(greaterThanOrEqualTo: SetNumberOutlet.superview!.leadingAnchor, constant: 20),
+            lbl.trailingAnchor.constraint(lessThanOrEqualTo: SetNumberOutlet.superview!.trailingAnchor, constant: -20)
+        ])
+        exerciseNameLabel = lbl
+        
+        // Modifying constraints of SetNumberOutlet
+        if let container = SetNumberOutlet.superview {
+            for constraint in container.constraints {
+                if let first = constraint.firstItem as? UILabel, first == SetNumberOutlet, constraint.firstAttribute == .centerX {
+                    constraint.isActive = false
+                }
+            }
+            SetNumberOutlet.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 22).isActive = true
+            SetNumberOutlet.textAlignment = .left
+        }
+    }
+
     private func configureUI() {
     
         guard let workoutExercise = workoutExercise else {
@@ -354,26 +387,36 @@ class WorkoutPlayerViewController: UIViewController {
         let exercise = workoutExercise.exercise
         let currentSet = workoutExercise.sets[currentSetIndex]
         
-        
         title = activeWorkout.routine.name
         navigationController?.navigationBar.prefersLargeTitles = false
         
+        setupExerciseNameLabel()
+        exerciseNameLabel?.text = exercise.name
+
         if workoutExercise.exercise.isTimeBased {
-            RepsOutlet.text = "\(currentSet.durationSeconds ?? 0) sec"
+            let durationSecs = currentSet.durationSeconds ?? 0
+            if durationSecs >= 60 {
+                let mins = durationSecs / 60
+                let secs = durationSecs % 60
+                if secs == 0 {
+                    RepsOutlet.text = "\(mins) min"
+                } else {
+                    RepsOutlet.text = "\(mins) min \(secs) sec"
+                }
+            } else {
+                RepsOutlet.text = "\(durationSecs) sec"
+            }
             repetitionsText.text="Duration"
+            
+            SetNumberOutlet.isHidden = true
+            SetNumberOutlet.text = "Set 1 of 1" // Keep intrinsic size for layout
+            paceButton.isHidden = true
         } else {
             RepsOutlet.text = "\(currentSet.reps)"
             repetitionsText.text = "Reps"
             repetitionsText.isHidden=false
-        }
-
-        if workoutExercise.exercise.isTimeBased {
-             SetNumberOutlet.isHidden = false
-             SetNumberOutlet.text = exercise.name
-             SetNumberOutlet.font = .systemFont(ofSize: 22, weight: .bold)
-             paceButton.isHidden = true
-        } else {
-            SetNumberOutlet.text = "\(exercise.name)\nSet \(currentSetIndex + 1) of \(workoutExercise.sets.count)"
+            
+            SetNumberOutlet.text = "Set \(currentSetIndex + 1) of \(workoutExercise.sets.count)"
             SetNumberOutlet.isHidden = false
             SetNumberOutlet.font = .systemFont(ofSize: 18, weight: .semibold)
             paceButton.isHidden = false

@@ -46,7 +46,9 @@ final class Signal01ViewController: UIViewController {
         // Hide the second card if there is no second paragraph data
         card2View.isHidden = (secondReason == nil || secondReason!.isEmpty)
         
-        illustrationImageView.image = UIImage(named: signal.signalIllustration)
+        // Hide illustration
+        // illustrationImageView.image = UIImage(named: signal.signalIllustration)
+        illustrationImageView.isHidden = true
     }
 
 }

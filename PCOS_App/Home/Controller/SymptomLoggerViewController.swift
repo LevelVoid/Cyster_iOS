@@ -207,7 +207,7 @@ extension SymptomLoggerViewController: UICollectionViewDelegate {
         // Group size - 4 items horizontally
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),   // Full width
-            heightDimension: .absolute(145)           // Fixed height per row
+            heightDimension: .absolute(128)           // Fixed height per row
         )
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: groupSize,

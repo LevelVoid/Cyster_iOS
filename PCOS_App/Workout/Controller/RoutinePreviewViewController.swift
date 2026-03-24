@@ -140,6 +140,8 @@ class RoutinePreviewViewController: UIViewController, UITableViewDelegate, UITab
             withIdentifier: "CountdownViewController"
         ) as! CountdownViewController
 
+        countdownVC.modalPresentationStyle = .fullScreen
+
         countdownVC.onCountdownFinished = { [weak self] in
             guard let self else { return }
 

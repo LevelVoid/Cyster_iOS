@@ -29,7 +29,7 @@
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Log Symptoms" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V1y-aH-uZ6">
-                                <rect key="frame" x="12" y="20" width="108" height="14.333333333333336"/>
+                                <rect key="frame" x="16" y="20" width="100" height="14.333333333333336"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -38,9 +38,9 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="LbZ-BJ-by1" firstAttribute="centerX" secondItem="nlj-hS-1Io" secondAttribute="centerX" id="096-U0-UEh"/>
-                            <constraint firstItem="V1y-aH-uZ6" firstAttribute="leading" secondItem="nlj-hS-1Io" secondAttribute="leading" constant="12" id="Bd3-qy-33Z"/>
+                            <constraint firstItem="V1y-aH-uZ6" firstAttribute="leading" secondItem="nlj-hS-1Io" secondAttribute="leading" constant="16" id="Bd3-qy-33Z"/>
                             <constraint firstItem="V1y-aH-uZ6" firstAttribute="top" secondItem="nlj-hS-1Io" secondAttribute="top" constant="20" id="JC6-dc-nbK"/>
-                            <constraint firstAttribute="trailing" secondItem="V1y-aH-uZ6" secondAttribute="trailing" constant="12" id="iOS-r1-y1L"/>
+                            <constraint firstAttribute="trailing" secondItem="V1y-aH-uZ6" secondAttribute="trailing" constant="16" id="iOS-r1-y1L"/>
                             <constraint firstAttribute="bottom" secondItem="LbZ-BJ-by1" secondAttribute="bottom" constant="20" id="sfv-DI-EOf"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>

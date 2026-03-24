@@ -11,14 +11,14 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="FoodSuggestionsCollectionViewCell" customModule="PCOS_App" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="590" height="299"/>
+            <rect key="frame" x="0.0" y="0.0" width="590" height="341"/>
             <autoresizingMask key="autoresizingMask"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                <rect key="frame" x="0.0" y="0.0" width="590" height="299"/>
+                <rect key="frame" x="0.0" y="0.0" width="590" height="341"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fSO-iN-xdJ">
-                        <rect key="frame" x="0.0" y="0.0" width="590" height="299"/>
+                        <rect key="frame" x="0.0" y="0.0" width="590" height="341"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Try Today" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2k9-4l-ZCE">
                                 <rect key="frame" x="16" y="16" width="68.666666666666671" height="18"/>
@@ -40,10 +40,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="jp3-6U-S2w">
-                                <rect key="frame" x="16" y="61.666666666666671" width="558" height="237.33333333333331"/>
+                                <rect key="frame" x="16" y="61.666666666666657" width="558" height="263.33333333333337"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JSH-Gc-Uy2">
-                                        <rect key="frame" x="0.0" y="0.0" width="179.33333333333334" height="237.33333333333334"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="179.33333333333334" height="263.33333333333331"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="nuts_red" translatesAutoresizingMaskIntoConstraints="NO" id="cdy-lD-t65">
                                                 <rect key="frame" x="64.666666666666671" y="8.0000000000000071" width="50" height="50"/>
@@ -92,7 +92,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="suI-GL-8Rk">
-                                        <rect key="frame" x="189.33333333333331" y="0.0" width="179.33333333333331" height="237.33333333333334"/>
+                                        <rect key="frame" x="189.33333333333331" y="0.0" width="179.33333333333331" height="263.33333333333331"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="salad_green" translatesAutoresizingMaskIntoConstraints="NO" id="jwU-5a-sDh">
                                                 <rect key="frame" x="64.666666666666657" y="8.0000000000000071" width="50" height="50"/>
@@ -141,7 +141,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tNd-s2-szL">
-                                        <rect key="frame" x="378.66666666666669" y="0.0" width="179.33333333333331" height="237.33333333333334"/>
+                                        <rect key="frame" x="378.66666666666669" y="0.0" width="179.33333333333331" height="263.33333333333331"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="fruits_yellow" translatesAutoresizingMaskIntoConstraints="NO" id="eL6-yg-Ioo">
                                                 <rect key="frame" x="64.666666666666629" y="8.0000000000000071" width="50" height="50"/>
@@ -203,7 +203,7 @@
                             <constraint firstItem="2k9-4l-ZCE" firstAttribute="top" secondItem="fSO-iN-xdJ" secondAttribute="top" constant="16" id="g4v-CD-1A5"/>
                             <constraint firstAttribute="trailing" secondItem="jp3-6U-S2w" secondAttribute="trailing" constant="16" id="qWR-lS-znt"/>
                             <constraint firstItem="eDe-h1-9Q3" firstAttribute="top" secondItem="2k9-4l-ZCE" secondAttribute="bottom" constant="2" id="qmA-mz-KLc"/>
-                            <constraint firstAttribute="bottom" secondItem="jp3-6U-S2w" secondAttribute="bottom" id="vQO-SS-ZUs"/>
+                            <constraint firstAttribute="bottom" secondItem="jp3-6U-S2w" secondAttribute="bottom" constant="16" id="vQO-SS-ZUs"/>
                             <constraint firstItem="CnL-8e-tBJ" firstAttribute="top" secondItem="fSO-iN-xdJ" secondAttribute="top" constant="16" id="xhm-Yl-fWw"/>
                         </constraints>
                     </view>
@@ -216,11 +216,11 @@
                 <constraint firstItem="fSO-iN-xdJ" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="c4K-bz-p5i"/>
                 <constraint firstItem="fSO-iN-xdJ" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="x26-Xf-Qjm"/>
             </constraints>
-            <size key="customSize" width="590" height="299"/>
+            <size key="customSize" width="590" height="341"/>
             <connections>
                 <outlet property="mainContent" destination="fSO-iN-xdJ" id="4u8-Id-lu8"/>
             </connections>
-            <point key="canvasLocation" x="-311.4503816793893" y="106.69014084507043"/>
+            <point key="canvasLocation" x="-311.4503816793893" y="121.47887323943662"/>
         </collectionViewCell>
     </objects>
     <resources>

@@ -377,13 +377,13 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     
     func createSignalsSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
-            widthDimension: .absolute(105),
-            heightDimension: .absolute(120)
+            widthDimension: .absolute(110),
+            heightDimension: .absolute(132)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         let groupSize = NSCollectionLayoutSize(
-            widthDimension: .estimated(105),
-            heightDimension: .absolute(120)
+            widthDimension: .estimated(110),
+            heightDimension: .absolute(132)
         )
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: groupSize,
