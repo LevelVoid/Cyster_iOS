@@ -165,7 +165,7 @@ class SymptomPatternsCollectionViewCell:
         let titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.text = "No Data Yet"
-        titleLabel.font = .systemFont(ofSize: 17, weight: .regular)
+        titleLabel.font = .systemFont(ofSize: 16, weight: .regular)
         titleLabel.textColor = .label
         titleLabel.textAlignment = .center
         emptyStateContainer.addSubview(titleLabel)

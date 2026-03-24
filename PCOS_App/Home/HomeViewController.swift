@@ -19,9 +19,11 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationController?.navigationBar.prefersLargeTitles = false
 
         tabBarItem.title = "Today"
-        title = "Today"
+        navigationItem.title = ""
         
         let bgColor = UIColor(hex: "#FCEEED")
         collectionView.backgroundColor = bgColor
@@ -74,11 +76,11 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         chatbotButton.translatesAutoresizingMaskIntoConstraints = false
 
         // Style
-        let config = UIImage.SymbolConfiguration(pointSize: 22, weight: .medium)
-        let icon = UIImage(systemName: "message.fill", withConfiguration: config)
+        let icon = UIImage(named: "chat3")?.withRenderingMode(.alwaysOriginal)
         chatbotButton.setImage(icon, for: .normal)
-        chatbotButton.tintColor = .white
-        chatbotButton.backgroundColor = UIColor(hex: "#FE7A96") // deep pink
+        chatbotButton.imageView?.contentMode = .scaleAspectFill
+        chatbotButton.clipsToBounds = true
+        chatbotButton.backgroundColor = UIColor(hex: "#ffffff") // deep pink
         chatbotButton.layer.cornerRadius = 28
         chatbotButton.layer.shadowColor = UIColor.black.cgColor
         chatbotButton.layer.shadowOpacity = 0.25
@@ -88,13 +90,25 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
 
         view.addSubview(chatbotButton)
 
+//        // "Chat with Adira" label
+//        let chatLabel = UILabel()
+//        chatLabel.translatesAutoresizingMaskIntoConstraints = false
+//        chatLabel.text = "Chat with Adira"
+//        chatLabel.font = UIFont.systemFont(ofSize: 10, weight: .medium)
+//        chatLabel.textColor = UIColor(hex: "#FE7A96")
+//        chatLabel.textAlignment = .center
+//        view.addSubview(chatLabel)
+
         // Pin to bottom-right, just above the tab bar
         let tabBarHeight: CGFloat = tabBarController?.tabBar.frame.height ?? 83
         NSLayoutConstraint.activate([
             chatbotButton.widthAnchor.constraint(equalToConstant: 56),
             chatbotButton.heightAnchor.constraint(equalToConstant: 56),
             chatbotButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            chatbotButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -(tabBarHeight + 16))
+            chatbotButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -(tabBarHeight + 8)),
+
+//            chatLabel.topAnchor.constraint(equalTo: chatbotButton.bottomAnchor, constant: 4),
+//            chatLabel.centerXAnchor.constraint(equalTo: chatbotButton.centerXAnchor)
         ])
     }
 
@@ -355,7 +369,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             case 4: return self.createSleepCardSection()
             case 5: return self.createCycleSection()
             case 6: return self.createSymptomPatternsSection()
-            case 7: return self.createAboutPCOSSection()
+            //case 7: return self.createAboutPCOSSection()
             default: return nil
             }
         }
@@ -464,7 +478,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     func createSleepCardSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(200)
+            heightDimension: .estimated(150)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         let groupSize = NSCollectionLayoutSize(
@@ -753,7 +767,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
                 return allSymptoms.count
             }
             return 1  // empty state card
-        case 7: return aboutPCOSArticles.count
+        //case 7: return aboutPCOSArticles.count
         default: return 0
         }
     }
@@ -853,14 +867,14 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
             }
             return cell
             
-        case 7:
-            let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: "about_pcos_cell",
-                for: indexPath
-            ) as! AboutPCOSCollectionViewCell
-            let article = aboutPCOSArticles[indexPath.item]
-            cell.configure(with: article)
-            return cell
+//        case 7:
+//            let cell = collectionView.dequeueReusableCell(
+//                withReuseIdentifier: "about_pcos_cell",
+//                for: indexPath
+//            ) as! AboutPCOSCollectionViewCell
+//            let article = aboutPCOSArticles[indexPath.item]
+//            cell.configure(with: article)
+//            return cell
             
         default:
             return UICollectionViewCell()
@@ -885,7 +899,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         case 4: headerView.configureHeader(with: "Sleep Patterns")
         case 5: headerView.configureHeader(with: "Cycle Trends")
         case 6: headerView.configureHeader(with: "Symptom Patterns")
-        case 7: headerView.configureHeader(with: "About PCOS")
+        //case 7: headerView.configureHeader(with: "About PCOS")
         default: headerView.configureHeader(with: "")
         }
         return headerView
@@ -940,13 +954,13 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
 //        case 5:
 //            performSegue(withIdentifier: "showCycleReport", sender: nil)
             
-        case 7:
-            let article = aboutPCOSArticles[indexPath.item]
-            let vc = storyboard?.instantiateViewController(
-                withIdentifier: "AboutPCOSViewController"
-            ) as! AboutPCOSViewController
-            vc.section = article
-            navigationController?.pushViewController(vc, animated: true)
+//        case 7:
+//            let article = aboutPCOSArticles[indexPath.item]
+//            let vc = storyboard?.instantiateViewController(
+//                withIdentifier: "AboutPCOSViewController"
+//            ) as! AboutPCOSViewController
+//            vc.section = article
+//            navigationController?.pushViewController(vc, animated: true)
             
         default:
             break

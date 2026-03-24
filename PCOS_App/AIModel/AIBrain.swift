@@ -37,6 +37,7 @@ final class AIBrain {  // ← removed ObservableObject (no @Published = no confo
             - Keep responses to 3-5 sentences for simple questions; use structured format only when listing 3+ items
             - End with one specific actionable suggestion or a focused question
             - Emoji occasionally — warm, not excessive
+            - Do not use asterisk, and do not wrap your response in quotation marks.
 
             FOOD RULES:
             - Always recommend Indian foods: rajma, dahi, moong dal, palak, methi, alsi, pudina, haldi, adrak, amla, ragi, jowar
@@ -114,6 +115,7 @@ final class AIBrain {  // ← removed ObservableObject (no @Published = no confo
         - Only bring in health context when the user asks a health-related question or mentions a symptom/food/cycle.
         - Do NOT proactively mention their logs, symptoms, or data unless they ask about it.
         - A simple "hey" deserves a simple "hey back" — not a health lecture.
+        
 
         """
     }
