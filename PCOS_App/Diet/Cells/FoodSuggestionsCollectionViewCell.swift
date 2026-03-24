@@ -57,6 +57,9 @@ class FoodSuggestionsCollectionViewCell: UICollectionViewCell {
         private func stylePillTag(_ label: UILabel) {
             label.layer.cornerRadius = 6
             label.clipsToBounds = true
+            label.adjustsFontSizeToFitWidth = true
+            label.minimumScaleFactor = 0.6
+            label.numberOfLines = 1
         }
 
         // MARK: - Loading State
@@ -109,10 +112,15 @@ class FoodSuggestionsCollectionViewCell: UICollectionViewCell {
             name.text = meal.name
             name.font = .systemFont(ofSize: 13, weight: .semibold)
             name.numberOfLines = 2
+            name.adjustsFontSizeToFitWidth = true
+            name.minimumScaleFactor = 0.7
             name.textAlignment = .natural
 
             gram.text = meal.primaryMacro
-            gram.font = .systemFont(ofSize: 12, weight: .semibold)
+            gram.font = .systemFont(ofSize: 11, weight: .semibold)
+            gram.numberOfLines = 1
+            gram.adjustsFontSizeToFitWidth = true
+            gram.minimumScaleFactor = 0.7
             gram.textColor = accentColor(for: meal.colorHint)
 
             tag1.text = meal.impactTags.count > 0 ? meal.impactTags[0] : ""
