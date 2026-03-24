@@ -486,14 +486,14 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
     func createSymptomPatternsSection() -> NSCollectionLayoutSection {
         let hasData = CycleDataStore.shared.hasTwoCycles && allSymptoms.count > 0
         
-        // Dynamic height: header(~92pt) + grid(rows*34) + legend+padding(~39pt) + AI Insight(~65pt)
+        // Dynamic height: header(~92pt) + grid(rows*34) + legend+padding(~39pt) + AI Insight(~50pt)
         let cycleCount = min(CycleDataStore.shared.previousCycles(count: 3).count, 3)
         let cellHeight: CGFloat
         if hasData {
             switch cycleCount {
-            case 1:  cellHeight = 265
-            case 2:  cellHeight = 305
-            default: cellHeight = 365
+            case 1:  cellHeight = 290
+            case 2:  cellHeight = 330
+            default: cellHeight = 395
             }
         } else {
             cellHeight = 300  // empty state
