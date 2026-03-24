@@ -341,7 +341,7 @@ class SymptomPatternsCollectionViewCell:
                     if !Task.isCancelled {
                         await MainActor.run {
                             self.insightLabel.text = insight
-                            self.insightLabel.textColor = .darkGray
+                            self.insightLabel.textColor = .black
                         }
                     }
                 } catch {

@@ -86,13 +86,13 @@ class DailyGoalsCollectionViewCell: UICollectionViewCell {
 
            // Title
            title.text = goal.title
-           title.font = .systemFont(ofSize: 14, weight: .bold)
+           title.font = .systemFont(ofSize: 14, weight: .medium)
            title.textColor = .label
            title.numberOfLines = 2
 
            // Description
            desc.text = goal.sentence
-           desc.font = .systemFont(ofSize: 12)
+           desc.font = .systemFont(ofSize: 13)
            desc.textColor = .secondaryLabel
            desc.numberOfLines = 3
        }
@@ -116,7 +116,7 @@ class DailyGoalsCollectionViewCell: UICollectionViewCell {
            switch category.lowercased() {
            case "sleep":     return "moon.zzz.fill"
            case "nutrition": return "fork.knife"
-           case "exercise":  return "figure.walk"
+           case "exercise":  return "figure.strengthtraining.traditional"
            case "symptoms":  return "heart.text.clipboard"
            default:          return "checkmark.circle.fill"
            }
