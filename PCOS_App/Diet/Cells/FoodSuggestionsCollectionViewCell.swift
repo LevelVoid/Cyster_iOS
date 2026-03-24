@@ -146,4 +146,4 @@ class FoodSuggestionsCollectionViewCell: UICollectionViewCell {
             }
         }
     }
-}
+
