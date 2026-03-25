@@ -33,15 +33,9 @@ class CreateRoutineViewController: UIViewController {
         //view.backgroundColor=UIColor(hex: "#FCEEED")
         navigationController?.navigationBar.prefersLargeTitles = false
         saveRoutineButton.isEnabled = false
-        addExerciseButton.tintColor = .white
-        addExerciseButton.backgroundColor = UIColor(hex: "#FE7A96")  // match the pink from design
-        // corner radius will be updated in viewDidLayoutSubviews
-        addExerciseButton.layer.shadowColor = UIColor.black.cgColor
-        addExerciseButton.layer.shadowOpacity = 0.18
-        addExerciseButton.layer.shadowOffset = CGSize(width: 0, height: 4)
-        addExerciseButton.layer.shadowRadius = 8
-        addExerciseButton.clipsToBounds = false
         exerciseTableView.separatorStyle = .none
+        
+        setupAddExerciseButton()
        
         setupUI()
         registerCells()
@@ -57,30 +51,53 @@ class CreateRoutineViewController: UIViewController {
             updateUI()
         }
         
+
+    
+    private func setupAddExerciseButton() {
+        var config = UIButton.Configuration.filled()
+        config.cornerStyle = .capsule
+        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .medium)
+        config.image = UIImage(systemName: "plus", withConfiguration: symbolConfig)
+        config.baseBackgroundColor = UIColor(hex: "#fe7a96")
+        config.baseForegroundColor = .white
+        addExerciseButton.configuration = config
         
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        // Guarantee perfectly circular button by using the smaller layout dimension 
-        let minSide = min(addExerciseButton.bounds.width, addExerciseButton.bounds.height)
-        addExerciseButton.layer.cornerRadius = minSide / 2.0
+        addExerciseButton.setTitle("", for: .normal)
+        
+        addExerciseButton.layer.shadowColor = UIColor(hex: "#fe7a96").cgColor
+        addExerciseButton.layer.shadowOpacity = 0.3
+        addExerciseButton.layer.shadowOffset = CGSize(width: 0, height: 4)
+        addExerciseButton.layer.shadowRadius = 6
+        
+        if let superview = addExerciseButton.superview {
+            addExerciseButton.removeFromSuperview()
+            superview.addSubview(addExerciseButton)
+        }
+        
+        addExerciseButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            addExerciseButton.widthAnchor.constraint(equalToConstant: 44),
+            addExerciseButton.heightAnchor.constraint(equalToConstant: 44),
+            addExerciseButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -24),
+            addExerciseButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24)
+        ])
     }
     
     private func setupUI() {
-            containerView.bringSubviewToFront(exerciseTableView)
-            
-            exerciseTableView.delegate = self
-            exerciseTableView.dataSource = self
-            exerciseTableView.estimatedRowHeight = 88
-            exerciseTableView.rowHeight = UITableView.automaticDimension
+        containerView.bringSubviewToFront(exerciseTableView)
+        
+        exerciseTableView.delegate = self
+        exerciseTableView.dataSource = self
+        exerciseTableView.estimatedRowHeight = 88
+        exerciseTableView.rowHeight = UITableView.automaticDimension
         routineNameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         
-        // Style the text field
         routineNameTextField.layer.cornerRadius = 12
         routineNameTextField.layer.masksToBounds = true
         routineNameTextField.layer.borderWidth = 0
         routineNameTextField.backgroundColor = UIColor.white.withAlphaComponent(0.85)
-            
-        }
+    }
     
     func registerCells() {
         exerciseTableView.register(

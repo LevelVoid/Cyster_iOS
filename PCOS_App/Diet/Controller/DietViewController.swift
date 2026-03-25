@@ -83,11 +83,35 @@ class DietViewController: UIViewController {
     }
 
     private func setupAddButtonStyle() {
-        AddMealButton.backgroundColor = UIColor.systemPink
-        AddMealButton.setTitle("Add", for: .normal)
-        AddMealButton.setTitleColor(.white, for: .normal)
-        AddMealButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
-        AddMealButton.layer.cornerRadius = 25
+        var config = UIButton.Configuration.filled()
+        config.cornerStyle = .capsule
+        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 18, weight: .medium)
+        config.image = UIImage(systemName: "plus", withConfiguration: symbolConfig)
+        config.baseBackgroundColor = UIColor(hex: "#fe7a96")
+        config.baseForegroundColor = .white
+        AddMealButton.configuration = config
+        
+        AddMealButton.setTitle("", for: .normal)
+        
+        AddMealButton.layer.shadowColor = UIColor(hex: "#fe7a96").cgColor
+        AddMealButton.layer.shadowOpacity = 0.3
+        AddMealButton.layer.shadowOffset = CGSize(width: 0, height: 4)
+        AddMealButton.layer.shadowRadius = 6
+        
+        if let superview = AddMealButton.superview {
+            AddMealButton.removeFromSuperview()
+            superview.addSubview(AddMealButton)
+        }
+        
+        AddMealButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            AddMealButton.widthAnchor.constraint(equalToConstant: 44),
+            AddMealButton.heightAnchor.constraint(equalToConstant: 44),
+            AddMealButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -24),
+            AddMealButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24)
+        ])
+        
         AddMealButton.addTarget(self, action: #selector(addButtonTapped(_:)), for: .touchUpInside)
     }
 
