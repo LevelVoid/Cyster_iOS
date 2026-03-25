@@ -68,31 +68,53 @@ class DailyGoalsCollectionViewCell: UICollectionViewCell {
        ) {
            let color = categoryColor(goal.category)
 
-           // Card background tint
-           view.backgroundColor = color.withAlphaComponent(0.08)
-           view.layer.cornerRadius = 12
+           // Card background — clean white with subtle border
+           view.backgroundColor = UIColor.systemBackground
+           view.layer.cornerRadius = 20
            view.layer.borderWidth = 1
-           view.layer.borderColor = color.withAlphaComponent(0.2).cgColor
+           view.layer.borderColor = color.withAlphaComponent(0.15).cgColor
 
-           // Icon
-           image.image = UIImage(systemName: categoryIcon(goal.category))
-           image.tintColor = color
-           image.contentMode = .scaleAspectFit
+           // Icon — white symbol on colored rounded-square background
+           image.image = UIImage(systemName: categoryIcon(goal.category))?
+               .withConfiguration(UIImage.SymbolConfiguration(pointSize: 12, weight: .medium))
+           image.tintColor = .white
+           //image.contentMode = .scaleAspectFit
 
-           // Category pill
+           // Add or update the colored rounded-square behind the icon
+           let bgTag = 999
+           if let existing = image.superview?.viewWithTag(bgTag) {
+               existing.backgroundColor = color
+           } else if let parent = image.superview {
+               let bg = UIView()
+               bg.tag = bgTag
+               bg.translatesAutoresizingMaskIntoConstraints = false
+               bg.layer.cornerRadius = 8
+               bg.layer.masksToBounds = true
+               bg.backgroundColor = color
+               parent.insertSubview(bg, belowSubview: image)
+
+               NSLayoutConstraint.activate([
+                   bg.centerXAnchor.constraint(equalTo: image.centerXAnchor),
+                   bg.centerYAnchor.constraint(equalTo: image.centerYAnchor),
+                   bg.widthAnchor.constraint(equalToConstant: 34),
+                   bg.heightAnchor.constraint(equalToConstant: 34)
+               ])
+           }
+
+           // Category label
            category.text = goal.category.capitalized
            category.textColor = color
-           category.font = .systemFont(ofSize: 11, weight: .semibold)
+           category.font = .systemFont(ofSize: 13, weight: .semibold)
 
            // Title
            title.text = goal.title
-           title.font = .systemFont(ofSize: 14, weight: .medium)
+           title.font = .systemFont(ofSize: 16, weight: .medium)
            title.textColor = .label
            title.numberOfLines = 2
 
            // Description
            desc.text = goal.sentence
-           desc.font = .systemFont(ofSize: 13)
+           desc.font = .systemFont(ofSize: 14)
            desc.textColor = .secondaryLabel
            desc.numberOfLines = 3
        }
@@ -103,22 +125,27 @@ class DailyGoalsCollectionViewCell: UICollectionViewCell {
        }
 
        private func categoryColor(_ category: String) -> UIColor {
-           switch category.lowercased() {
-           case "sleep":     return UIColor(red: 0.35, green: 0.30, blue: 0.85, alpha: 1)
-           case "nutrition": return UIColor(red: 0.20, green: 0.65, blue: 0.35, alpha: 1)
-           case "exercise":  return UIColor(red: 0.95, green: 0.50, blue: 0.10, alpha: 1)
-           case "symptoms":  return UIColor(red: 0.85, green: 0.25, blue: 0.45, alpha: 1)
-           default:          return UIColor(red: 0.85, green: 0.25, blue: 0.45, alpha: 1)
+           let c = category.lowercased()
+           if c.contains("diet")      { return UIColor(red: 0.90, green: 0.22, blue: 0.21, alpha: 1) }
+           if c.contains("nutrition") { return UIColor(red: 0.20, green: 0.65, blue: 0.35, alpha: 1) }
+           if c.contains("exercise") || c.contains("workout") {
+               return UIColor(red: 0.95, green: 0.50, blue: 0.10, alpha: 1)
            }
+           if c.contains("sleep")     { return UIColor(red: 0.35, green: 0.30, blue: 0.85, alpha: 1) }
+           if c.contains("symptom")   { return UIColor(red: 0.85, green: 0.25, blue: 0.45, alpha: 1) }
+           return UIColor(red: 0.85, green: 0.25, blue: 0.45, alpha: 1)
        }
 
        private func categoryIcon(_ category: String) -> String {
-           switch category.lowercased() {
-           case "sleep":     return "moon.zzz.fill"
-           case "nutrition": return "fork.knife"
-           case "exercise":  return "figure.strengthtraining.traditional"
-           case "symptoms":  return "heart.text.clipboard"
-           default:          return "checkmark.circle.fill"
+           let c = category.lowercased()
+           if c.contains("diet")      { return "fork.knife" }
+           if c.contains("nutrition") { return "leaf.fill" }
+           if c.contains("exercise") || c.contains("workout") {
+               return "figure.strengthtraining.traditional"
            }
+           if c.contains("sleep")     { return "moon.zzz.fill" }
+           if c.contains("symptom")   { return "heart.text.clipboard" }
+           return "star.fill"
        }
    }
+

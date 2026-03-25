@@ -381,7 +381,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         func createDailyGoalsSection() -> NSCollectionLayoutSection {
             let itemSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1),
-                heightDimension: .absolute(180))
+                heightDimension: .estimated(270))
             let group = NSCollectionLayoutGroup.vertical(
                 layoutSize: itemSize,
                 subitems: [NSCollectionLayoutItem(layoutSize: itemSize)])
