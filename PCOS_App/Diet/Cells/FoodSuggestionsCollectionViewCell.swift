@@ -41,6 +41,25 @@ class FoodSuggestionsCollectionViewCell: UICollectionViewCell {
         ImpactTag_1.numberOfLines = 0
         ImpactTag_2.numberOfLines = 0
         ImpactTag_3.numberOfLines = 0
+        
+        // Fix missing bottom constraints programmatically so StackView can compute intrinsic height
+        firstView.bottomAnchor.constraint(greaterThanOrEqualTo: mealGram1.bottomAnchor, constant: 16).isActive = true
+        secondView.bottomAnchor.constraint(greaterThanOrEqualTo: mealGram2.bottomAnchor, constant: 16).isActive = true
+        thirdView.bottomAnchor.constraint(greaterThanOrEqualTo: mealGram3.bottomAnchor, constant: 16).isActive = true
+        
+        // Set minimum height for each food slot to accommodate image/content gracefully
+        firstView.heightAnchor.constraint(greaterThanOrEqualToConstant: 80).isActive = true
+        secondView.heightAnchor.constraint(greaterThanOrEqualToConstant: 80).isActive = true
+        thirdView.heightAnchor.constraint(greaterThanOrEqualToConstant: 80).isActive = true
+        
+        // Ensure mainContent is constrained to contentView for UICollectionViewCell auto-sizing
+        mainContent.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            mainContent.topAnchor.constraint(equalTo: contentView.topAnchor),
+            mainContent.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            mainContent.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            mainContent.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        ])
     }
 
     // MARK: - States

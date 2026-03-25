@@ -302,7 +302,13 @@ extension DietViewController: UICollectionViewDataSource, UICollectionViewDelega
         case 0: return CGSize(width: width, height: 195)
         case 1:
             if let output = mealOutput {
+                sizingSuggestionCell.bounds.size.width = width
+                sizingSuggestionCell.contentView.bounds.size.width = width
                 sizingSuggestionCell.configure(with: output)
+                
+                sizingSuggestionCell.setNeedsLayout()
+                sizingSuggestionCell.layoutIfNeeded()
+
                 // Calculate height based on width and Auto Layout
                 let size = sizingSuggestionCell.contentView.systemLayoutSizeFitting(
                     CGSize(width: width, height: UIView.layoutFittingCompressedSize.height),
@@ -337,7 +343,7 @@ extension DietViewController: UICollectionViewDataSource, UICollectionViewDelega
         ) as! SectionHeaderView
  
         switch indexPath.section {
-        case 1: header.configure(title: "Suggestions")
+        case 1: header.configure(title: "Suggestions For Today")
         case 2: header.configure(title: "Today's Meals")
         default: break
         }
