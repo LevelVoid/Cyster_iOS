@@ -232,29 +232,33 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         // MARK: - Chatbot Button
 
         private func setupChatbotButton() {
-            chatbotButton = UIButton(type: .system)
+            chatbotButton = UIButton(type: .custom)
             chatbotButton.translatesAutoresizingMaskIntoConstraints = false
+            
             let icon = UIImage(named: "chat3")?.withRenderingMode(.alwaysOriginal)
-                    chatbotButton.setImage(icon, for: .normal)
-                    chatbotButton.imageView?.contentMode = .scaleAspectFill
-                    chatbotButton.clipsToBounds = true
-                    chatbotButton.backgroundColor = UIColor(hex: "#ffffff")
-            chatbotButton.layer.cornerRadius = 28
+            chatbotButton.setImage(icon, for: .normal)
+            chatbotButton.imageView?.contentMode = .scaleAspectFill
+            
+            chatbotButton.backgroundColor = .white
+            chatbotButton.layer.cornerRadius = 30
+            
+            // Apply clipping to the imageView so the button's shadow isn't cut off
+            chatbotButton.imageView?.layer.cornerRadius = 30
+            chatbotButton.imageView?.clipsToBounds = true
+            
             chatbotButton.layer.shadowColor = UIColor.black.cgColor
-            chatbotButton.layer.shadowOpacity = 0.25
-            chatbotButton.layer.shadowOffset = CGSize(width: 0, height: 4)
-            chatbotButton.layer.shadowRadius = 6
+            chatbotButton.layer.shadowOpacity = 0.15
+            chatbotButton.layer.shadowOffset = CGSize(width: 0, height: 6)
+            chatbotButton.layer.shadowRadius = 8
+            
             chatbotButton.addTarget(self, action: #selector(ChatbotButtonTapped(_:)), for: .touchUpInside)
             view.addSubview(chatbotButton)
 
-            let tabBarHeight: CGFloat = tabBarController?.tabBar.frame.height ?? 83
             NSLayoutConstraint.activate([
-                chatbotButton.widthAnchor.constraint(equalToConstant: 56),
-                chatbotButton.heightAnchor.constraint(equalToConstant: 56),
-                chatbotButton.trailingAnchor.constraint(
-                    equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-                chatbotButton.bottomAnchor.constraint(
-                    equalTo: view.bottomAnchor, constant: -(tabBarHeight + 16))
+                chatbotButton.widthAnchor.constraint(equalToConstant: 60),
+                chatbotButton.heightAnchor.constraint(equalToConstant: 60),
+                chatbotButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -24),
+                chatbotButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24)
             ])
         }
 
