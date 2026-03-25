@@ -47,6 +47,19 @@ class AddExerciseViewController: UIViewController {
         addExerciseSearchBar.delegate = self
         //addExerciseSearchBar.placeholder="Search Exercises"
         
+        // Remove the default background to reduce weird square padding
+        addExerciseSearchBar.backgroundImage = UIImage()
+        addExerciseSearchBar.backgroundColor = .clear
+        
+        // Style the inner text field as capsule to match AddMealViewController
+        if let searchField = addExerciseSearchBar.value(forKey: "searchField") as? UITextField {
+            searchField.backgroundColor = .white
+            searchField.layer.cornerRadius = 18
+            searchField.layer.masksToBounds = true
+            searchField.layer.borderWidth = 1
+            searchField.layer.borderColor = UIColor.systemGray5.cgColor
+        }
+        
         //setup filter buttons
         equipmentsFilterButton.setTitle("All Equipment", for: .normal)
         muscleTypeFilterButton.setTitle("All Muscles", for: .normal)

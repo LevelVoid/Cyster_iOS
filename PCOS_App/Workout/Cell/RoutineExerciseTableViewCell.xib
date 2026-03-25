@@ -13,7 +13,7 @@
         <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="routine_exercise_cell" rowHeight="372" id="KGk-i7-Jjw" customClass="RoutineExerciseTableViewCell" customModule="PCOS_App" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="390" height="158"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.90000000000000002" contentMode="center" ambiguous="YES" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
                 <rect key="frame" x="0.0" y="0.0" width="390" height="158"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
@@ -53,6 +53,7 @@
                                             <constraint firstAttribute="width" constant="60" id="EYx-Rp-EEu"/>
                                             <constraint firstAttribute="height" constant="34.329999999999998" id="Ic8-Ra-NaZ"/>
                                         </constraints>
+                                        <color key="tintColor" red="0.0" green="0.45882352939999999" blue="0.89019607840000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="info.circle" catalog="system"/>
                                         <connections>
@@ -166,7 +167,8 @@
                         </constraints>
                     </view>
                 </subviews>
-                <color key="backgroundColor" red="0.98823529409999999" green="0.93333333330000001" blue="0.92941176469999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                <color key="backgroundColor" red="0.9882352941176471" green="0.93333333333333335" blue="0.92941176470588238" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 <constraints>
                     <constraint firstItem="gr3-UK-BqX" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="12" id="0ci-O0-046"/>
                     <constraint firstItem="gr3-UK-BqX" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="12" id="8Yz-Qh-ak0"/>
