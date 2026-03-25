@@ -268,7 +268,7 @@ class AddMealViewController: UIViewController {
        
        // MARK: - Navigation to AddDescribedMealVC
        
-       private func navigateToAddDescribedMeal(with food: Food) {
+       private func navigateToAddDescribedMeal(with food: Food, isReadOnlyIngredients: Bool = false) {
            let storyboard = UIStoryboard(name: "Diet", bundle: nil)
            guard let confirmVC = storyboard.instantiateViewController(
                withIdentifier: "AddDescribedMealViewController"
@@ -279,6 +279,7 @@ class AddMealViewController: UIViewController {
            
            confirmVC.food = food
            confirmVC.delegate = dietDelegate
+           confirmVC.isReadOnlyIngredients = isReadOnlyIngredients
            
            let navController = UINavigationController(rootViewController: confirmVC)
            navController.modalPresentationStyle = .pageSheet
@@ -398,14 +399,20 @@ extension AddMealViewController: UITableViewDataSource {
             let food = filteredRecentMeals[indexPath.row]
             cell.textLabel?.text = food.name
             let calories = Int(food.calories)
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "MMM d, h:mm a"
-            let timeString = dateFormatter.string(from: food.timeStamp)
-            cell.detailTextLabel?.text = "\(calories) kcal • \(timeString)"
+            
+            // Show weight or serving size consistently with catalog
+            let weightStr: String
+            if let wt = food.weight, wt > 0 {
+                weightStr = "\(Int(wt)) g"
+            } else {
+                weightStr = "\(Int(food.servingSize)) g"
+            }
+            
+            cell.detailTextLabel?.text = "\(calories) kcal • \(weightStr)"
         } else {
             let foodItem = filteredFoodItems[indexPath.row]
             cell.textLabel?.text = foodItem.name
-            cell.detailTextLabel?.text = "\(foodItem.calories) kcal • \(foodItem.servingSize) \(foodItem.unit)"
+            cell.detailTextLabel?.text = "\(foodItem.calories) kcal • \(Int(foodItem.servingSize)) \(foodItem.unit)"
         }
         
         return cell
@@ -484,8 +491,8 @@ extension AddMealViewController: BarcodeScannerDelegate {
                 DispatchQueue.main.async {
                     self.hideFetchingIndicator()
                     // ← KEY FIX: call delegate (DietVC) and pop back
-                    self.delegate?.didAddMeal(food)
-                    self.navigationController?.popToRootViewController(animated: true)
+                    // NEW — show confirmation screen so user can adjust serving
+                    self.navigateToAddDescribedMeal(with: food)
                 }
             } catch {
                 print("JSON decode error:", error)

@@ -21,7 +21,9 @@ class FoodLogIngredientViewController: UIViewController {
         private var headerView: FoodLogIngredientHeader!
         let defaultIngredient = FoodLogDataStore.ingredient
         // Food data
+        // Food data
         var food: Food!
+        private var baseFood: Food!
         private var servingMultiplier: Double = 1.0
         
         override func viewDidLoad() {
@@ -47,6 +49,30 @@ class FoodLogIngredientViewController: UIViewController {
             // Disable large title to prevent it from pushing content down
             navigationController?.navigationBar.prefersLargeTitles = false
             navigationItem.largeTitleDisplayMode = .never
+            
+            // Determine initial multiplier based on stored weight vs base servingSize
+            if let wt = food.weight, food.servingSize > 0 {
+                servingMultiplier = wt / food.servingSize
+            } else {
+                servingMultiplier = 1.0
+            }
+            
+            // Reverse-engineer the base 1-serving macros to prevent exponential scaling on edit
+            baseFood = food
+            if servingMultiplier > 0 && servingMultiplier != 1.0 {
+                baseFood.weight = food.servingSize
+                baseFood.proteinContent = food.proteinContent / servingMultiplier
+                baseFood.carbsContent = food.carbsContent / servingMultiplier
+                baseFood.fatsContent = food.fatsContent / servingMultiplier
+                if let cc = food.customCalories { baseFood.customCalories = cc / servingMultiplier }
+                if let ing = food.ingredients {
+                    baseFood.ingredients = ing.map { i in
+                        var newI = i
+                        newI.quantity = i.quantity / servingMultiplier
+                        return newI
+                    }
+                }
+            }
             
             // Setup all UI elements
             setupHeader()
@@ -111,8 +137,7 @@ class FoodLogIngredientViewController: UIViewController {
             stepper.maximumValue = 10.0
             stepper.stepValue = 0.5
             
-            stepper.value = 1.0
-            servingMultiplier = 1.0
+            stepper.value = servingMultiplier
             
             // Style the stepper to match design
             stepper.tintColor = .label
@@ -163,28 +188,27 @@ class FoodLogIngredientViewController: UIViewController {
         }
         
     @IBAction func saveButton(_ sender: Any) {
-        guard var updatedFood = food else { return }
+        guard var updatedFood = baseFood else { return }
                     
-        // Apply the serving multiplier to all values
-        updatedFood.proteinContent = food.proteinContent * servingMultiplier
-        updatedFood.carbsContent = food.carbsContent * servingMultiplier
-        updatedFood.fatsContent = food.fatsContent * servingMultiplier
-        updatedFood.servingSize = food.servingSize * servingMultiplier
+        // Apply the serving multiplier to base values
+        updatedFood.proteinContent = baseFood.proteinContent * servingMultiplier
+        updatedFood.carbsContent = baseFood.carbsContent * servingMultiplier
+        updatedFood.fatsContent = baseFood.fatsContent * servingMultiplier
+        
+        // Update weight but keep servingSize as the base 1-serving size
+        updatedFood.servingSize = baseFood.servingSize
+        updatedFood.weight = baseFood.servingSize * servingMultiplier
                     
-        if let weight = food.weight {
-                updatedFood.weight = weight * servingMultiplier
-            }
-        if let customCalories = food.customCalories {
-                updatedFood.customCalories = customCalories * servingMultiplier
-            }
-        if let ingredients = food.ingredients {
-                updatedFood.ingredients = ingredients.map { ingredient in
+        if let customCalories = baseFood.customCalories {
+            updatedFood.customCalories = customCalories * servingMultiplier
+        }
+        if let ingredients = baseFood.ingredients {
+            updatedFood.ingredients = ingredients.map { ingredient in
                 var newIngredient = ingredient
                 newIngredient.quantity = ingredient.quantity * servingMultiplier
                 return newIngredient
-                }
             }
-        // Save to Core Data. Don't multiply customCalories again since the model itself recalculates macros on save if not strictly bound. CustomCalories are explicit override, so we should multiply that.
+        }
     
         FoodLogDataStore.updateFood(updatedFood)
         navigationController?.popViewController(animated: true)
@@ -204,13 +228,13 @@ class FoodLogIngredientViewController: UIViewController {
             servingNumberLabel?.text = servingText
             
             // Update weight label - single line format
-            guard let food = food else { return }
+            guard let baseFood = baseFood else { return }
             
             let scaledWeight: Double
-            if let baseWeight = food.weight, baseWeight > 0 {
-                scaledWeight = baseWeight * servingMultiplier
+            if baseFood.servingSize > 0 {
+                scaledWeight = baseFood.servingSize * servingMultiplier
             } else {
-                let ingTotal = (food.ingredients ?? []).reduce(0.0) { $0 + $1.quantity }
+                let ingTotal = (baseFood.ingredients ?? []).reduce(0.0) { $0 + $1.quantity }
                 scaledWeight = ingTotal * servingMultiplier
             }
             
@@ -220,29 +244,25 @@ class FoodLogIngredientViewController: UIViewController {
         }
         
         private func updateMacros() {
-            guard let food = food else { return }
+            guard let baseFood = baseFood else { return }
             
-            // Create a temporary food object with multiplied values
-            var multipliedFood = food
-            multipliedFood.proteinContent = food.proteinContent * servingMultiplier
-            multipliedFood.carbsContent = food.carbsContent * servingMultiplier
-            multipliedFood.fatsContent = food.fatsContent * servingMultiplier
+            // Create a temporary food object with multiplied values based on BASE food
+            var multipliedFood = baseFood
+            multipliedFood.proteinContent = baseFood.proteinContent * servingMultiplier
+            multipliedFood.carbsContent = baseFood.carbsContent * servingMultiplier
+            multipliedFood.fatsContent = baseFood.fatsContent * servingMultiplier
             
-            // Update quantity
-            multipliedFood.servingSize = food.servingSize * servingMultiplier
+            // Update quantity/weight
+            multipliedFood.servingSize = baseFood.servingSize
+            multipliedFood.weight = baseFood.servingSize * servingMultiplier
             
-            // Update weight if available
-            if let weight = food.weight {
-                multipliedFood.weight = weight * servingMultiplier
-            }
-            
-            // Update custom calories if set, otherwise it will auto-calculate
-            if let customCalories = food.customCalories {
+            // Update custom calories if set
+            if let customCalories = baseFood.customCalories {
                 multipliedFood.customCalories = customCalories * servingMultiplier
             }
             
             // Update ingredients if available
-            if let ingredients = food.ingredients {
+            if let ingredients = baseFood.ingredients {
                 multipliedFood.ingredients = ingredients.map { ingredient in
                     var newIngredient = ingredient
                     newIngredient.quantity = ingredient.quantity * servingMultiplier

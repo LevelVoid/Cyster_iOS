@@ -32,7 +32,7 @@ final class ChatPersistenceManager {
     func loadTodaysMessages() -> [ChatMessage] {
         let startOfDay = Calendar.current.startOfDay(for: Date())
 
-        let request: NSFetchRequest<CDChatMessage> = CDChatMessage.fetchRequest()
+        let request = NSFetchRequest<CDChatMessage>(entityName: "CDChatMessage")
         request.predicate = NSPredicate(format: "timestamp >= %@", startOfDay as NSDate)
         request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
 
@@ -50,7 +50,7 @@ final class ChatPersistenceManager {
     func saveMessage(text: String, sender: MessageSender) {
         // Get next sortOrder based on today's messages
         let startOfDay = Calendar.current.startOfDay(for: Date())
-        let request: NSFetchRequest<CDChatMessage> = CDChatMessage.fetchRequest()
+        let request = NSFetchRequest<CDChatMessage>(entityName: "CDChatMessage")
         request.predicate = NSPredicate(format: "timestamp >= %@", startOfDay as NSDate)
         request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: false)]
         request.fetchLimit = 1
@@ -110,7 +110,7 @@ final class ChatPersistenceManager {
 
     /// Deletes all CDChatMessage records — used by the "Clear Chat" button.
     func clearAllMessages() {
-        let request: NSFetchRequest<NSFetchRequestResult> = CDChatMessage.fetchRequest()
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "CDChatMessage")
         let batchDelete = NSBatchDeleteRequest(fetchRequest: request)
 
         do {
@@ -134,7 +134,7 @@ final class ChatPersistenceManager {
     func deleteOldMessages() {
         let startOfDay = Calendar.current.startOfDay(for: Date())
 
-        let request: NSFetchRequest<NSFetchRequestResult> = CDChatMessage.fetchRequest()
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "CDChatMessage")
         request.predicate = NSPredicate(format: "timestamp < %@", startOfDay as NSDate)
 
         let batchDelete = NSBatchDeleteRequest(fetchRequest: request)

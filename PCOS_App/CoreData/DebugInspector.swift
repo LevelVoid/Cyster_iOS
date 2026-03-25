@@ -28,7 +28,7 @@ struct DebugInspector {
     }
 
     static func printChatMessages() {
-        let request: NSFetchRequest<CDChatMessage> = CDChatMessage.fetchRequest()
+        let request = NSFetchRequest<CDChatMessage>(entityName: "CDChatMessage")
         request.sortDescriptors = [NSSortDescriptor(key: "sortOrder", ascending: true)]
         guard let results = try? context.fetch(request) else { return }
         print("\n💬 CDChatMessage (\(results.count) records)")

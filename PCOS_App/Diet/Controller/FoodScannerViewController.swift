@@ -24,7 +24,8 @@ class FoodScannerViewController: UIViewController {
     private var captureSession: AVCaptureSession!
     private var previewLayer: AVCaptureVideoPreviewLayer!
     private var photoOutput: AVCapturePhotoOutput!
-    
+    private var capturedImage: UIImage?
+
     // ML Model
     private var foodClassifier: VNCoreMLModel?
     
@@ -367,13 +368,41 @@ class FoodScannerViewController: UIViewController {
                 showError("No ingredients found in AI response. Please try again.")
                 return
             }
+            
+            // Normalize serving size to standard defaults
+            let normalizedUnit = decoded.unit.lowercased()
+            let normalizedServingSize: Double
+            switch normalizedUnit {
+            case "ml", "milliliter", "millilitre":
+                normalizedServingSize = 100   // 100 ml
+            case "piece", "pieces", "unit", "units", "pcs", "pc", "slice", "slices":
+                normalizedServingSize = 1     // 1 piece
+            default:
+                normalizedServingSize = 100   // 100 g (default)
+            }
+
+            // Save captured image to Documents directory
+            var savedImageName = "dietPlaceholder"
+            if let capturedImage = self.capturedImage {
+                let fileName = "food_\(UUID().uuidString).jpg"
+                if let data = capturedImage.jpegData(compressionQuality: 0.7) {
+                    let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                    let foodImagesDir = documentsDir.appendingPathComponent("FoodImages", isDirectory: true)
+                    try? FileManager.default.createDirectory(at: foodImagesDir, withIntermediateDirectories: true)
+                    let fileURL = foodImagesDir.appendingPathComponent(fileName)
+                    try? data.write(to: fileURL)
+                    savedImageName = fileURL.path
+                    print("DEBUG: Saved food image to \(fileURL.path)")
+                }
+            }
+
 
             let foodItem = FoodItem(
                 id: Int.random(in: 100000...999999),
                 name: decoded.name,
                 calories: decoded.calories,
-                image: "dietPlaceholder",
-                servingSize: decoded.servingSize,
+                image: savedImageName,
+                servingSize: normalizedServingSize,
                 unit: decoded.unit,
                 protein: decoded.protein,
                 carbs: decoded.carbs,
@@ -536,7 +565,7 @@ extension FoodScannerViewController: AVCapturePhotoCaptureDelegate {
             captureButton.isEnabled = true
             return
         }
-        
+        self.capturedImage = image
         print("DEBUG: Photo captured successfully")
         showLoadingIndicator(message: "Identifying food...")
         

@@ -149,13 +149,26 @@ class DescribeFoodViewController: UIViewController {
                 showAlert(message: "No ingredients found in AI response. Please try again.")
                 return
             }
+            
+            // Normalize serving size to standard defaults
+            let normalizedUnit = decoded.unit.lowercased()
+            let normalizedServingSize: Double
+            switch normalizedUnit {
+            case "ml", "milliliter", "millilitre":
+                normalizedServingSize = 100   // 100 ml
+            case "piece", "pieces", "unit", "units", "pcs", "pc", "slice", "slices":
+                normalizedServingSize = 1     // 1 piece
+            default:
+                normalizedServingSize = 100   // 100 g (default)
+            }
+
 
             let foodItem = FoodItem(
                 id: Int.random(in: 100000...999999),
                 name: decoded.name,
                 calories: decoded.calories,
                 image: "dietPlaceholder",
-                servingSize: decoded.servingSize,
+                servingSize: normalizedServingSize,
                 unit: decoded.unit,
                 protein: decoded.protein,
                 carbs: decoded.carbs,

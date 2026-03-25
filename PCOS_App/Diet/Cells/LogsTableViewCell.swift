@@ -39,21 +39,22 @@ class LogsTableViewCell: UITableViewCell {
         foodImg.clipsToBounds = true
         foodImg.layer.cornerRadius = 12
         
-        // Image loading with full fallback chain
         if let imageName = log.image, imageName.hasPrefix("http"),
            let url = URL(string: imageName) {
-            // Remote URL → load async with placeholder
             foodImg.image = UIImage(named: "dietPlaceholder")
             loadImage(from: url)
+        } else if let imageName = log.image, imageName.hasPrefix("/") {
+            // File path — must check BEFORE UIImage(named:)
+            foodImg.image = UIImage(contentsOfFile: imageName)
+                ?? UIImage(named: "dietPlaceholder")
         } else if let imageName = log.image, !imageName.isEmpty,
                   let localImg = UIImage(named: imageName) {
-            // Valid local asset
             foodImg.image = localImg
         } else {
-            // No URL, no local image → placeholder
             foodImg.image = UIImage(named: "dietPlaceholder")
         }
     }
+
 
     private func loadImage(from url: URL) {
         URLSession.shared.dataTask(with: url) { data, response, error in
