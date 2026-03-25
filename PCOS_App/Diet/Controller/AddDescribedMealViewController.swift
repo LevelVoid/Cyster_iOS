@@ -26,6 +26,7 @@ class AddDescribedMealViewController: UIViewController {
     var foodItem: FoodItem!
     var food: Food?
     weak var delegate: AddDescribedMealDelegate?
+    var isReadOnlyIngredients: Bool = false
     
     private var servingMultiplier: Double = 1.0
     private var headerView: FoodLogIngredientHeader!
@@ -98,6 +99,18 @@ class AddDescribedMealViewController: UIViewController {
             totalFat     += ingredient.fats    * factor
             totalFibre   += ingredient.fibre   * factor
         }
+        // After the loop, add:
+        let totalRecipeWeight = ingredients.reduce(0.0) { $0 + $1.quantity }
+        let servingSize = foodItem?.servingSize ?? food?.servingSize ?? 100
+
+        // Scale macros from full recipe to one serving
+        if totalRecipeWeight > 0 && totalRecipeWeight != servingSize {
+            let scaleFactor = servingSize / totalRecipeWeight
+            totalProtein *= scaleFactor
+            totalCarbs *= scaleFactor
+            totalFat *= scaleFactor
+        }
+
         totalProtein *= servingMultiplier
         totalCarbs   *= servingMultiplier
         totalFat     *= servingMultiplier
@@ -378,19 +391,49 @@ class AddDescribedMealViewController: UIViewController {
     private func updateWeightLabel() {
         guard let label = FoodWeightLabel else { return }
         
-        var totalWeight: Double = 0
-        if let originalWeight = food?.weight, originalWeight > 0 {
-            totalWeight = originalWeight * servingMultiplier
+        // Weight is always in grams — servingSize from normalized defaults (100g/100ml/1pc)
+        // Use total ingredient weight for actual weight display
+        let totalRecipeWeight = ingredients.reduce(0.0) { $0 + $1.quantity }
+        let servingSize = foodItem?.servingSize ?? food?.servingSize ?? 100
+        
+        // Scale weight proportionally: if recipe=300g and serving=100g, show 100g
+        let displayWeight: Double
+        if totalRecipeWeight > 0 && totalRecipeWeight != servingSize {
+            displayWeight = servingSize * servingMultiplier
         } else {
-            totalWeight = ingredients.reduce(0.0) { $0 + $1.quantity } * servingMultiplier
+            displayWeight = totalRecipeWeight * servingMultiplier
         }
         
-        label.text = String(format: "  Weight Total  %.0f g  ", totalWeight)
+        label.text = String(format: "  Weight Total  %.0f g  ", displayWeight)
     }
+
     
     // MARK: - Update Header
     
     private func updateHeaderWithCurrentIngredients() {
+        if isReadOnlyIngredients, let f = food {
+            let totalProtein = f.proteinContent * servingMultiplier
+            let totalCarbs = f.carbsContent * servingMultiplier
+            let totalFat = f.fatsContent * servingMultiplier
+            let totalCalories = Int((totalProtein * 4) + (totalCarbs * 4) + (totalFat * 9))
+            
+            let tempFoodItem = FoodItem(
+                id: f.id.hashValue,
+                name: f.name,
+                calories: totalCalories,
+                image: f.image ?? "dietPlaceholder",
+                servingSize: f.servingSize,
+                protein: totalProtein,
+                carbs: totalCarbs,
+                fat: totalFat,
+                isSelected: false,
+                desc: f.desc,
+                ingredients: ingredients
+            )
+            headerView.configure(with: tempFoodItem)
+            return
+        }
+
         guard !ingredients.isEmpty else {
             print("DEBUG: No ingredients to calculate macros")
             return
@@ -405,6 +448,18 @@ class AddDescribedMealViewController: UIViewController {
             totalProtein += ingredient.protein * factor
             totalCarbs += ingredient.carbs * factor
             totalFat += ingredient.fats * factor
+        }
+        
+        // After the loop, add:
+        let totalRecipeWeight = ingredients.reduce(0.0) { $0 + $1.quantity }
+        let servingSize = foodItem?.servingSize ?? food?.servingSize ?? 100
+
+        // Scale macros from full recipe to one serving
+        if totalRecipeWeight > 0 && totalRecipeWeight != servingSize {
+            let scaleFactor = servingSize / totalRecipeWeight
+            totalProtein *= scaleFactor
+            totalCarbs *= scaleFactor
+            totalFat *= scaleFactor
         }
         
         totalProtein *= servingMultiplier
@@ -470,35 +525,60 @@ class AddDescribedMealViewController: UIViewController {
             }
             
             print("DEBUG: Save button completed")
-        }
+    }
+
     private func createFinalFoodObject() -> Food? {
         var totalProtein: Double = 0
         var totalCarbs: Double = 0
         var totalFat: Double = 0
         
-        for ingredient in ingredients {
-            let factor = ingredient.quantity / 100.0
-            totalProtein += ingredient.protein * factor
-            totalCarbs += ingredient.carbs * factor
-            totalFat += ingredient.fats * factor
+        // After the loop, add:
+        let totalRecipeWeight = ingredients.reduce(0.0) { $0 + $1.quantity }
+        let servingSize = foodItem?.servingSize ?? food?.servingSize ?? 100
+
+        // Calculate what the actual logged weight should be
+        let finalWeight: Double
+        if totalRecipeWeight > 0 && totalRecipeWeight != servingSize {
+            finalWeight = servingSize * servingMultiplier
+        } else {
+            finalWeight = totalRecipeWeight * servingMultiplier
         }
         
-        totalProtein *= servingMultiplier
-        totalCarbs *= servingMultiplier
-        totalFat *= servingMultiplier
+        if isReadOnlyIngredients, let f = food {
+             totalProtein = f.proteinContent * servingMultiplier
+             totalCarbs = f.carbsContent * servingMultiplier
+             totalFat = f.fatsContent * servingMultiplier
+        } else {
+            for ingredient in ingredients {
+                let factor = ingredient.quantity / 100.0
+                totalProtein += ingredient.protein * factor
+                totalCarbs += ingredient.carbs * factor
+                totalFat += ingredient.fats * factor
+            }
+            
+            // Scale macros from full recipe to one serving
+            if totalRecipeWeight > 0 && totalRecipeWeight != servingSize {
+                let scaleFactor = servingSize / totalRecipeWeight
+                totalProtein *= scaleFactor
+                totalCarbs *= scaleFactor
+                totalFat *= scaleFactor
+            }
+           
+            totalProtein *= servingMultiplier
+            totalCarbs *= servingMultiplier
+            totalFat *= servingMultiplier
+        }
         
         // Compute calories explicitly so Food.calories uses customCalories branch
-        // (avoids the ingredient-based branch which previously used 100g macros without quantity scaling)
         let totalCalories = (totalProtein * 4) + (totalCarbs * 4) + (totalFat * 9)
-        
         if let food = food {
             return Food(
                 id: UUID(),
                 name: food.name,
                 image: food.image,
                 timeStamp: Date(),
-                servingSize: food.servingSize * servingMultiplier,
-                weight: food.weight != nil ? food.weight! * servingMultiplier : nil,
+                servingSize: food.servingSize,
+                weight: finalWeight,
                 desc: food.desc,
                 proteinContent: totalProtein,
                 carbsContent: totalCarbs,
@@ -508,14 +588,13 @@ class AddDescribedMealViewController: UIViewController {
                 ingredients: ingredients
             )
         } else if let foodItem = foodItem {
-            let totalWeight = ingredients.reduce(0.0) { $0 + $1.quantity } * servingMultiplier
             return Food(
                 id: UUID(),
                 name: foodItem.name,
                 image: foodItem.image,
                 timeStamp: Date(),
-                servingSize: foodItem.servingSize * servingMultiplier,
-                weight: totalWeight,
+                servingSize: foodItem.servingSize,
+                weight: finalWeight,
                 desc: foodItem.desc,
                 proteinContent: totalProtein,
                 carbsContent: totalCarbs,
@@ -588,6 +667,7 @@ extension AddDescribedMealViewController: UITableViewDelegate, UITableViewDataSo
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        if isReadOnlyIngredients { return }
         if !ingredients.isEmpty {
             let ingredient = ingredients[indexPath.row]
             showEditIngredient(ingredient, at: indexPath)
@@ -595,6 +675,7 @@ extension AddDescribedMealViewController: UITableViewDelegate, UITableViewDataSo
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        if isReadOnlyIngredients { return false }
         return !ingredients.isEmpty
     }
     
@@ -617,6 +698,7 @@ extension AddDescribedMealViewController: UITableViewDelegate, UITableViewDataSo
         _ tableView: UITableView,
         trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
     ) -> UISwipeActionsConfiguration? {
+        if isReadOnlyIngredients { return nil }
         guard !ingredients.isEmpty else { return nil }
         
         // Don't allow swipe-delete if only one ingredient remains

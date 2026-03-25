@@ -119,30 +119,30 @@ class FoodLogIngredientHeader: UIView {
     
     // MARK: - Configure
     func configure(with food: Food) {
-            self.food = food
-            self.foodItem = nil
-            
-            // Image loading with full fallback chain (matches LogsTableViewCell)
-            if let imageName = food.image, imageName.hasPrefix("http"),
-               let url = URL(string: imageName) {
-                // Remote URL → load async with placeholder
-                FoodImageView.image = UIImage(named: "dietPlaceholder")
-                FoodImageView.backgroundColor = .systemGray5
-                loadImage(from: url)
-            } else if let imageName = food.image, !imageName.isEmpty,
-                      let localImg = UIImage(named: imageName) {
-                // Valid local asset
-                FoodImageView.image = localImg
-                FoodImageView.backgroundColor = .clear
-            } else {
-                // No URL, no local image → placeholder
-                FoodImageView.image = UIImage(named: "dietPlaceholder")
-                FoodImageView.backgroundColor = .systemGray5
-            }
-            
-            updateMacros()
-            print("DEBUG: Header configured with Food: \(food.name)")
+        self.food = food
+        self.foodItem = nil
+        
+        if let imageName = food.image, imageName.hasPrefix("http"),
+           let url = URL(string: imageName) {
+            FoodImageView.image = UIImage(named: "dietPlaceholder")
+            FoodImageView.backgroundColor = .systemGray5
+            loadImage(from: url)
+        } else if let imageName = food.image, imageName.hasPrefix("/") {
+            // File path from camera capture
+            FoodImageView.image = UIImage(contentsOfFile: imageName)
+            FoodImageView.backgroundColor = .clear
+        } else if let imageName = food.image, !imageName.isEmpty,
+                  let localImg = UIImage(named: imageName) {
+            FoodImageView.image = localImg
+            FoodImageView.backgroundColor = .clear
+        } else {
+            FoodImageView.image = UIImage(named: "dietPlaceholder")
+            FoodImageView.backgroundColor = .systemGray5
         }
+        
+        updateMacros()
+    }
+
     
     private func loadImage(from url: URL) {
         URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
@@ -154,16 +154,21 @@ class FoodLogIngredientHeader: UIView {
         }.resume()
     }
         
-        func configure(with foodItem: FoodItem) {
-            self.foodItem = foodItem
-            self.food = nil
-            
-            FoodImageView.image = UIImage(named: foodItem.image)
-            FoodImageView.backgroundColor = .systemGray5
-            
-            updateMacros()
-            print("DEBUG: Header configured with FoodItem: \(foodItem.name)")
+    func configure(with foodItem: FoodItem) {
+        self.foodItem = foodItem
+        self.food = nil
+        
+        let img = foodItem.image
+        if img.hasPrefix("/") {
+            FoodImageView.image = UIImage(contentsOfFile: img)
+        } else {
+            FoodImageView.image = UIImage(named: img)
         }
+        FoodImageView.backgroundColor = .systemGray5
+        
+        updateMacros()
+    }
+
         
         private func updateMacros() {
             // Handle both Food and FoodItem types
