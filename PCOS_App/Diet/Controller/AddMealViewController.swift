@@ -492,7 +492,7 @@ extension AddMealViewController: BarcodeScannerDelegate {
                     self.hideFetchingIndicator()
                     // ← KEY FIX: call delegate (DietVC) and pop back
                     // NEW — show confirmation screen so user can adjust serving
-                    self.navigateToAddDescribedMeal(with: food)
+                    self.navigateToAddDescribedMeal(with: food, isReadOnlyIngredients: true)
                 }
             } catch {
                 print("JSON decode error:", error)

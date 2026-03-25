@@ -44,12 +44,19 @@ class LogsTableViewCell: UITableViewCell {
             foodImg.image = UIImage(named: "dietPlaceholder")
             loadImage(from: url)
         } else if let imageName = log.image, imageName.hasPrefix("/") {
-            // File path — must check BEFORE UIImage(named:)
+            // Legacy File path
             foodImg.image = UIImage(contentsOfFile: imageName)
                 ?? UIImage(named: "dietPlaceholder")
-        } else if let imageName = log.image, !imageName.isEmpty,
-                  let localImg = UIImage(named: imageName) {
-            foodImg.image = localImg
+        } else if let imageName = log.image, !imageName.isEmpty {
+            let docDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let fileURL = docDir.appendingPathComponent("FoodImages").appendingPathComponent(imageName)
+            if FileManager.default.fileExists(atPath: fileURL.path) {
+                foodImg.image = UIImage(contentsOfFile: fileURL.path)
+            } else if let localImg = UIImage(named: imageName) {
+                foodImg.image = localImg
+            } else {
+                foodImg.image = UIImage(named: "dietPlaceholder")
+            }
         } else {
             foodImg.image = UIImage(named: "dietPlaceholder")
         }

@@ -128,13 +128,23 @@ class FoodLogIngredientHeader: UIView {
             FoodImageView.backgroundColor = .systemGray5
             loadImage(from: url)
         } else if let imageName = food.image, imageName.hasPrefix("/") {
-            // File path from camera capture
+            // Legacy absolute path (will break across restarts, but keeping for compatibility if fresh)
             FoodImageView.image = UIImage(contentsOfFile: imageName)
             FoodImageView.backgroundColor = .clear
-        } else if let imageName = food.image, !imageName.isEmpty,
-                  let localImg = UIImage(named: imageName) {
-            FoodImageView.image = localImg
-            FoodImageView.backgroundColor = .clear
+        } else if let imageName = food.image, !imageName.isEmpty {
+            // Relative file path (e.g. food_UUID.jpg) or bundle assert
+            let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let fileURL = documentsDir.appendingPathComponent("FoodImages").appendingPathComponent(imageName)
+            if FileManager.default.fileExists(atPath: fileURL.path) {
+                FoodImageView.image = UIImage(contentsOfFile: fileURL.path)
+                FoodImageView.backgroundColor = .clear
+            } else if let localImg = UIImage(named: imageName) {
+                FoodImageView.image = localImg
+                FoodImageView.backgroundColor = .clear
+            } else {
+                FoodImageView.image = UIImage(named: "dietPlaceholder")
+                FoodImageView.backgroundColor = .systemGray5
+            }
         } else {
             FoodImageView.image = UIImage(named: "dietPlaceholder")
             FoodImageView.backgroundColor = .systemGray5
@@ -162,7 +172,13 @@ class FoodLogIngredientHeader: UIView {
         if img.hasPrefix("/") {
             FoodImageView.image = UIImage(contentsOfFile: img)
         } else {
-            FoodImageView.image = UIImage(named: img)
+            let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let fileURL = documentsDir.appendingPathComponent("FoodImages").appendingPathComponent(img)
+            if FileManager.default.fileExists(atPath: fileURL.path) {
+                FoodImageView.image = UIImage(contentsOfFile: fileURL.path)
+            } else {
+                FoodImageView.image = UIImage(named: img)
+            }
         }
         FoodImageView.backgroundColor = .systemGray5
         

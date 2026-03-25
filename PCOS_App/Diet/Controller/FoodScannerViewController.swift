@@ -391,8 +391,8 @@ class FoodScannerViewController: UIViewController {
                     try? FileManager.default.createDirectory(at: foodImagesDir, withIntermediateDirectories: true)
                     let fileURL = foodImagesDir.appendingPathComponent(fileName)
                     try? data.write(to: fileURL)
-                    savedImageName = fileURL.path
-                    print("DEBUG: Saved food image to \(fileURL.path)")
+                    savedImageName = fileName
+                    print("DEBUG: Saved food image relative name: \(fileName)")
                 }
             }
 

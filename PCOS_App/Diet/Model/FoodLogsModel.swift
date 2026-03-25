@@ -62,6 +62,8 @@ struct OFFResponse: Codable {
 struct OFFProduct: Codable {
     let product_name: String?
     let image_url: String?
+    let image_front_url: String?
+    let image_small_url: String?
     let nutriments: OFFNutriments?
     let ingredients: [OFFIngredient]?
     
@@ -112,7 +114,7 @@ extension OFFProduct{
             let food: Food = Food(
                 id: UUID(),
                 name: product_name ?? "Unknown Food",
-                image: image_url,
+                image: image_url ?? image_front_url ?? image_small_url,
                 timeStamp: Date(),
                 servingSize: 100,
                 proteinContent: nutr?.proteins100g ?? 0,
