@@ -83,7 +83,7 @@ class SignalsCollectionViewCell: UICollectionViewCell {
                 .first(where: { $0.name == symptom.name })?.icon ?? symptom.icon
                 
             SignalsImage.image = UIImage(named: canonicalIcon)
-            SignalsImage.contentMode = .scaleAspectFit
+            SignalsImage.contentMode = .scaleAspectFill
             IconBackgroundView.isHidden = false
         } else {
             SignalsLabel.text = signal.signalTitle

@@ -28,6 +28,17 @@ class SymptomLoggerViewController: UIViewController {
         title = "Today's Symptoms"
         navigationController?.navigationBar.prefersLargeTitles = false
         
+        // Filter out Flow category if logDate is not a period date
+        if let timestamps = UserDefaults.standard.array(forKey: "SavedPeriodDates") as? [TimeInterval] {
+            let periodDates = Set(timestamps.map { Calendar.current.startOfDay(for: Date(timeIntervalSince1970: $0)) })
+            let isPeriod = periodDates.contains(Calendar.current.startOfDay(for: logDate))
+            if !isPeriod {
+                categories.removeAll(where: { $0.title == "Flow" })
+            }
+        } else {
+            categories.removeAll(where: { $0.title == "Flow" })
+        }
+        
         let doneButton = UIBarButtonItem(title: "Save", style: .prominent, target: self, action: #selector(doneButtonTapped(_:)))
         navigationItem.rightBarButtonItem = doneButton
         doneButton.tintColor = .white
@@ -100,17 +111,29 @@ class SymptomLoggerViewController: UIViewController {
     
     private func getSelectedSymptoms() -> [SymptomItem] {
         var symptoms: [SymptomItem] = []
-        for indexPath in selectedSymptoms {
+        let sortedIndexPaths = selectedSymptoms.sorted {
+            if $0.section != $1.section { return $0.section < $1.section }
+            return $0.item < $1.item
+        }
+        
+        let now = logDate
+        
+        for (index, indexPath) in sortedIndexPaths.enumerated() {
             let symptom = categories[indexPath.section].items[indexPath.item]
+            let originalDate = preSelectedSymptoms.first(where: { $0.name == symptom.name })?.date ?? now.addingTimeInterval(TimeInterval(index))
             let logged = SymptomItem(
                 name: symptom.name,
                 icon: symptom.icon,
                 isSelected: true,
-                date: logDate,
+                date: originalDate,
                 category: symptom.category
             )
             symptoms.append(logged)
         }
+        
+        // Sort symptoms by date so the newest are returned first
+        symptoms.sort { ($0.date ?? Date.distantPast) > ($1.date ?? Date.distantPast) }
+        
         return symptoms
     }
 }

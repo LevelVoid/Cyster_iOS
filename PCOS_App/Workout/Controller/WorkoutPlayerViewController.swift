@@ -301,7 +301,9 @@ class WorkoutPlayerViewController: UIViewController {
 
         //  Cardio → fixed duration
         if exercise.isTimeBased {
-            return currentSet.durationSeconds ?? 0
+            let total = currentSet.durationSeconds ?? 0
+            let completed = currentSet.elapsedSeconds ?? 0
+            return max(0, total - completed)
         }
 
         // Strength → reps × pace

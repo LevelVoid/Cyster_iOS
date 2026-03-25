@@ -98,11 +98,11 @@ class ExerciseDataStore {
     ),
 
     Exercise(
-    name: "Bicycle Crunch",
-    muscleGroup: .core,
+    name: "Electric Bicycle",
+    muscleGroup: .cardio,
     equipment: .none,
     image: "bicycle",
-    instructions: "Alternate elbow to opposite knee while extending the other leg.",
+    instructions: "Alternate elbow to opposite knee while extending the other leg smoothly, resembling bicycling mechanics.",
     gifUrl: "bicyclegif.gif",
     level: "Beginner",
     tempo: "1–2s per rep",
@@ -112,8 +112,8 @@ class ExerciseDataStore {
     "Control movement"
     ],
     variations: [
-    "Slow bicycle crunch",
-    "Weighted bicycle crunch"
+    "Slow electric bicycle",
+    "Weighted electric bicycle"
     ],
     commonMistakes: [
     "Pulling neck",

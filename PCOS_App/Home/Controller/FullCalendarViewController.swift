@@ -158,6 +158,10 @@ class FullCalendarViewController: UIViewController {
             // Present new modal
             if let detailVC = storyboard?.instantiateViewController(withIdentifier: "DaySymptomDetailViewController") as? DaySymptomDetailViewController {
                 detailVC.selectedDate = date
+                detailVC.onDataChanged = { [weak self] in
+                    self?.loadSymptomDates()
+                    self?.collectionView.reloadData()
+                }
                 detailVC.modalPresentationStyle = .pageSheet
                 
                 if let sheet = detailVC.sheetPresentationController {

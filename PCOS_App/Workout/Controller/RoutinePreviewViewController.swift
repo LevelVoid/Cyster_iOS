@@ -112,8 +112,16 @@ class RoutinePreviewViewController: UIViewController, UITableViewDelegate, UITab
         }
 
         //  Else start fresh
-        let workoutExercises = routine.exercises.map {
+        var workoutExercises = routine.exercises.map {
             $0.generateWorkoutExercise()
+        }
+        
+        let estimatedDuration = routine.estimatedDurationSeconds
+        if estimatedDuration < 600 {
+            if let cardioExercise = ExerciseDataStore.shared.allExercises.first(where: { $0.name == "Electric Bicycle" }) {
+                let dynamicCardio = RoutineExercise(exercise: cardioExercise, durationSeconds: 60)
+                workoutExercises.append(dynamicCardio.generateWorkoutExercise())
+            }
         }
 
         let activeWorkout = ActiveWorkout(

@@ -165,7 +165,8 @@ struct RoutineExercise: Codable, Identifiable {
                 self.numberOfSets = 1
                 self.reps = 0
                 self.restTimerSeconds = nil
-                self.durationSeconds = durationSeconds ?? (exercise.isYoga ? 60 : 600)
+                let rawDuration = durationSeconds ?? (exercise.isYoga ? 180 : 600)
+                self.durationSeconds = exercise.isYoga ? min(rawDuration, 180) : rawDuration
             } else {
                 self.numberOfSets = numberOfSets ?? 3
                 self.reps = reps ?? 10

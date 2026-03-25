@@ -30,8 +30,19 @@ class Phase02ViewController: UIViewController {
         private func setupUI() {
             card1View.layer.cornerRadius=16
             card2View.layer.cornerRadius=16
+            
             headingLabel.text = phaseSignal.symptoms.heading
+            headingLabel.numberOfLines = 0
+            headingLabel.lineBreakMode = .byWordWrapping
+            
+            if let stackView = headingLabel.superview as? UIStackView {
+                stackView.constraints.filter { $0.firstAttribute == .height }.forEach { $0.isActive = false }
+            }
+            
             Description.text = phaseSignal.symptoms.introText
+            Description.numberOfLines = 0
+            Description.lineBreakMode = .byWordWrapping
+            Description.setContentCompressionResistancePriority(.required, for: .vertical)
         }
 
         private func setupTableView() {
@@ -41,6 +52,11 @@ class Phase02ViewController: UIViewController {
             TableView.separatorStyle = .none
             TableView.backgroundColor = .clear
             TableView.isScrollEnabled = false
+            
+            // Force table view to fully expand so symptoms aren't clipped inside the stack
+            TableView.translatesAutoresizingMaskIntoConstraints = false
+            let totalHeight = CGFloat(symptoms.count * 72)
+            TableView.heightAnchor.constraint(equalToConstant: totalHeight).isActive = true
         }
 }
 extension Phase02ViewController: UITableViewDataSource {

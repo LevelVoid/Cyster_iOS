@@ -16,8 +16,7 @@ final class SymptomStoryPageViewController: UIPageViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         edgesForExtendedLayout = []
-
-        title = signal.signalTitle
+        title = signal.symptomName
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .close,

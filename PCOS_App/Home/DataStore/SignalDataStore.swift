@@ -260,7 +260,7 @@ let hirsutismPCOSSignal = PCOSSignal(
 
 
 let skinDarkeningPCOSSignal = PCOSSignal(
-    symptomName: "Skin Darkening",
+    symptomName: "Darkening",
     signalTitle: "Understanding Skin Darkening",
     signalIllustration: "skin_darkening",
     

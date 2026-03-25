@@ -15,6 +15,8 @@ class DaySymptomDetailViewController: UIViewController, UITableViewDataSource, U
     @IBOutlet weak var CycleDayLabel: UILabel!
     @IBOutlet weak var editButton: UIButton!
     
+    var onDataChanged: (() -> Void)?
+    
     var selectedDate: Date!
     private var symptoms: [SymptomItem] = []
     private let calendar = Calendar.current
@@ -208,12 +210,13 @@ class DaySymptomDetailViewController: UIViewController, UITableViewDataSource, U
             iconBackgroundView.translatesAutoresizingMaskIntoConstraints = false
             iconBackgroundView.backgroundColor = UIColor(red: 254.0/255.0, green: 122.0/255.0, blue: 150.0/255.0, alpha: 0.1)
             iconBackgroundView.layer.cornerRadius = 22
+            iconBackgroundView.clipsToBounds = true
             cardView.addSubview(iconBackgroundView)
             
             // Icon image
             let iconImageView = UIImageView()
             iconImageView.translatesAutoresizingMaskIntoConstraints = false
-            iconImageView.contentMode = .scaleAspectFit
+            iconImageView.contentMode = .scaleAspectFill
             iconImageView.tintColor = UIColor(red: 254.0/255.0, green: 122.0/255.0, blue: 150.0/255.0, alpha: 1.0)
             iconImageView.image = UIImage(named: symptom.icon)
             iconBackgroundView.addSubview(iconImageView)
@@ -243,8 +246,8 @@ class DaySymptomDetailViewController: UIViewController, UITableViewDataSource, U
                 // Icon image
                 iconImageView.centerXAnchor.constraint(equalTo: iconBackgroundView.centerXAnchor),
                 iconImageView.centerYAnchor.constraint(equalTo: iconBackgroundView.centerYAnchor),
-                iconImageView.widthAnchor.constraint(equalToConstant: 24),
-                iconImageView.heightAnchor.constraint(equalToConstant: 24),
+                iconImageView.widthAnchor.constraint(equalToConstant: 44),
+                iconImageView.heightAnchor.constraint(equalToConstant: 44),
                 
                 // Name label
                 nameLabel.leadingAnchor.constraint(equalTo: iconBackgroundView.trailingAnchor, constant: 12),
@@ -273,6 +276,7 @@ class DaySymptomDetailViewController: UIViewController, UITableViewDataSource, U
             
             // Reload the symptoms and update UI
             loadSymptoms()
+            onDataChanged?()
             
             return symptoms
         }

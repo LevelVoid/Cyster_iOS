@@ -50,9 +50,9 @@ private let menstrualSignal = PhaseSignal(
     understanding: PhaseUnderstanding(
         heading: "Periods in PCOS",
         descriptions: [
-            "With PCOS, progesterone can be lower.",
-            "This can lead to lighter periods or heavier bleeding for some people.",
-            "Feeling more tired or unmotivated during this phase is common."
+            "Because PCOS can cause skipped ovulation, the lining of your uterus might build up over time without shedding.",
+            "When your period finally arrives, a lack of certain hormones can make the bleeding irregular, heavier, or last longer than usual.",
+            "During your period, the shift in hormones and related body inflammation can leave you feeling extra tired or experiencing a bit of brain fog."
         ]
     ),
 
@@ -144,9 +144,9 @@ private let ovulationSignal = PhaseSignal(
     understanding: PhaseUnderstanding(
         heading: "Ovulation in PCOS",
         descriptions: [
-            "Ovulation happens when an ovary releases an egg. In people with PCOS, ovulation may not occur regularly because hormone levels can be imbalanced.",
-            "When ovulation does occur, estrogen levels are usually higher. Many people notice increased energy, clearer thinking, and improved mood.",
-            "Fertility is highest around ovulation because the body is preparing for a possible pregnancy."
+            "Ovulation is when your body releases an egg. With PCOS, higher levels of certain hormones can pause this process, causing irregular periods or skipped ovulation.",
+            "If and when ovulation does happen, a natural rise in estrogen can give you a nice boost in energy, sharper focus, and an uplifted mood.",
+            "While tracking ovulation signs like body temperature can be helpful, keep in mind that PCOS can sometimes cause false hormone peaks on over-the-counter test kits."
         ]
     ),
 
@@ -233,9 +233,9 @@ private let follicularSignal = PhaseSignal(
     understanding: PhaseUnderstanding(
         heading: "Follicular Phase in PCOS",
         descriptions: [
-            "The follicular phase begins after menstruation and lasts until ovulation.",
-            "During this time, estrogen levels gradually increase as the body prepares an egg for release.",
-            "In people with PCOS, this phase may last longer because ovulation can be delayed or irregular."
+            "This phase begins on the first day of your period and lasts until you ovulate. It's when your body prepares an egg to be released.",
+            "Usually, your hormones encourage one egg to grow and mature. In PCOS, though, extra hormones can sometimes stall this growth.",
+            "Because of this stall, your follicular phase might be longer than usual, or pause altogether, which contributes to the small, fluid-filled sacs often seen on ovaries."
         ]
     ),
 
@@ -320,9 +320,9 @@ private let lutealSignal = PhaseSignal(
     understanding: PhaseUnderstanding(
         heading: "Luteal Phase in PCOS",
         descriptions: [
-            "The luteal phase occurs after ovulation when progesterone levels rise.",
-            "Progesterone prepares the body for a possible pregnancy.",
-            "With PCOS, hormone fluctuations during this phase may contribute to symptoms like fatigue, mood changes, or acne."
+            "This phase happens right after ovulation, where your body creates a balancing hormone called progesterone to support a healthy cycle.",
+            "If you skipped ovulation, your body doesn't produce this extra progesterone, leaving you exposed to higher levels of estrogen.",
+            "Without enough progesterone, and with PCOS hormones in the mix, you might notice stronger PMS symptoms like fatigue, mood swings, and unexpected breakouts."
         ]
     ),
 

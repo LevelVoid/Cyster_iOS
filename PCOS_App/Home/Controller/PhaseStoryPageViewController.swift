@@ -38,8 +38,8 @@ final class PhaseStoryPageViewController: UIPageViewController {
             action: #selector(closeTapped)
         )
 
-        navigationController?.navigationBar.prefersLargeTitles = false
-        navigationItem.largeTitleDisplayMode = .never
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
 
         let appearance = UINavigationBarAppearance()
         appearance.backgroundColor = UIColor(hex: "#FCEEED")

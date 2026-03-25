@@ -31,7 +31,7 @@ class SymptomItemCollectionViewCell: UICollectionViewCell {
         IconImage?.layer.cornerRadius = 16 // Rounded square instead of circle
         IconImage?.clipsToBounds = true
         IconImage?.contentMode = .scaleAspectFit
-        IconImage?.backgroundColor = .white
+        IconImage?.backgroundColor = .clear // Used to be .white
         
         IconImage.clipsToBounds = true
     }

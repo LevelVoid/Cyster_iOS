@@ -37,7 +37,7 @@ class SymptomDataStore {
             startOfDay as NSDate,
             endOfDay as NSDate
         )
-        request.sortDescriptors = [NSSortDescriptor(key: "symptomName", ascending: true)]
+        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         
         do {
             let results = try context.fetch(request)

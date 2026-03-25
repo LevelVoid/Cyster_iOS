@@ -20,7 +20,24 @@ class RoutineDataStore {
 
     // MARK: - All 35 predefined routines (7 per phase)
     lazy var predefinedRoutines: [Routine] = {
-        return menstrualRoutines + follicularRoutines + ovulationRoutines + lutealRoutines + unknownRoutines
+        var all = menstrualRoutines + follicularRoutines + ovulationRoutines + lutealRoutines + unknownRoutines
+        let cardios = ["Incline Treadmill Walk", "Elliptical Trainer", "Treadmill Run", "Electric Bicycle"]
+        
+        for i in 0..<all.count {
+            if all[i].estimatedDurationSeconds < 2400 {
+                // If the routine already has one of these cardios, just extend its duration to avoid duplicates!
+                if let existingIdx = all[i].exercises.firstIndex(where: { cardios.contains($0.exercise.name) }) {
+                    let currentDur = all[i].exercises[existingIdx].durationSeconds ?? 0
+                    all[i].exercises[existingIdx].durationSeconds = currentDur + 600
+                } else {
+                    if let randomCardioName = cardios.randomElement() {
+                        let extraCardio = RoutineExercise(exercise: self.ex(randomCardioName), durationSeconds: 600)
+                        all[i].exercises.append(extraCardio)
+                    }
+                }
+            }
+        }
+        return all
     }()
 
     // MARK: - Query Methods
@@ -85,8 +102,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Downward Dog"), durationSeconds: 420),
                 RoutineExercise(exercise: ex("Bhujangasana"), durationSeconds: 420)
             ],
-            thumbnailImageName: "routine_9", routineTagline: "Ease into movement with breath-led yoga",
-            routineDescription: "A gentle 35-minute yoga flow designed for the menstrual phase...",
+            thumbnailImageName: "routine_9", routineTagline: "A grounding yoga sequence to safely ease back and pelvic tension during your period.",
+            routineDescription: "A restorative and gentle yoga flow tailored for menstrual phase comfort, promoting relaxation and reducing cortisol.",
             phase: .menstrual, routineType: .yoga
         ),
         Routine(
@@ -98,8 +115,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Cat Cow"), durationSeconds: 420),
                 RoutineExercise(exercise: ex("Malasana (Yogic Squat)"), durationSeconds: 420)
             ],
-            thumbnailImageName: "routine_10", routineTagline: "Deep stretches to ease tension and cramps",
-            routineDescription: "Restorative 30-40 min stretching targets the hips, pelvis, and lower back.",
+            thumbnailImageName: "routine_10", routineTagline: "Deep, restorative holds perfectly soothing your tough menstrual cramps and stiffness.",
+            routineDescription: "This long-hold stretching routine specifically targets the hips, pelvis, and lower back to ease intense menstrual discomfort.",
             phase: .menstrual, routineType: .yoga
         ),
         Routine(
@@ -113,8 +130,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Incline Treadmill Walk"), durationSeconds: 600),
                 RoutineExercise(exercise: ex("Child Pose"), durationSeconds: 120)
             ],
-            thumbnailImageName: "routine_11", routineTagline: "Gentle core work without overstressing",
-            routineDescription: "Light core activation keeps muscles engaged without spiking cortisol.",
+            thumbnailImageName: "routine_11", routineTagline: "Gentle core engagement importantly supporting full circulation safely during your period.",
+            routineDescription: "A light, stabilizing core session that builds necessary strength while completely avoiding high-intensity burnout during your period.",
             phase: .menstrual, routineType: .strength
         ),
         Routine(
@@ -128,8 +145,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Incline Treadmill Walk"), durationSeconds: 600),
                 RoutineExercise(exercise: ex("Butterfly Stretch"), durationSeconds: 120)
             ],
-            thumbnailImageName: "routine_12", routineTagline: "Keep legs moving with low-impact strength",
-            routineDescription: "A 35-40 min session following the consistency-first PCOS protocol.",
+            thumbnailImageName: "routine_12", routineTagline: "Maintain consistent leg strength with safe, low-impact movements during your true period.",
+            routineDescription: "Keep your lower body strong without exhausting yourself. This low-impact strength session is designed specifically for menstrual energy dips.",
             phase: .menstrual, routineType: .strength
         ),
         Routine(
@@ -141,8 +158,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Incline Treadmill Walk"), durationSeconds: 900),
                 RoutineExercise(exercise: ex("Child Pose"), durationSeconds: 180)
             ],
-            thumbnailImageName: "routine_13", routineTagline: "When fatigue is high and your body needs gentle support",
-            routineDescription: "Designed for days of low energy and physical fatigue, prioritizing gentle activation.",
+            thumbnailImageName: "routine_13", routineTagline: "A deeply comforting routine gently supporting lymphatic flow when fatigued from your period.",
+            routineDescription: "For your lowest energy days, this extremely gentle routine prioritizes light activation to help you feel better rather than drained.",
             phase: .menstrual, routineType: .mixed
         ),
         Routine(
@@ -154,8 +171,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Elliptical Trainer"), durationSeconds: 900),
                 RoutineExercise(exercise: ex("Downward Dog"), durationSeconds: 180)
             ],
-            thumbnailImageName: "routine_14", routineTagline: "Slow, stabilizing movement for overwhelming days",
-            routineDescription: "This 35-40 min routine supports stress regulation.",
+            thumbnailImageName: "routine_14", routineTagline: "Slow, perfectly deliberate movements to comfortably steady your mind safely during your period.",
+            routineDescription: "A combination of stabilizing exercises tailored to help regulate physical and mental stress when you feel overloaded.",
             phase: .menstrual, routineType: .mixed
         ),
         Routine(
@@ -167,8 +184,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Incline Treadmill Walk"), durationSeconds: 900),
                 RoutineExercise(exercise: ex("Cat Cow"), durationSeconds: 180)
             ],
-            thumbnailImageName: "routine_15", routineTagline: "Open hips and move gently",
-            routineDescription: "Mobility-focused with light walking to promote lymphatic drainage.",
+            thumbnailImageName: "routine_15", routineTagline: "Release tight hips and slowly improve your functional mobility to reduce menstrual bloating.",
+            routineDescription: "Blend gentle joint mobility with light cardiovascular movement to reduce water retention and ease painful cramps gently.",
             phase: .menstrual, routineType: .mixed
         )
     ]
@@ -186,8 +203,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Malasana (Yogic Squat)"), durationSeconds: 420),
                 RoutineExercise(exercise: ex("Cat Cow"), durationSeconds: 420)
             ],
-            thumbnailImageName: "routine_9", routineTagline: "Channel rising energy into dynamic yoga",
-            routineDescription: "Estrogen rises during the follicular phase, energy increases. 30-40 min flow.",
+            thumbnailImageName: "routine_9", routineTagline: "A dynamic flowing sequence designed cleanly to build your naturally rising follicular stamina.",
+            routineDescription: "As your estrogen climbs, harness your growing energy with this progressive yoga flow designed to increase your cardiovascular stamina safely.",
             phase: .follicular, routineType: .yoga
         ),
         Routine(
@@ -199,8 +216,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Child Pose"), durationSeconds: 420),
                 RoutineExercise(exercise: ex("Cat Cow"), durationSeconds: 420)
             ],
-            thumbnailImageName: "routine_10", routineTagline: "Classic sun salutation adapted for PCOS",
-            routineDescription: "A 35-minute sun salutation sequence that builds body heat.",
+            thumbnailImageName: "routine_10", routineTagline: "A highly modified sun salutation perfectly syncing with your rising follicular hormones.",
+            routineDescription: "Flow through repeated, heat-building postures that encourage circulation and gently push your cardiovascular boundaries without overstressing.",
             phase: .follicular, routineType: .yoga
         ),
         Routine(
@@ -214,8 +231,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Treadmill Run"), durationSeconds: 600),
                 RoutineExercise(exercise: ex("Child Pose"), durationSeconds: 120)
             ],
-            thumbnailImageName: "routine_11", routineTagline: "Build strength while primed for gains",
-            routineDescription: "Progressive lower body strength session for 35-40 minutes.",
+            thumbnailImageName: "routine_11", routineTagline: "Steadily condition the sensitive lower body and nicely build follicular resilience safely.",
+            routineDescription: "Your body is primed for strength gains during this phase. This progressive lower body workout focuses heavily on form, power, and muscle resilience.",
             phase: .follicular, routineType: .strength
         ),
         Routine(
@@ -229,21 +246,21 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Elliptical Trainer"), durationSeconds: 600),
                 RoutineExercise(exercise: ex("Butterfly Stretch"), durationSeconds: 120)
             ],
-            thumbnailImageName: "routine_12", routineTagline: "Sculpt and strengthen upper body",
-            routineDescription: "Upper body strength training leveraging peak 30-40 minute consistency layout.",
+            thumbnailImageName: "routine_12", routineTagline: "Sculpt your upper body naturally utilizing steady follicular energy safely for improved posture.",
+            routineDescription: "Leverage this phase's hormonal environment to build strong, stable upper body muscles, particularly focusing on your back and shoulders.",
             phase: .follicular, routineType: .strength
         ),
         Routine(
             id: UUID(), name: "Cardio & Core Combo",
             exercises: [
                 RoutineExercise(exercise: ex("Hip Rotation"), durationSeconds: 180),
-                RoutineExercise(exercise: ex("Bicycle Crunch"), numberOfSets: 3, reps: 15),
+                RoutineExercise(exercise: ex("Electric Bicycle"), durationSeconds: 120),
                 RoutineExercise(exercise: ex("Leg Raises"), numberOfSets: 3, reps: 15),
                 RoutineExercise(exercise: ex("Jump Rope"), durationSeconds: 900),
                 RoutineExercise(exercise: ex("Child Pose"), durationSeconds: 180)
             ],
-            thumbnailImageName: "routine_13", routineTagline: "Boost metabolism with cardio and core",
-            routineDescription: "Combines cardiovascular intervals with core strengthening.",
+            thumbnailImageName: "routine_13", routineTagline: "Elevate your heart rate and properly engage your core cleanly utilizing fresh follicular energy.",
+            routineDescription: "A mix of moderate cardiovascular intervals and targeted core work, perfect for utilizing your improving stamina and boosting metabolic health.",
             phase: .follicular, routineType: .mixed
         ),
         Routine(
@@ -255,8 +272,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Treadmill Run"), durationSeconds: 900),
                 RoutineExercise(exercise: ex("Downward Dog"), durationSeconds: 180)
             ],
-            thumbnailImageName: "routine_14", routineTagline: "Warm up progressively for peak performance",
-            routineDescription: "A 30-40 minute preparation routine transitioning from mobility to strength.",
+            thumbnailImageName: "routine_14", routineTagline: "Properly warm up major muscle groups carefully utilizing your new building follicular energy.",
+            routineDescription: "A dynamic transition routine that bridges the gap between gentle mobility and full-blown strength, getting you ready for more challenging days.",
             phase: .follicular, routineType: .mixed
         ),
         Routine(
@@ -268,8 +285,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Elliptical Trainer"), durationSeconds: 900),
                 RoutineExercise(exercise: ex("Plank"), durationSeconds: 180)
             ],
-            thumbnailImageName: "routine_15", routineTagline: "Total body activation",
-            routineDescription: "Balanced 35-40 min full body session.",
+            thumbnailImageName: "routine_15", routineTagline: "A brilliantly balanced approach easily building solid foundational strength in your follicular phase.",
+            routineDescription: "A balanced, moderately intense full-body session that recruits all your major muscle groups evenly, promoting systemic strength and stability.",
             phase: .follicular, routineType: .mixed
         )
     ]
@@ -287,8 +304,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Bow Pose"), durationSeconds: 420),
                 RoutineExercise(exercise: ex("Malasana (Yogic Squat)"), durationSeconds: 420)
             ],
-            thumbnailImageName: "routine_9", routineTagline: "Challenge your body with power yoga",
-            routineDescription: "Power yoga during ovulation harnesses peak estrogen and testosterone.",
+            thumbnailImageName: "routine_9", routineTagline: "A highly challenging power yoga sequence perfectly utilizing your absolute peak ovulation energy.",
+            routineDescription: "A demanding power yoga sequence designed to take full advantage of your testosterone and estrogen peaks, pushing your muscular endurance to its limit.",
             phase: .ovulation, routineType: .yoga
         ),
         Routine(
@@ -300,8 +317,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Malasana (Yogic Squat)"), durationSeconds: 420),
                 RoutineExercise(exercise: ex("Bhujangasana"), durationSeconds: 420)
             ],
-            thumbnailImageName: "routine_10", routineTagline: "Push flexibility boundaries",
-            routineDescription: "A 35-minute flow focusing on longer holds to build range of motion.",
+            thumbnailImageName: "routine_10", routineTagline: "Deep flexibility work purely safely pushing your true mobility boundaries while pliable in ovulation.",
+            routineDescription: "Take advantage of peak hormone-induced ligament laxity with a flow that deeply stretches and improves your overall functional range of motion.",
             phase: .ovulation, routineType: .yoga
         ),
         Routine(
@@ -315,8 +332,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Treadmill Run"), durationSeconds: 600),
                 RoutineExercise(exercise: ex("Cat Cow"), durationSeconds: 120)
             ],
-            thumbnailImageName: "routine_11", routineTagline: "Peak energy calls for compounds",
-            routineDescription: "A consistency-first, 30-40 min PCOS lower body session.",
+            thumbnailImageName: "routine_11", routineTagline: "A amazingly strong, compound session completely confidently building leg strength during ovulation.",
+            routineDescription: "This heavy compound lower body routine is meant for your highest energy days. Push real weight and focus on maximizing your strength output safely.",
             phase: .ovulation, routineType: .strength
         ),
         Routine(
@@ -330,8 +347,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Elliptical Trainer"), durationSeconds: 600),
                 RoutineExercise(exercise: ex("Child Pose"), durationSeconds: 120)
             ],
-            thumbnailImageName: "routine_12", routineTagline: "Push your limits during your strongest phase",
-            routineDescription: "Mid-cycle peak upper body focus for ~35 minutes.",
+            thumbnailImageName: "routine_12", routineTagline: "Push past limits purely safely with heavy upper body movements deeply during peak ovulation.",
+            routineDescription: "When your testosterone peaks mid-cycle, use this high-intensity upper body routine to challenge your limits and prioritize significant muscle growth.",
             phase: .ovulation, routineType: .strength
         ),
         Routine(
@@ -339,12 +356,12 @@ class RoutineDataStore {
             exercises: [
                 RoutineExercise(exercise: ex("Jump Rope"), durationSeconds: 180),
                 RoutineExercise(exercise: ex("Squats"), numberOfSets: 3, reps: 15),
-                RoutineExercise(exercise: ex("Bicycle Crunch"), numberOfSets: 3, reps: 15),
+                RoutineExercise(exercise: ex("Electric Bicycle"), durationSeconds: 120),
                 RoutineExercise(exercise: ex("Treadmill Run"), durationSeconds: 900),
                 RoutineExercise(exercise: ex("Butterfly Stretch"), durationSeconds: 180)
             ],
-            thumbnailImageName: "routine_13", routineTagline: "High-intensity intervals for peak days",
-            routineDescription: "Alternating high-intensity cardio with steady components.",
+            thumbnailImageName: "routine_13", routineTagline: "A truly fast-paced, high interval routine to perfectly match your incredible peak ovulation energy.",
+            routineDescription: "Blend high-intensity athletic intervals with steady recovery to massively boost cardiovascular fitness during the narrow window your body can handle the stress.",
             phase: .ovulation, routineType: .mixed
         ),
         Routine(
@@ -356,8 +373,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Elliptical Trainer"), durationSeconds: 900),
                 RoutineExercise(exercise: ex("Plank"), durationSeconds: 180)
             ],
-            thumbnailImageName: "routine_14", routineTagline: "A complete full-body challenge",
-            routineDescription: "Combining heavy compounds with ~15 min core steady state.",
+            thumbnailImageName: "routine_14", routineTagline: "A highly demanding full-body conditioning session perfectly testing your peak stamina in ovulation.",
+            routineDescription: "Combine heavy full-body strength movements with sustained cardiovascular efforts to build elite endurance and power while you have the energy to spare.",
             phase: .ovulation, routineType: .mixed
         ),
         Routine(
@@ -369,8 +386,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Treadmill Run"), durationSeconds: 900),
                 RoutineExercise(exercise: ex("Downward Dog"), durationSeconds: 180)
             ],
-            thumbnailImageName: "routine_15", routineTagline: "Train at your peak",
-            routineDescription: "35-minute peak performance workout.",
+            thumbnailImageName: "routine_15", routineTagline: "Train completely fearlessly at your absolute ovulation peak with explosive power and high endurance.",
+            routineDescription: "This is the routine you save for when you feel invincible. Push limits across all muscle groups in this demanding peak performance conditioning session.",
             phase: .ovulation, routineType: .mixed
         )
     ]
@@ -388,8 +405,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Downward Dog"), durationSeconds: 420),
                 RoutineExercise(exercise: ex("Hip Rotation"), durationSeconds: 420)
             ],
-            thumbnailImageName: "routine_9", routineTagline: "Calm your nervous system",
-            routineDescription: "A soothing 30-40 min session to calm anxiety and ease PMS.",
+            thumbnailImageName: "routine_9", routineTagline: "An unbelievably anxiety-reducing sequence purposefully designed to effectively soothe luteal PMS.",
+            routineDescription: "As progesterone rises and energy wanes, use this incredibly soothing yoga flow to intentionally lower your heart rate and combat pre-menstrual anxiety.",
             phase: .luteal, routineType: .yoga
         ),
         Routine(
@@ -401,8 +418,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Hip Rotation"), durationSeconds: 420),
                 RoutineExercise(exercise: ex("Cat Cow"), durationSeconds: 420)
             ],
-            thumbnailImageName: "routine_10", routineTagline: "Long-held stretches for release",
-            routineDescription: "Yin-style 35-min session targeting connective fascia.",
+            thumbnailImageName: "routine_10", routineTagline: "A very deeply relaxing luteal stretch practice safely releasing tension just before your period.",
+            routineDescription: "A yin-style practice emphasizing very long, relaxed holds that open up stubborn connective tissues and melt away built-up physical and mental tension.",
             phase: .luteal, routineType: .yoga
         ),
         Routine(
@@ -416,8 +433,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Incline Treadmill Walk"), durationSeconds: 600),
                 RoutineExercise(exercise: ex("Child Pose"), durationSeconds: 120)
             ],
-            thumbnailImageName: "routine_11", routineTagline: "Maintain strength without overload",
-            routineDescription: "Focuses on consistency during the latter half of the cycle. 35 mins.",
+            thumbnailImageName: "routine_11", routineTagline: "A perfectly steady, highly sustainable lower body workout session specifically for your luteal phase.",
+            routineDescription: "Protect your hard-earned strength gains with a highly consistent, moderate-intensity workout that won't spike your cortisol or exhaust you prematurely.",
             phase: .luteal, routineType: .strength
         ),
         Routine(
@@ -431,8 +448,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Elliptical Trainer"), durationSeconds: 600),
                 RoutineExercise(exercise: ex("Butterfly Stretch"), durationSeconds: 120)
             ],
-            thumbnailImageName: "routine_12", routineTagline: "Consistent steady resistance",
-            routineDescription: "Machine-based and controlled 30-40 min workout to stay on track.",
+            thumbnailImageName: "routine_12", routineTagline: "Controlled, highly moderate resistance absolutely safely keeping your strength base in the luteal phase.",
+            routineDescription: "A highly controlled, mostly machine-based workout designed to provide excellent muscular stimulus without stressing your central nervous system.",
             phase: .luteal, routineType: .strength
         ),
         Routine(
@@ -444,8 +461,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Incline Treadmill Walk"), durationSeconds: 900),
                 RoutineExercise(exercise: ex("Cat Cow"), durationSeconds: 180)
             ],
-            thumbnailImageName: "routine_13", routineTagline: "Low-impact movement to keep momentum",
-            routineDescription: "Incline walking with glute activation for a full 35-min duration.",
+            thumbnailImageName: "routine_13", routineTagline: "Super low-impact luteal training gracefully prioritizing glute activation and gentle steady cardio.",
+            routineDescription: "A pure, slow-burn cardiovascular session focused entirely on gentle incline walking and simple glute work to keep your engine running smoothly.",
             phase: .luteal, routineType: .mixed
         ),
         Routine(
@@ -457,8 +474,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Elliptical Trainer"), durationSeconds: 900),
                 RoutineExercise(exercise: ex("Downward Dog"), durationSeconds: 180)
             ],
-            thumbnailImageName: "routine_14", routineTagline: "Move with intention and body awareness",
-            routineDescription: "Bridges yoga and traditional training evenly.",
+            thumbnailImageName: "routine_14", routineTagline: "Dynamic luteal movements simply requiring deep focus to gently tune exactly into your personal body.",
+            routineDescription: "By combining intentional, slow-movement strength patterns with deep stretching, this routine honors your body's need for both work and deliberate rest.",
             phase: .luteal, routineType: .mixed
         ),
         Routine(
@@ -466,12 +483,12 @@ class RoutineDataStore {
             exercises: [
                 RoutineExercise(exercise: ex("Cat Cow"), durationSeconds: 180),
                 RoutineExercise(exercise: ex("Lunges"), numberOfSets: 3, reps: 15),
-                RoutineExercise(exercise: ex("Bicycle Crunch"), numberOfSets: 3, reps: 15),
+                RoutineExercise(exercise: ex("Electric Bicycle"), durationSeconds: 120),
                 RoutineExercise(exercise: ex("Incline Treadmill Walk"), durationSeconds: 900),
                 RoutineExercise(exercise: ex("Child Pose"), durationSeconds: 180)
             ],
-            thumbnailImageName: "routine_15", routineTagline: "Balance activity and recovery",
-            routineDescription: "Low cortisol 30-40 min workout promoting circulation.",
+            thumbnailImageName: "routine_15", routineTagline: "A highly supportive, deeply calming luteal session smoothly promoting recovery before your period.",
+            routineDescription: "The ultimate bridge routine designed specifically for those exhausted pre-menstrual days, ensuring you stay active without making your fatigue any worse.",
             phase: .luteal, routineType: .mixed
         )
     ]
@@ -488,8 +505,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Bhujangasana"), durationSeconds: 420),
                 RoutineExercise(exercise: ex("Butterfly Stretch"), durationSeconds: 420)
             ],
-            thumbnailImageName: "routine_9", routineTagline: "A safe, gentle yoga flow",
-            routineDescription: "When cycle phase is unknown, this 30-40 min gentle flow is perfect.",
+            thumbnailImageName: "routine_9", routineTagline: "A purely universally satisfying yoga flow that feels totally incredibly good at any random cycle phase.",
+            routineDescription: "This fail-safe yoga routine is perfectly balanced for any day. It provides enough movement to feel productive, but enough rest to feel deeply rejuvenated.",
             phase: .unknown, routineType: .yoga
         ),
         Routine(
@@ -501,8 +518,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Cat Cow"), durationSeconds: 420),
                 RoutineExercise(exercise: ex("Child Pose"), durationSeconds: 420)
             ],
-            thumbnailImageName: "routine_10", routineTagline: "Ground yourself with pelvic stretches",
-            routineDescription: "A 35-min grounding sequence improving circulation.",
+            thumbnailImageName: "routine_10", routineTagline: "Find your incredibly calm, beautiful spiritual center carefully balancing out any random cycle phase.",
+            routineDescription: "Use this comprehensive stretching routine to improve pelvic floor circulation and ground yourself physically and mentally whenever you feel completely disconnected.",
             phase: .unknown, routineType: .yoga
         ),
         Routine(
@@ -516,8 +533,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Treadmill Run"), durationSeconds: 600),
                 RoutineExercise(exercise: ex("Butterfly Stretch"), durationSeconds: 120)
             ],
-            thumbnailImageName: "routine_11", routineTagline: "Foundational strength training",
-            routineDescription: "A balanced lower body strength session for 35 minutes.",
+            thumbnailImageName: "routine_11", routineTagline: "Safely establish a highly reliable, strongly functional lower-body baseline naturally in any specific phase.",
+            routineDescription: "Perfect for any phase, this highly reliable lower body session skips the complex movements in favor of safe, foundational exercises that always work well.",
             phase: .unknown, routineType: .strength
         ),
         Routine(
@@ -531,8 +548,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Elliptical Trainer"), durationSeconds: 600),
                 RoutineExercise(exercise: ex("Child Pose"), durationSeconds: 120)
             ],
-            thumbnailImageName: "routine_12", routineTagline: "Balance upper body strength",
-            routineDescription: "Symmetrical training stimulus mirroring the trainer's 35 min guide.",
+            thumbnailImageName: "routine_12", routineTagline: "A beautifully supportive upper body routine absolutely safely designed flawlessly for any random cycle phase.",
+            routineDescription: "Focuses heavily on pulling movements and back stability. This is your go-to routine to reverse the effects of daily life and build symmetrical upper body strength.",
             phase: .unknown, routineType: .strength
         ),
         Routine(
@@ -544,21 +561,21 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Incline Treadmill Walk"), durationSeconds: 900),
                 RoutineExercise(exercise: ex("Glute Bridge"), durationSeconds: 180)
             ],
-            thumbnailImageName: "routine_13", routineTagline: "Adapt your workout to how you feel",
-            routineDescription: "A moderately paced 30-40 min session.",
+            thumbnailImageName: "routine_13", routineTagline: "A perfectly flexible, highly adaptable routine safely harmonizing exactly with however your random cycle feels.",
+            routineDescription: "A highly adaptable combination routine that serves as a moving meditation. You decide the intensity, ensuring you ALWAYS get exactly what you need out of it.",
             phase: .unknown, routineType: .mixed
         ),
         Routine(
             id: UUID(), name: "Core & Stretch",
             exercises: [
                 RoutineExercise(exercise: ex("Hip Rotation"), durationSeconds: 180),
-                RoutineExercise(exercise: ex("Bicycle Crunch"), numberOfSets: 3, reps: 15),
+                RoutineExercise(exercise: ex("Electric Bicycle"), durationSeconds: 120),
                 RoutineExercise(exercise: ex("Leg Raises"), numberOfSets: 3, reps: 15),
                 RoutineExercise(exercise: ex("Incline Treadmill Walk"), durationSeconds: 900),
                 RoutineExercise(exercise: ex("Butterfly Stretch"), durationSeconds: 180)
             ],
-            thumbnailImageName: "routine_14", routineTagline: "Strengthen core and stretch",
-            routineDescription: "Core strength paired with endurance and deep stretching.",
+            thumbnailImageName: "routine_14", routineTagline: "A wonderfully well-balanced approach safely strengthening your exact core through any random cycle phase.",
+            routineDescription: "This elegant routine alternates between active core engagement and passive stretching to build torso stability without tightening up your hips and back.",
             phase: .unknown, routineType: .mixed
         ),
         Routine(
@@ -570,8 +587,8 @@ class RoutineDataStore {
                 RoutineExercise(exercise: ex("Elliptical Trainer"), durationSeconds: 900),
                 RoutineExercise(exercise: ex("Child Pose"), durationSeconds: 180)
             ],
-            thumbnailImageName: "routine_15", routineTagline: "An easy full body session",
-            routineDescription: "A light 35 min full-body circuit with warm-up, and consistent reps.",
+            thumbnailImageName: "routine_15", routineTagline: "A flawlessly engaging circuit powerfully hitting every specific muscle safely at any exact time in your cycle.",
+            routineDescription: "When you don't know what to train, do this. A comprehensive, easy-going full body circuit that touches on all essential movement patterns safely and simply.",
             phase: .unknown, routineType: .mixed
         )
     ]
