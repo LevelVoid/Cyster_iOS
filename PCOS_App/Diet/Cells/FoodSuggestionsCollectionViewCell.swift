@@ -65,6 +65,7 @@ class FoodSuggestionsCollectionViewCell: UICollectionViewCell {
     // MARK: - States
     func showLoadingState() {
         DescriptionFocus.text = "Fetching personalized recommendations..."
+        //DescriptionFocus.textColor = .tertiaryLabel
         [firstView, secondView, thirdView].forEach { $0?.isHidden = true }
     }
 

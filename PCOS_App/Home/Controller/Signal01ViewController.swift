@@ -84,7 +84,7 @@ final class Signal01ViewController: UIViewController {
         case "disrupted sleep", "sleep":
             return ("moon.zzz", "bed.double.fill")
         case "headache", "headaches":
-            return ("bolt.head", "pills")
+            return ("bolt.fill", "pills")
         case "digestion", "bloating":
             return ("leaf", "pills.circle")
         case "low libido":

@@ -15,6 +15,7 @@ struct MealRecommendationOutput {
     One sentence, max 12 words, referencing actual logged numbers from context.
     E.g. 'You have logged only 20g protein against your 60g target.'
     Use ONLY numbers present in the context — never invent values.
+    Do not use colon for last meal.
     """)
     var observationLine: String
 

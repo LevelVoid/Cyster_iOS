@@ -181,7 +181,7 @@ final class HealthKitManager {
         ) { [weak self] _, samples, _ in
             guard let self = self else { return }
             if let samples = samples as? [HKQuantitySample], !samples.isEmpty {
-                // ✅ Real session HR found — use it
+                
                 let avg = samples.reduce(0.0) { $0 + $1.quantity.doubleValue(for: HKUnit(from: "count/min")) }
                     / Double(samples.count)
                 completion(avg)
