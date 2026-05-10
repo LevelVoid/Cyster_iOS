@@ -34,10 +34,8 @@ class QuickActionsCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         dietActionCard.layer.cornerRadius = 20
         workoutActionCard.layer.cornerRadius = 20
-        dietActionCard.layer.borderWidth = 1
-        dietActionCard.layer.borderColor = UIColor.separator.cgColor
-        workoutActionCard.layer.borderWidth = 1
-        workoutActionCard.layer.borderColor = UIColor.separator.cgColor
+        dietActionCard.layer.borderWidth = 0
+        workoutActionCard.layer.borderWidth = 0
 
     }
     
