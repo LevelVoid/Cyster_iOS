@@ -9,13 +9,20 @@
 /* Begin PBXBuildFile section */
 		19AAC9322ED5C04F00B83D7B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 19AAC9312ED5C04700B83D7B /* README.md */; };
 		19AAC9342ED5C1BC00B83D7B /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 19AAC9332ED5C1B000B83D7B /* .gitignore */; };
+		1F2B2E4BBD120A4F4DE65271 /* GuidedTourManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BB5ABEC156975EF76963C1 /* GuidedTourManager.swift */; };
 		1F832979208BE074C0306F1F /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38848CDF9FF987B704A7D9F8 /* ActivityKit.framework */; };
 		41624167DD70FF899CC27DDD /* WorkoutWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 7ACD8A682EF94CC66992A097 /* WorkoutWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5021B362188549F625C7E48D /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B358C68D582CEFE7CAB58347 /* WidgetKit.framework */; };
+		5164A4770D59073F35B5D91F /* OnboardingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94860791055362B16CD5908D /* OnboardingPage.swift */; };
+		5E90BC2605B35672CA5B7F19 /* OnboardingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF623DA6D7E14B82E4758318 /* OnboardingManager.swift */; };
 		667F03BF1A33C0E140AE0738 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD5519D776BFCCFFCD4C2CFC /* SwiftUI.framework */; };
 		7A5ADB5050ACCF5E16A7F6A2 /* WorkoutLiveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB70645F661AEE395E439D6B /* WorkoutLiveActivityAttributes.swift */; };
 		87C4E15BFB5D664565B677F6 /* WorkoutLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E287544AC930323A21D9F9 /* WorkoutLiveActivity.swift */; };
+		9AB3B06BA8931B1A4C9FA7CC /* OnboardingPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D001F89A54AF8B3E48EC2B06 /* OnboardingPageViewController.swift */; };
 		B86E1B2235C2EA27EFB5340E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90D46D2813F4855C18D32140 /* Foundation.framework */; };
+		C4AD298F71E9B07365205FB5 /* UIView+ParentVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9516770871223C7A2F77848F /* UIView+ParentVC.swift */; };
+		CBB84E4AEFD9C480FDC54D26 /* WellnessTips.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7940E0129E8304DF629F52 /* WellnessTips.swift */; };
+		DC9FC68AD96876962060775C /* OnboardingContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4AE6EC60A055764B143664 /* OnboardingContainerViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,12 +57,19 @@
 		38848CDF9FF987B704A7D9F8 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ActivityKit.framework; sourceTree = "<group>"; };
 		38E287544AC930323A21D9F9 /* WorkoutLiveActivity.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorkoutLiveActivity.swift; sourceTree = "<group>"; };
 		3B5E26525A919EBF494175C0 /* WorkoutWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WorkoutWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		5E4AE6EC60A055764B143664 /* OnboardingContainerViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OnboardingContainerViewController.swift; path = PCOS_App/Onboarding/Controllers/OnboardingContainerViewController.swift; sourceTree = "<group>"; };
 		7ACD8A682EF94CC66992A097 /* WorkoutWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WorkoutWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		84BB5ABEC156975EF76963C1 /* GuidedTourManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GuidedTourManager.swift; path = PCOS_App/Onboarding/Managers/GuidedTourManager.swift; sourceTree = "<group>"; };
 		90D46D2813F4855C18D32140 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		94860791055362B16CD5908D /* OnboardingPage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OnboardingPage.swift; path = PCOS_App/Onboarding/Models/OnboardingPage.swift; sourceTree = "<group>"; };
+		9516770871223C7A2F77848F /* UIView+ParentVC.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIView+ParentVC.swift"; path = "PCOS_App/Home/Model/UIView+ParentVC.swift"; sourceTree = "<group>"; };
 		9ED1A7F0AF122063CD88BD7E /* WorkoutWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WorkoutWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB7940E0129E8304DF629F52 /* WellnessTips.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WellnessTips.swift; path = PCOS_App/Home/Model/WellnessTips.swift; sourceTree = "<group>"; };
 		AD5519D776BFCCFFCD4C2CFC /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SwiftUI.framework; sourceTree = "<group>"; };
 		B358C68D582CEFE7CAB58347 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = WidgetKit.framework; sourceTree = "<group>"; };
 		CB70645F661AEE395E439D6B /* WorkoutLiveActivityAttributes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WorkoutLiveActivityAttributes.swift; path = ../PCOS_App/Workout/DataStore/WorkoutLiveActivityAttributes.swift; sourceTree = "<group>"; };
+		CF623DA6D7E14B82E4758318 /* OnboardingManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OnboardingManager.swift; path = PCOS_App/Onboarding/Managers/OnboardingManager.swift; sourceTree = "<group>"; };
+		D001F89A54AF8B3E48EC2B06 /* OnboardingPageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OnboardingPageViewController.swift; path = PCOS_App/Onboarding/Controllers/OnboardingPageViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -110,6 +124,7 @@
 				19AAC9332ED5C1B000B83D7B /* .gitignore */,
 				194230C82EEBFF3500BD748F /* Frameworks */,
 				C525960E53003DBD3E4E6066 /* WorkoutWidgetExtension */,
+				D5934FE5F17B50E52E14C5EE /* PCOS_App */,
 			);
 			sourceTree = "<group>";
 		};
@@ -136,6 +151,23 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		1971507719CD427EFB8E4A2A /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				EBDDFB001F20A2B9CEACED02 /* Model */,
+			);
+			name = Home;
+			sourceTree = "<group>";
+		};
+		313215DCAE0799DDA1A88CD9 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				CF623DA6D7E14B82E4758318 /* OnboardingManager.swift */,
+				84BB5ABEC156975EF76963C1 /* GuidedTourManager.swift */,
+			);
+			name = Managers;
+			sourceTree = "<group>";
+		};
 		3CEC1128B598FE06C14AEABF /* iOS */ = {
 			isa = PBXGroup;
 			children = (
@@ -144,14 +176,58 @@
 			name = iOS;
 			sourceTree = "<group>";
 		};
+		8E85E81AA5D6B3F9D88EBEA0 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				94860791055362B16CD5908D /* OnboardingPage.swift */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
 		C525960E53003DBD3E4E6066 /* WorkoutWidgetExtension */ = {
 			isa = PBXGroup;
 			children = (
 				38E287544AC930323A21D9F9 /* WorkoutLiveActivity.swift */,
 				CB70645F661AEE395E439D6B /* WorkoutLiveActivityAttributes.swift */,
 			);
-			name = WorkoutWidgetExtension;
 			path = WorkoutWidgetExtension;
+			sourceTree = "<group>";
+		};
+		D1EC69E70712D45D2FF75BE7 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				313215DCAE0799DDA1A88CD9 /* Managers */,
+				8E85E81AA5D6B3F9D88EBEA0 /* Models */,
+				DDAAC4BC8044689FB11B1434 /* Controllers */,
+			);
+			name = Onboarding;
+			sourceTree = "<group>";
+		};
+		D5934FE5F17B50E52E14C5EE /* PCOS_App */ = {
+			isa = PBXGroup;
+			children = (
+				D1EC69E70712D45D2FF75BE7 /* Onboarding */,
+				1971507719CD427EFB8E4A2A /* Home */,
+			);
+			name = PCOS_App;
+			sourceTree = "<group>";
+		};
+		DDAAC4BC8044689FB11B1434 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				D001F89A54AF8B3E48EC2B06 /* OnboardingPageViewController.swift */,
+				5E4AE6EC60A055764B143664 /* OnboardingContainerViewController.swift */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		EBDDFB001F20A2B9CEACED02 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				AB7940E0129E8304DF629F52 /* WellnessTips.swift */,
+				9516770871223C7A2F77848F /* UIView+ParentVC.swift */,
+			);
+			name = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -255,6 +331,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5E90BC2605B35672CA5B7F19 /* OnboardingManager.swift in Sources */,
+				5164A4770D59073F35B5D91F /* OnboardingPage.swift in Sources */,
+				9AB3B06BA8931B1A4C9FA7CC /* OnboardingPageViewController.swift in Sources */,
+				DC9FC68AD96876962060775C /* OnboardingContainerViewController.swift in Sources */,
+				CBB84E4AEFD9C480FDC54D26 /* WellnessTips.swift in Sources */,
+				C4AD298F71E9B07365205FB5 /* UIView+ParentVC.swift in Sources */,
+				1F2B2E4BBD120A4F4DE65271 /* GuidedTourManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

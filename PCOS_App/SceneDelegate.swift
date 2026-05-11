@@ -18,14 +18,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
-        // Check if onboarding has been completed
-        if UserDefaults.standard.bool(forKey: "hasCompletedOnboarding") {
-            // User has completed onboarding → go straight to main app
+        // Check if onboarding questionnaire has been completed
+        if OnboardingManager.shared.hasSeenOnboarding || UserDefaults.standard.bool(forKey: "hasCompletedOnboarding") {
+            // Returning user → go straight to main app
             window.rootViewController = storyboard.instantiateViewController(withIdentifier: "MainTabBarController")
         } else {
-            // First launch → show onboarding
+            // First launch → skip page-view intro, go directly to onboarding questionnaire
             let onboardingStoryboard = UIStoryboard(name: "Onboarding", bundle: nil)
-            window.rootViewController = onboardingStoryboard.instantiateInitialViewController()
+            if let onboardingVC = onboardingStoryboard.instantiateInitialViewController() {
+                window.rootViewController = onboardingVC
+            } else {
+                window.rootViewController = storyboard.instantiateViewController(withIdentifier: "MainTabBarController")
+            }
         }
         
         self.window = window

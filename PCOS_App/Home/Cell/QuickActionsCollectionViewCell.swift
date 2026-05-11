@@ -97,7 +97,6 @@ class QuickActionsCollectionViewCell: UICollectionViewCell {
         }
     }
 
-
     @IBAction func addMeal(_ sender: Any) {
         delegate?.quickActionsDidTapAddMeal()
     }

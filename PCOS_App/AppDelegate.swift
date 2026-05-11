@@ -8,6 +8,7 @@
 import UIKit
 import HealthKit
 import CoreData
+import TipKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -87,6 +88,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ = SymptomDataStore.shared
 //        FoodLogDataStore.seedSampleDataIfNeeded()
         ChatPersistenceManager.shared.deleteOldMessages()
+        if #available(iOS 17.0, *) {
+            try? Tips.configure([
+                .datastoreLocation(.applicationDefault),
+                .displayFrequency(.immediate)
+            ])
+        }
         return true
     }
 

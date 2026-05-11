@@ -1,6 +1,7 @@
 import UIKit
+import TipKit
 
-class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollectionViewCellDelegate, LogPeriodCalendarDelegate,SleepCardCollectionViewCellDelegate {
+class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollectionViewCellDelegate, LogPeriodCalendarDelegate, SleepCardCollectionViewCellDelegate, UIPopoverPresentationControllerDelegate {
     
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -10,6 +11,8 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         private var allSymptoms: [SymptomItem] = []
         private var aboutPCOSArticles: [AboutPCOSSection] = []
         private var chatbotButton: UIButton!
+        private var calendarBarButton: UIBarButtonItem? // used for TipKit tour anchor
+        private var guidedTourManager: Any? // Typed as Any for iOS version compatibility
         private var sleepData: SleepData? = nil
         private var todaySleepLog: SleepLog? = nil
         private var hkSteps: Int = 0
@@ -37,6 +40,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
                 target: self,
                 action: #selector(leftBarButtonTapped)
             )
+            calendarBarButton = calendar
             let profile = UIBarButtonItem(
                 image: UIImage(systemName: "person.circle"),
                 style: .plain,
@@ -100,6 +104,57 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
 
         override func viewDidAppear(_ animated: Bool) {
             super.viewDidAppear(animated)
+            
+            // Start the sequential guided tour on first home launch
+            if #available(iOS 17.0, *) {
+                let manager = guidedTourManager as? GuidedTourManager ?? GuidedTourManager()
+                guidedTourManager = manager
+                if !manager.hasCompletedTour {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
+                        self?.startGuidedTour(manager: manager)
+                    }
+                }
+            }
+        }
+        
+        @available(iOS 17.0, *)
+        private func startGuidedTour(manager: GuidedTourManager) {
+            manager.setup(presenter: self)
+            
+            let visibleCells = collectionView.visibleCells
+            
+            // 1. Log Period button
+            if let cell = visibleCells.first(where: { $0 is HomeHeaderCollectionViewCell }) as? HomeHeaderCollectionViewCell {
+                manager.enqueue(LogPeriodTip(), sourceView: cell.logPeriodButton)
+            }
+            
+            // 2. Calendar bar button (TipKit handles UIBarButtonItem natively)
+            if let calBtn = calendarBarButton {
+                manager.enqueue(CalendarTip(), barButtonItem: calBtn)
+            }
+            
+            // 3. Log Symptoms cell
+            if let cell = visibleCells.first(where: { $0 is AddSymptomCollectionViewCell }) {
+                manager.enqueue(SymptomTrackerTip(), sourceView: cell)
+            }
+            
+            // 4. Chatbot button
+            manager.enqueue(ChatbotTip(), sourceView: chatbotButton)
+            
+            // 5. Diet shortcut  6. Workout shortcut
+            if let cell = visibleCells.first(where: { $0 is QuickActionsCollectionViewCell }) as? QuickActionsCollectionViewCell {
+                manager.enqueue(AddMealTip(), sourceView: cell.dietActionCard)
+                manager.enqueue(StartWorkoutTip(), sourceView: cell.workoutButton)
+            }
+            
+            manager.start()
+        }
+        
+        override func viewWillDisappear(_ animated: Bool) {
+            super.viewWillDisappear(animated)
+            if #available(iOS 17.0, *) {
+                (guidedTourManager as? GuidedTourManager)?.cancel()
+            }
         }
 
         // MARK: - Daily Goals AI
@@ -124,6 +179,11 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
                     }
                 }
             }
+        }
+
+        // MARK: - UIPopoverPresentationControllerDelegate
+        func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+            return .none
         }
 
         // MARK: - HealthKit
