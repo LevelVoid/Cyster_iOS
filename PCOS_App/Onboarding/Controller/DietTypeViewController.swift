@@ -98,9 +98,32 @@ class DietTypeViewController: UIViewController {
             nextButton.alpha = 1.0
         }
     
-    @IBAction func nextButtonTapped(_ sender: UIButton) { }
+    @IBAction func nextButtonTapped(_ sender: UIButton) {
+        guard let dietType = selectedDietType else { return }
+        UserDefaults.standard.set(dietType, forKey: "userDietType")
+        
+        if WalkthroughManager.shared.isActive {
+            dismiss(animated: true) {
+                guard let window = UIApplication.shared.connectedScenes
+                    .compactMap({ $0 as? UIWindowScene })
+                    .flatMap({ $0.windows })
+                    .first(where: { $0.isKeyWindow }) else { return }
+                    
+                WalkthroughCongratsView.present(
+                    in: window,
+                    title: "Great Choice! 🥗",
+                    body: "Your diet type is set.\nNext, let's explore your workout options!",
+                    continueTitle: "Go to Workout"
+                ) {
+                    WalkthroughManager.shared.advanceToStep(.workoutIntro)
+                }
+            }
+        }
+    }
 
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        // During walkthrough we handle navigation ourselves in nextButtonTapped
+        if WalkthroughManager.shared.isActive { return false }
         guard let dietType = selectedDietType else { return false }
         // Save BEFORE the segue fires — IBAction timing is unreliable with button-wired segues
         UserDefaults.standard.set(dietType, forKey: "userDietType")

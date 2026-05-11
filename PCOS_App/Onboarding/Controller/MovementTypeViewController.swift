@@ -95,9 +95,33 @@ class MovementTypeViewController: UIViewController {
             nextButton.alpha = 1.0
         }
 
-    @IBAction func nextButtonTapped(_ sender: UIButton) { }
+    @IBAction func nextButtonTapped(_ sender: UIButton) { 
+        if WalkthroughManager.shared.isActive {
+            guard let movementType = selectedMovementType else { return }
+            UserDefaults.standard.set(movementType, forKey: "userWorkoutType")
+            
+            dismiss(animated: true) {
+                guard let window = UIApplication.shared.connectedScenes
+                    .compactMap({ $0 as? UIWindowScene })
+                    .flatMap({ $0.windows })
+                    .first(where: { $0.isKeyWindow }) else { return }
+                    
+                WalkthroughCongratsView.present(
+                    in: window,
+                    title: "Routines Ready! 🎯",
+                    body: "We've curated the best routines for a \(movementType.lowercased()) level.\nLet's check them out!",
+                    continueTitle: "Explore Routines"
+                ) {
+                    WalkthroughManager.shared.advanceToStep(.workoutPremade)
+                }
+            }
+        }
+    }
 
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        if WalkthroughManager.shared.isActive {
+            return false // Prevent segue during walkthrough, handled manually in nextButtonTapped
+        }
         guard let movementType = selectedMovementType else { return false }
         // Save BEFORE the segue fires — IBAction timing is unreliable with button-wired segues
         UserDefaults.standard.set(movementType, forKey: "userWorkoutType")

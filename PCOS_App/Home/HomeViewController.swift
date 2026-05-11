@@ -14,6 +14,11 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         private var todaySleepLog: SleepLog? = nil
         private var hkSteps: Int = 0
         private var hkCalories: Double = 0
+        private var walkthroughOverlay: WalkthroughOverlayView?
+        private var isShowingWalkthroughCongrats: Bool = false
+        /// Set to true the moment the user saves symptoms during the walkthrough,
+        /// so that viewWillAppear doesn't re-trigger the symptom overlay.
+        private var walkthroughSymptomLogged: Bool = false
 
         // ── Daily Goals AI ────────────────────────────────────────────────────
         private var goalsOutput: DailyGoalsOutput?
@@ -59,6 +64,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             loadTodaySleepLog()
             aboutPCOSArticles = AboutPCOSDataStore.shared.fetchSections()
             setupChatbotButton()
+            WalkthroughManager.shared.addDelegate(self)
         }
 
         override func viewWillAppear(_ animated: Bool) {
@@ -100,6 +106,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
 
         override func viewDidAppear(_ animated: Bool) {
             super.viewDidAppear(animated)
+            handleWalkthroughOnAppear()
         }
 
         // MARK: - Daily Goals AI
@@ -508,6 +515,21 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             self.selectedSymptoms = symptoms
             SymptomDataStore.saveSymptoms(symptoms, for: Date())
             DispatchQueue.main.async { self.collectionView.reloadData() }
+            
+            // Advance walkthrough after symptom save.
+            // Set both flags FIRST so that viewWillAppear (triggered when this VC
+            // is dismissed) does NOT re-show the symptom overlay.
+            if WalkthroughManager.shared.isActive && WalkthroughManager.shared.currentStep == .logSymptom {
+                self.walkthroughSymptomLogged = true   // ← prevent re-trigger
+                self.isShowingWalkthroughCongrats = true
+                self.walkthroughOverlay?.dismiss()
+                self.walkthroughOverlay = nil
+                // Wait for the sheet dismiss animation before showing congrats
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                    self?.showSymptomWalkthroughCongrats()
+                }
+            }
+            
             return symptoms
         }
 
@@ -546,6 +568,13 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             collectionView.reloadData()
             collectionView.layoutIfNeeded()
             collectionView.contentOffset = savedOffset
+
+            // Advance walkthrough after period is saved
+            if WalkthroughManager.shared.isActive && WalkthroughManager.shared.currentStep == .logPeriod {
+                walkthroughOverlay?.dismiss()
+                walkthroughOverlay = nil
+                WalkthroughManager.shared.advanceToNextStep()  // → .logSymptom
+            }
         }
 
         override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -553,12 +582,6 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
                let symptomLoggerVC = segue.destination as? SymptomLoggerViewController {
                 symptomLoggerVC.delegate = self
                 symptomLoggerVC.setSelectedSymptoms(selectedSymptoms)
-                symptomLoggerVC.onSymptomsSelected = { [weak self] symptoms in
-                    guard let self else { return }
-                    self.selectedSymptoms = symptoms
-                    SymptomDataStore.saveSymptoms(symptoms, for: Date())
-                    DispatchQueue.main.async { self.collectionView.reloadData() }
-                }
             }
             if segue.identifier == "showSignal01",
                let destination = segue.destination as? Signal01ViewController,
@@ -811,3 +834,229 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             }
         }
     }
+
+// MARK: - Walkthrough
+
+extension HomeViewController: WalkthroughManagerDelegate {
+
+    // MARK: Entry point (called from viewDidAppear)
+
+    func handleWalkthroughOnAppear() {
+        // First launch after onboarding: start walkthrough
+        if WalkthroughManager.shared.shouldStartWalkthrough && !WalkthroughManager.shared.isActive {
+            WalkthroughManager.shared.addDelegate(self)
+            WalkthroughManager.shared.startWalkthrough()  // triggers walkthroughDidReachStep(.logPeriod)
+            return
+        }
+        // Returning to Home tab while walkthrough is still active.
+        // Guard: never re-show if congrats is up, an overlay is already visible,
+        // or the user already saved symptoms this session.
+        guard WalkthroughManager.shared.isActive,
+              !isShowingWalkthroughCongrats,
+              walkthroughOverlay == nil else { return }
+
+        WalkthroughManager.shared.addDelegate(self)
+        let step = WalkthroughManager.shared.currentStep
+        switch step {
+        case .logPeriod:
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { [weak self] in
+                self?.showPeriodWalkthroughOverlay()
+            }
+        case .logSymptom:
+            // Only re-show if the user hasn't saved symptoms yet this session
+            guard !walkthroughSymptomLogged else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { [weak self] in
+                self?.showSymptomWalkthroughOverlay()
+            }
+        default: break
+        }
+    }
+
+    // MARK: WalkthroughManagerDelegate
+
+    func walkthroughDidReachStep(_ step: WalkthroughStep) {
+        guard isViewLoaded, view.window != nil else { return }
+        switch step {
+        case .logPeriod:
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.showPeriodWalkthroughOverlay()
+            }
+        case .logSymptom:
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.showSymptomWalkthroughOverlay()
+            }
+        case .logMeal:
+            // Hand off to Diet tab
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                self?.tabBarController?.selectedIndex = 1
+            }
+        case .workoutIntro:
+            // Switch to Workout tab
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+                self?.tabBarController?.selectedIndex = 2
+            }
+        case .chatbotPrompt:
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+                self?.tabBarController?.selectedIndex = 0
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                    self?.showChatbotWalkthroughOverlay()
+                }
+            }
+        default: break
+        }
+    }
+
+    func walkthroughDidComplete() {
+        walkthroughOverlay?.dismiss()
+        walkthroughOverlay = nil
+    }
+
+    // MARK: Step 1 – Log Period overlay
+
+    private func showPeriodWalkthroughOverlay() {
+        guard WalkthroughManager.shared.isActive,
+              WalkthroughManager.shared.currentStep == .logPeriod else { return }
+              
+        let indexPath = IndexPath(item: 0, section: 0)
+        collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+            guard let self = self else { return }
+            guard let cell = self.collectionView.cellForItem(at: indexPath)
+                    as? HomeHeaderCollectionViewCell,
+                  let window = self.view.window else { return }
+
+            let btn = cell.logPeriodButton!
+            let btnFrame = btn.convert(btn.bounds, to: window)
+
+            self.walkthroughOverlay?.dismiss(animated: false)
+            self.walkthroughOverlay = WalkthroughOverlayView.install(
+                in: window,
+                targetFrame: btnFrame,
+                message: "Tap this button to log your first period and kick off your PCOS journey!",
+                iconEmoji: "🩸",
+                tipTitle: "Log Your First Period",
+                onTargetTapped: { [weak self, weak cell] in
+                    guard let self, let cell else { return }
+                    self.walkthroughOverlay?.dismiss()
+                    self.walkthroughOverlay = nil
+                    self.homeHeaderCellDidTapLogPeriod(cell)
+                }
+            )
+        }
+    }
+
+    // MARK: Step 2 – Log Symptom overlay
+
+    private func showSymptomWalkthroughOverlay() {
+        guard WalkthroughManager.shared.isActive,
+              WalkthroughManager.shared.currentStep == .logSymptom else { return }
+              
+        let indexPath = IndexPath(item: 0, section: 1)
+        collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            guard let self = self else { return }
+            guard let cell = self.collectionView.cellForItem(at: indexPath),
+                  let window = self.view.window else {
+                // Retry in case the layout is still updating from the period save reload
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                    self?.showSymptomWalkthroughOverlay()
+                }
+                return
+            }
+
+            let cellFrame = cell.convert(cell.bounds, to: window)
+
+            self.walkthroughOverlay?.dismiss(animated: false)
+            self.walkthroughOverlay = WalkthroughOverlayView.install(
+                in: window,
+                targetFrame: cellFrame,
+                message: "How are you feeling today? Tap here to log your symptoms.",
+                iconEmoji: "✨",
+                tipTitle: "Log Your Symptoms",
+                onTargetTapped: { [weak self] in
+                    guard let self else { return }
+                    self.walkthroughOverlay?.dismiss()
+                    self.walkthroughOverlay = nil
+                    self.performSegue(withIdentifier: "showSymptomLogger", sender: self)
+                }
+            )
+        }
+    }
+
+    // MARK: Step 2 → Step 3 congrats
+
+    func showSymptomWalkthroughCongrats() {
+        // Prefer the key window so the card still shows even if the sheet is
+        // mid-dismiss and view.window is temporarily nil.
+        let window: UIWindow?
+        if let w = view.window {
+            window = w
+        } else {
+            window = UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .flatMap { $0.windows }
+                .first(where: { $0.isKeyWindow })
+        }
+        guard let window else { return }
+        // isShowingWalkthroughCongrats is already true (set in onSymptomsSelected)
+        WalkthroughCongratsView.present(
+            in: window,
+            title: "Amazing! 🌸",
+            body: "You've logged your period and how you feel.\nNext, let's set up your nutrition!",
+            continueTitle: "Go to Diet"
+        ) { [weak self] in
+            self?.isShowingWalkthroughCongrats = false
+            WalkthroughManager.shared.advanceToStep(.logMeal)  // triggers tab switch to Diet
+        }
+    }
+
+    // MARK: Step 7 – Chatbot Prompt
+    private func showChatbotWalkthroughOverlay() {
+        guard WalkthroughManager.shared.isActive,
+              WalkthroughManager.shared.currentStep == .chatbotPrompt,
+              let window = view.window else { return }
+
+        let btnFrame = chatbotButton.convert(chatbotButton.bounds, to: window)
+
+        walkthroughOverlay?.dismiss(animated: false)
+        walkthroughOverlay = WalkthroughOverlayView.install(
+            in: window,
+            targetFrame: btnFrame,
+            message: "Have a question? Tap here to ask our AI assistant for personalized PCOS advice.",
+            iconEmoji: "💬",
+            tipTitle: "Meet Your AI Companion",
+            onTargetTapped: { [weak self] in
+                guard let self else { return }
+                self.walkthroughOverlay?.dismiss()
+                self.walkthroughOverlay = nil
+                self.ChatbotButtonTapped(self.chatbotButton)
+                
+                // Show final congrats over the chatbot screen
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+                    self?.showFinalCompletionCongrats()
+                }
+            }
+        )
+    }
+
+    // MARK: Step 8 – Final completion congrats
+
+    private func showFinalCompletionCongrats() {
+        guard let keyWindow = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .flatMap({ $0.windows })
+            .first(where: { $0.isKeyWindow }) else { return }
+
+        WalkthroughCongratsView.present(
+            in: keyWindow,
+            title: "You're All Set! 🎉",
+            body: "You've completed the setup!\nYou are now ready to use the app to manage your PCOS journey.",
+            continueTitle: "Start Exploring"
+        ) {
+            WalkthroughManager.shared.completeWalkthrough()
+        }
+    }
+}
+

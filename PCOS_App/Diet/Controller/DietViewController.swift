@@ -13,6 +13,9 @@ class DietViewController: UIViewController {
     private var isMealLoading = false
     private var mealError: String?
     private var lastFoodLogCount: Int = -1
+    private var walkthroughOverlay: WalkthroughOverlayView?
+    private var isShowingWalkthroughCongrats: Bool = false
+    private var walkthroughMealLogged: Bool = false
  
     // Sizing prototype for dynamic height
     private lazy var sizingSuggestionCell: FoodSuggestionsCollectionViewCell = {
@@ -28,6 +31,7 @@ class DietViewController: UIViewController {
         setupNavigation()
         setupCollectionView()
         setupAddButtonStyle()
+        WalkthroughManager.shared.addDelegate(self)
     }
  
     override func viewWillAppear(_ animated: Bool) {
@@ -35,6 +39,7 @@ class DietViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         filterTodaysFoods()
         Task { await refreshMealRecommendationsIfNeeded() }
+        handleWalkthroughOnAppear()
     }
  
     // MARK: - Setup
@@ -425,6 +430,16 @@ extension DietViewController: AddMealDelegate {
         }
         filterTodaysFoods()
         print("Added food: \(food.name)")
+
+        if WalkthroughManager.shared.isActive && WalkthroughManager.shared.currentStep == .logMeal {
+            self.walkthroughMealLogged = true
+            self.isShowingWalkthroughCongrats = true
+            self.walkthroughOverlay?.dismiss()
+            self.walkthroughOverlay = nil
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.showMealWalkthroughCongrats()
+            }
+        }
     }
 }
  
@@ -448,5 +463,106 @@ extension DietViewController: AddDescribedMealDelegate {
             nutritionCell?.updateValues(food)
         }
         print("Meal added successfully")
+
+        if WalkthroughManager.shared.isActive && WalkthroughManager.shared.currentStep == .logMeal {
+            self.walkthroughMealLogged = true
+            self.isShowingWalkthroughCongrats = true
+            self.walkthroughOverlay?.dismiss()
+            self.walkthroughOverlay = nil
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.showMealWalkthroughCongrats()
+            }
+        }
     }
 }
+
+// MARK: - Walkthrough
+
+extension DietViewController: WalkthroughManagerDelegate {
+
+    func handleWalkthroughOnAppear() {
+        guard WalkthroughManager.shared.isActive,
+              !isShowingWalkthroughCongrats,
+              walkthroughOverlay == nil else { return }
+              
+        WalkthroughManager.shared.addDelegate(self)
+        if WalkthroughManager.shared.currentStep == .logMeal {
+            guard !walkthroughMealLogged else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.showMealWalkthroughOverlay()
+            }
+        }
+    }
+
+    func walkthroughDidReachStep(_ step: WalkthroughStep) {
+        guard isViewLoaded, view.window != nil else { return }
+        if step == .logMeal {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.showMealWalkthroughOverlay()
+            }
+        } else if step == .workoutIntro {
+            walkthroughOverlay?.dismiss()
+            walkthroughOverlay = nil
+            // Switch to Workout tab
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+                self?.tabBarController?.selectedIndex = 2
+            }
+        }
+    }
+
+    func walkthroughDidComplete() {
+        walkthroughOverlay?.dismiss()
+        walkthroughOverlay = nil
+    }
+
+    private func showMealWalkthroughOverlay() {
+        guard WalkthroughManager.shared.isActive,
+              WalkthroughManager.shared.currentStep == .logMeal,
+              let window = view.window else { return }
+
+        let btnFrame = AddMealButton.convert(AddMealButton.bounds, to: window)
+
+        walkthroughOverlay?.dismiss(animated: false)
+        walkthroughOverlay = WalkthroughOverlayView.install(
+            in: window,
+            targetFrame: btnFrame,
+            message: "Tap here to log your first meal and start tracking your nutrition.",
+            iconEmoji: "🥗",
+            tipTitle: "Log Your First Meal",
+            onTargetTapped: { [weak self] in
+                guard let self = self else { return }
+                self.walkthroughOverlay?.dismiss()
+                self.walkthroughOverlay = nil
+                self.addButtonTapped(self.AddMealButton)
+            }
+        )
+    }
+
+    private func showMealWalkthroughCongrats() {
+        guard let window = view.window else { return }
+        isShowingWalkthroughCongrats = true
+        WalkthroughCongratsView.present(
+            in: window,
+            title: "Step 2 Complete! 🌟",
+            body: "Great job logging your meal. Now, let's quickly set your diet preference.",
+            continueTitle: "Set Diet Type"
+        ) { [weak self] in
+            self?.isShowingWalkthroughCongrats = false
+            self?.presentDietTypeViewController()
+        }
+    }
+
+    private func presentDietTypeViewController() {
+        let onboardingStoryboard = UIStoryboard(name: "Onboarding", bundle: nil)
+        guard let dietTypeVC = onboardingStoryboard.instantiateViewController(withIdentifier: "DietTypeViewController") as? DietTypeViewController else { return }
+        
+        dietTypeVC.modalPresentationStyle = .pageSheet
+        if let sheet = dietTypeVC.sheetPresentationController {
+            sheet.detents = [.large()]
+            sheet.prefersGrabberVisible = true
+        }
+        
+        present(dietTypeVC, animated: true)
+    }
+}
+

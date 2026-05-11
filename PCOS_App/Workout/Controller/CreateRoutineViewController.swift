@@ -27,6 +27,9 @@ class CreateRoutineViewController: UIViewController {
     
     private var routineExercises: [RoutineExercise] = []
     
+    // Walkthrough State
+    private var walkthroughOverlay: WalkthroughOverlayView?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Create New Routine"
@@ -47,9 +50,10 @@ class CreateRoutineViewController: UIViewController {
         
     }
     override func viewWillAppear(_ animated: Bool) {
-            super.viewWillAppear(animated)
-            updateUI()
-        }
+        super.viewWillAppear(animated)
+        updateUI()
+        handleWalkthroughOnAppear()
+    }
         
 
     
@@ -231,9 +235,21 @@ class CreateRoutineViewController: UIViewController {
                 message: "\"\(name)\" has been saved with \(routineExercises.count) exercises.\nEven planning your routine is an act of self-care 🌸",
                 preferredStyle: .alert
             )
-            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-                // 6. Navigate back
-                self.navigationController?.popViewController(animated: true)
+            alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+                // Advance walkthrough
+                if WalkthroughManager.shared.isActive && WalkthroughManager.shared.currentStep == .workoutEditName {
+                    
+                    let storyboard = UIStoryboard(name: "Onboarding", bundle: nil)
+                    if let movementTypeVC = storyboard.instantiateViewController(withIdentifier: "MovementTypeViewController") as? MovementTypeViewController {
+                        movementTypeVC.modalPresentationStyle = .overFullScreen
+                        self?.present(movementTypeVC, animated: true) {
+                            WalkthroughManager.shared.advanceToStep(.workoutActivityLevel)
+                        }
+                    }
+                } else {
+                    // 6. Navigate back normally if not in walkthrough
+                    self?.navigationController?.popViewController(animated: true)
+                }
             })
             present(alert, animated: true)
     }
@@ -311,6 +327,10 @@ class CreateRoutineViewController: UIViewController {
         print("📊 Total exercises in routine: \(routineExercises.count)")
         
         updateUI()
+        
+        if WalkthroughManager.shared.isActive && WalkthroughManager.shared.currentStep == .workoutAddExercise {
+            WalkthroughManager.shared.advanceToStep(.workoutEditName)
+        }
     }
     
     
@@ -394,3 +414,88 @@ extension CreateRoutineViewController: UITableViewDelegate {
     
 }
 
+// MARK: - Walkthrough
+extension CreateRoutineViewController: WalkthroughManagerDelegate {
+    
+    func handleWalkthroughOnAppear() {
+        guard WalkthroughManager.shared.isActive, walkthroughOverlay == nil else { return }
+        WalkthroughManager.shared.addDelegate(self)
+        
+        let step = WalkthroughManager.shared.currentStep
+        if step == .workoutAddExercise {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.showAddExerciseOverlay()
+            }
+        } else if step == .workoutEditName {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.showEditNameOverlay()
+            }
+        }
+    }
+    
+    func walkthroughDidReachStep(_ step: WalkthroughStep) {
+        guard isViewLoaded, view.window != nil else { return }
+        if step == .workoutAddExercise {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.showAddExerciseOverlay()
+            }
+        } else if step == .workoutEditName {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.showEditNameOverlay()
+            }
+        } else {
+            walkthroughOverlay?.dismiss()
+            walkthroughOverlay = nil
+            
+            // If the walkthrough just completed the activity level and advanced to .workoutPremade,
+            // we should navigate back to the Workout tab.
+            if step == .workoutPremade {
+                self.navigationController?.popViewController(animated: true)
+            }
+        }
+    }
+    
+    func walkthroughDidComplete() {
+        walkthroughOverlay?.dismiss()
+        walkthroughOverlay = nil
+    }
+    
+    private func showAddExerciseOverlay() {
+        guard let window = view.window else { return }
+        let btnFrame = addExerciseButton.convert(addExerciseButton.bounds, to: window)
+        
+        walkthroughOverlay?.dismiss(animated: false)
+        walkthroughOverlay = WalkthroughOverlayView.install(
+            in: window,
+            targetFrame: btnFrame,
+            message: "Tap this button to browse and add exercises to your custom routine.",
+            iconEmoji: "➕",
+            tipTitle: "Add Exercises",
+            onTargetTapped: { [weak self] in
+                guard let self = self else { return }
+                self.walkthroughOverlay?.dismiss()
+                self.walkthroughOverlay = nil
+                self.performSegue(withIdentifier: "showAddExercise", sender: nil)
+            }
+        )
+    }
+    
+    private func showEditNameOverlay() {
+        guard let window = view.window else { return }
+        let targetFrame = routineNameTextField.convert(routineNameTextField.bounds, to: window)
+        
+        walkthroughOverlay?.dismiss(animated: false)
+        walkthroughOverlay = WalkthroughOverlayView.install(
+            in: window,
+            targetFrame: targetFrame,
+            message: "You can customize the reps and sets of each exercise below. Then, give your routine a name and hit Save!",
+            iconEmoji: "📝",
+            tipTitle: "Edit & Save",
+            onTargetTapped: { [weak self] in
+                self?.walkthroughOverlay?.dismiss()
+                self?.walkthroughOverlay = nil
+                self?.routineNameTextField.becomeFirstResponder()
+            }
+        )
+    }
+}

@@ -22,6 +22,10 @@ class WorkoutViewController: UIViewController {
     
     @IBOutlet weak var collectionView: UICollectionView!
     
+    // Walkthrough State
+    private var walkthroughOverlay: WalkthroughOverlayView?
+    private var isShowingWalkthroughCongrats: Bool = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -370,6 +374,9 @@ extension WorkoutViewController {
 
         // Step 3: Fetch live HealthKit data, merge into CDDailyContext, then re-read
         fetchHealthKitData()
+        
+        // Walkthrough check
+        handleWalkthroughOnAppear()
     }
     
     // Sync all completed workouts for today into CDDailyContext
@@ -422,5 +429,153 @@ extension WorkoutViewController {
         
         // cards[2] = Steps
         cards[2].done = Double(todayActivity?.steps ?? 0)
+    }
+}
+
+// MARK: - Walkthrough
+
+extension WorkoutViewController: WalkthroughManagerDelegate {
+    
+    func handleWalkthroughOnAppear() {
+        guard WalkthroughManager.shared.isActive,
+              !isShowingWalkthroughCongrats,
+              walkthroughOverlay == nil else { return }
+        
+        WalkthroughManager.shared.addDelegate(self)
+        let step = WalkthroughManager.shared.currentStep
+        
+        if step == .workoutIntro {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.showCreateRoutineWalkthroughOverlay()
+            }
+        } else if step == .workoutPremade {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.showPremadeRoutineWalkthroughOverlay()
+            }
+        }
+    }
+    
+    func walkthroughDidReachStep(_ step: WalkthroughStep) {
+        guard isViewLoaded, view.window != nil else { return }
+        if step == .workoutIntro {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.showCreateRoutineWalkthroughOverlay()
+            }
+        } else if step == .workoutPremade {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.showPremadeRoutineWalkthroughOverlay()
+            }
+        } else if step == .chatbotPrompt {
+            walkthroughOverlay?.dismiss()
+            walkthroughOverlay = nil
+        }
+    }
+    
+    func walkthroughDidComplete() {
+        walkthroughOverlay?.dismiss()
+        walkthroughOverlay = nil
+    }
+    
+    private func showCreateRoutineWalkthroughOverlay() {
+        guard WalkthroughManager.shared.isActive,
+              WalkthroughManager.shared.currentStep == .workoutIntro,
+              let window = view.window else { return }
+              
+        // We want to point to the "+" button which is the first cell in section 1 when empty
+        // Or the "+" cell if there are routines.
+        // It's always at indexPath [1, routines.count] or [1, 0] if empty.
+        let routinesCount = UserRoutineDataStore.shared.loadAll().count
+        let targetIndexPath = IndexPath(item: routinesCount, section: 1)
+        
+        // Ensure cell is visible
+        collectionView.scrollToItem(at: targetIndexPath, at: .centeredHorizontally, animated: false)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+            guard let self = self else { return }
+            guard let cell = self.collectionView.cellForItem(at: targetIndexPath),
+                  let window = self.view.window else {
+                // Retry if cell isn't rendered yet
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                    self?.showCreateRoutineWalkthroughOverlay()
+                }
+                return
+            }
+            
+            let cellFrame = cell.convert(cell.bounds, to: window)
+            
+            self.walkthroughOverlay?.dismiss(animated: false)
+            self.walkthroughOverlay = WalkthroughOverlayView.install(
+                in: window,
+                targetFrame: cellFrame,
+                message: "Create your own custom workout routine by tapping here.",
+                iconEmoji: "🏋️‍♀️",
+                tipTitle: "Custom Routines",
+                onTargetTapped: { [weak self] in
+                    guard let self = self else { return }
+                    self.walkthroughOverlay?.dismiss()
+                    self.walkthroughOverlay = nil
+                    
+                    WalkthroughManager.shared.advanceToStep(.workoutAddExercise)
+                    self.performSegue(withIdentifier: "showCreateRoutine", sender: nil)
+                }
+            )
+        }
+    }
+    
+    private func showPremadeRoutineWalkthroughOverlay() {
+        guard WalkthroughManager.shared.isActive,
+              WalkthroughManager.shared.currentStep == .workoutPremade,
+              let window = view.window else { return }
+              
+        // Point to the first recommended routine in section 2
+        let targetIndexPath = IndexPath(item: 0, section: 2)
+        
+        collectionView.scrollToItem(at: targetIndexPath, at: .top, animated: false)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            guard let self = self else { return }
+            guard let cell = self.collectionView.cellForItem(at: targetIndexPath),
+                  let window = self.view.window else {
+                // Retry if cell isn't rendered yet
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                    self?.showPremadeRoutineWalkthroughOverlay()
+                }
+                return
+            }
+            
+            let cellFrame = cell.convert(cell.bounds, to: window)
+            
+            let workoutType = UserDefaults.standard.string(forKey: "userWorkoutType") ?? "activity"
+            let message = "We've curated these routines specifically for your \(workoutType.lowercased()) level and current menstrual phase."
+            
+            self.walkthroughOverlay?.dismiss(animated: false)
+            self.walkthroughOverlay = WalkthroughOverlayView.install(
+                in: window,
+                targetFrame: cellFrame,
+                message: message,
+                iconEmoji: "🎯",
+                tipTitle: "Recommended For You",
+                onTargetTapped: { [weak self] in
+                    guard let self = self else { return }
+                    self.walkthroughOverlay?.dismiss()
+                    self.walkthroughOverlay = nil
+                    
+                    // Show prompt to go to home tab
+                    guard let keyWindow = UIApplication.shared.connectedScenes
+                        .compactMap({ $0 as? UIWindowScene })
+                        .flatMap({ $0.windows })
+                        .first(where: { $0.isKeyWindow }) else { return }
+
+                    WalkthroughCongratsView.present(
+                        in: keyWindow,
+                        title: "Workout Ready! 💪",
+                        body: "You've got your routines sorted.\nFinally, let's meet your AI companion on the Home tab.",
+                        continueTitle: "Go to Home"
+                    ) {
+                        WalkthroughManager.shared.advanceToStep(.chatbotPrompt)
+                    }
+                }
+            )
+        }
     }
 }
