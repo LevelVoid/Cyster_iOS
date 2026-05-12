@@ -2,12 +2,24 @@ import Foundation
 import FoundationModels
 
 @MainActor
-final class AIBrain {  // ← removed ObservableObject (no @Published = no conformance needed)
+final class AIBrain {
 
     static let shared = AIBrain()
     private init() {}
 
+    // ── Engine dispatch ───────────────────────────────────────────────────
+    /// True when Apple Intelligence is available on this device.
+    private var foundationModelsAvailable: Bool {
+        if case .available = SystemLanguageModel.default.availability { return true }
+        return false
+    }
+
+    /// Cloud fallback — used whenever FoundationModels is unavailable.
+    private let cloudEngine = CloudModelEngine()
+
     private var chatSession: LanguageModelSession?
+    /// Cloud chat history (stateless per-session substitute).
+    private var cloudChatHistory: [[String: String]] = []
 
     // MARK: - System Prompt
     private var systemPrompt: String {
@@ -123,54 +135,36 @@ final class AIBrain {  // ← removed ObservableObject (no @Published = no confo
 
     // MARK: - Chat
     func sendChatMessage(_ text: String, context: String) async throws -> String {
-        if chatSession == nil {
-            guard case .available = SystemLanguageModel.default.availability else {
-                throw AIBrainError.modelUnavailable
-            }
-            chatSession = LanguageModelSession(
-                tools: [PCOSResearchTool(), IndianFoodTool()],
-                instructions: systemPrompt
-            )
-        }
 
-        // Detect casual/greeting AND short follow-up replies that rely on conversation memory
+        let trimmed    = text.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        let wordCount  = trimmed.components(separatedBy: .whitespaces).filter { !$0.isEmpty }.count
         let casualPhrases = [
-            // Greetings
             "hey", "hi", "hello", "hii", "heyy", "how are you",
             "what's up", "sup", "good morning", "good night",
             "thanks", "thank you", "haha", "lol",
-            // Short follow-ups that depend on conversation memory
             "yes", "no", "yeah", "nope", "sure", "okay", "ok",
             "please", "go ahead", "tell me", "yes please",
             "no thanks", "that's fine", "sounds good", "great",
             "not really", "maybe", "i think so", "definitely"
         ]
-
-        let trimmed = text.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-
-        // Match exact OR very short messages (under 2 words) that are follow-ups
-        let wordCount = trimmed.components(separatedBy: .whitespaces).filter { !$0.isEmpty }.count
         let isCasual = casualPhrases.contains(where: { trimmed == $0 || trimmed.hasPrefix($0 + " ") })
-                      || wordCount <= 2  // ← short replies always rely on session memory, not fresh context
+                      || wordCount <= 2
 
+        // Build the contextual message (shared by both engines)
         let contextualMessage: String
         if isCasual {
-            // No health context for small talk — just chat naturally
             contextualMessage = text
         } else {
-            // Period hint for cycle questions
             let isPeriodQuestion = trimmed.contains("period") ||
                                    trimmed.contains("next cycle") ||
                                    trimmed.contains("ovulat")
-
             var periodHint = ""
             if isPeriodQuestion,
-               let range = context.range(of: "Next period:"),
+               let range    = context.range(of: "Next period:"),
                let endRange = context.range(of: "\n", range: range.upperBound..<context.endIndex) {
                 let periodLine = String(context[range.lowerBound..<endRange.lowerBound])
                 periodHint = "\n[Relevant data: \(periodLine)]"
             }
-
             contextualMessage = """
             [BACKGROUND HEALTH DATA — use only if relevant to the question below:]
             \(context)\(periodHint)
@@ -180,151 +174,237 @@ final class AIBrain {  // ← removed ObservableObject (no @Published = no confo
             """
         }
 
+        // ── Route to the available engine ────────────────────────────────
+        if foundationModelsAvailable {
+            // On-device path
+            if chatSession == nil {
+                chatSession = LanguageModelSession(
+                    tools: [PCOSResearchTool(), IndianFoodTool()],
+                    instructions: systemPrompt
+                )
+            }
+            do {
+                let response = try await chatSession!.respond(to: contextualMessage)
+                return response.content
+            } catch {
+                print("⚠️ FoundationModels chat failed (\(error)), falling back to Cloud")
+                chatSession = nil
+                // Fall through to cloud path below
+            }
+        }
+
+        // Cloud path — also the fallback when FoundationModels throws
+        if cloudChatHistory.isEmpty {
+            cloudChatHistory = [["role": "system", "content": systemPrompt]]
+        }
+        cloudChatHistory.append(["role": "user", "content": contextualMessage])
         do {
-            let response = try await chatSession!.respond(to: contextualMessage)
-            return response.content
+            let reply = try await cloudEngine.request(
+                messages: cloudChatHistory,
+                maxTokens: 1024,
+                temperature: 0.75
+            )
+            cloudChatHistory.append(["role": "assistant", "content": reply])
+            return reply
         } catch {
-            chatSession = nil
+            cloudChatHistory.removeLast()
             throw error
         }
     }
     
-//MARK: generate meal recommendations
+    // MARK: - Meal Recommendations
+    private var mealInstructions: String { """
+        Generate exactly 3 personalized Indian meal suggestions based on the user's PCOS context.
+
+        CONTEXT DATA:
+        - Meals eaten today with macro gaps
+        - Protein/Macro targets vs actuals
+        - PCOS phenotype and cycle phase
+        - Current symptoms
+
+        RULES:
+        - Provide exactly 3 AUTHENTIC INDIAN food suggestions. No Western foods (no turkey chili, osso buco, etc.).
+        - Do NOT repeat any food already logged today.
+        - Use short dish names (max 25 characters). E.g. 'Moong Dal Chilla', 'Palak Paneer', 'Ragi Roti'.
+        - primaryMacro: Must be a metric based on the nutritional gap (e.g. "22g protein", "8g fibre").
+        - description: A 5-8 word description of the dish.
+        - calories: Estimated calorie count per serving (e.g. "420 kcal").
+        - emoji: A single relevant food emoji.
+
+        FOOD SELECTION PRIORITY:
+        - Check the Gap values in context. Focus on the nutrient with the LARGEST remaining gap.
+        - If Protein gap > 0: Include at least 1 protein-rich food.
+        - Suggest diverse DISHES — 3 different meals covering different nutritional needs.
+
+        IMPACT TAG RULES — Allowed tags: High Protein, Low GI, High Fibre, Healthy Fats, Whole Food
+        - High Protein → dal, paneer, eggs, chicken, legumes
+        - Low GI → ragi, oats, whole grains
+        - High Fibre → vegetables, salads, legumes
+        - Healthy Fats → ONLY nut/seed/oil-based dishes. NEVER for paneer, dal, eggs, chicken.
+        - Whole Food → minimally processed balanced meals
+
+        OBSERVATION LINE: Output any short phrase. It will be overridden by the app.
+        SUB OBSERVATION LINE: Output any short phrase. It will be overridden by the app.
+        """ }
+
     func generateMealRecommendations(context: String) async throws -> MealRecommendationOutput {
-        guard case .available = SystemLanguageModel.default.availability else {
-            throw AIBrainError.modelUnavailable
+        if foundationModelsAvailable {
+            do {
+                // On-device structured generation
+                let session = LanguageModelSession(instructions: mealInstructions)
+                let response = try await session.respond(
+                    to: context,
+                    generating: MealRecommendationOutput.self
+                )
+                return response.content
+            } catch {
+                print("⚠️ FoundationModels meal generation failed (\(error)), falling back to Cloud")
+                // Fall through to cloud
+            }
         }
-        let session = LanguageModelSession(
-            instructions: """
-            Generate exactly 3 personalized Indian meal suggestions based on the user's PCOS context.
 
-            CONTEXT DATA:
-            - Meals eaten today with macro gaps
-            - Protein/Macro targets vs actuals
-            - PCOS phenotype and cycle phase
-            - Current symptoms
-
-            RULES:
-            - Provide exactly 3 Indian food suggestions.
-            - Do NOT repeat any food already logged today.
-            - Use short dish names (max 25 characters). E.g. 'Moong Dal Chilla', 'Palak Paneer', 'Ragi Roti'.
-            - primaryMacro: Must be a metric based on the nutritional gap (e.g. "22g protein", "8g fibre").
-            - description: A 5-8 word description of the dish.
-            - calories: Estimated calorie count per serving (e.g. "420 kcal").
-
-            FOOD SELECTION PRIORITY:
-            - Check the Gap values in context. Focus on the nutrient with the LARGEST remaining gap.
-            - If Protein gap > 0: Include at least 1 protein-rich food. The other 2 should address different gaps (fibre, carbs, fats) for nutritional variety.
-            - If Protein gap = 0: Do NOT suggest protein-focused foods. Focus on carbs/fibre/fats gaps instead.
-            - Suggest diverse DISHES — 3 different meals covering different nutritional needs.
-
-            IMPACT TAG RULES:
-            - Each suggestion MUST have EXACTLY ONE impactTag.
-            - Tag must be nutritionally ACCURATE for that specific dish.
-            - Do NOT assign "Healthy Fats" to dairy/paneer dishes — those are "High Protein".
-            - When a dish fits multiple tags equally well, prefer the one NOT already used by another card.
-            - Aim for at least 2 different tags across the 3 cards.
-            - Allowed tags: High Protein, Low GI, High Fibre, Healthy Fats, Whole Food
-            
-            TAG DEFINITIONS:
-            - High Protein → primarily protein-rich (dal, paneer, eggs, chicken, legumes)
-            - Low GI → slow glucose-release (ragi, oats, whole grains)
-            - High Fibre → fibre-dense (vegetables, salads, legumes)
-            - Healthy Fats → ONLY for nut/seed/oil-based dishes (trail mix, chia pudding, coconut chutney). NEVER for paneer, dal, eggs, chicken, or dairy.
-            - Whole Food → minimally processed balanced meals
-
-            CORRECT TAG EXAMPLES (follow these):
-            - Palak Paneer → "High Protein"
-            - Paneer Tikka → "High Protein"
-            - Dal Tadka → "High Protein"
-            - Egg Curry → "High Protein"
-            - Chana Masala → "High Fibre"
-            - Chickpea Curry → "High Fibre"
-            - Moong Dal Chilla → "High Protein"
-            - Ragi Roti → "Low GI"
-            - Ragi Porridge → "Low GI"
-            - Oats Upma → "Low GI"
-            - Vegetable Stir Fry → "Whole Food"
-            - Khichdi → "Whole Food"
-            - Trail Mix → "Healthy Fats"
-            - Chia Pudding → "Healthy Fats"
-            - Flaxseed Chutney → "Healthy Fats"
-
-            VALIDATION:
-            - Before returning output, verify:
-                1. No meal repeats from logged meals
-                2. Every impactTag matches the examples above
-                3. "Healthy Fats" is NEVER used for paneer, dal, egg, chicken, or dairy dishes
-                4. At least 2 different tags across the 3 cards
-
-            OBSERVATION LINE: Output any short phrase. It will be overridden by the app.
-            SUB OBSERVATION LINE: Output any short phrase. It will be overridden by the app.
-            """
+        // Cloud path — also the fallback when FoundationModels throws
+        let jsonString = try await cloudEngine.generateMealRecommendationsJSON(
+            context: context,
+            instructions: mealInstructions
         )
-        let response = try await session.respond(
-            to: context,
-            generating: MealRecommendationOutput.self
+        return try parseMealJSON(jsonString)
+    }
+
+    /// Parses the raw JSON string returned by the cloud engine into a `MealRecommendationOutput`.
+    private func parseMealJSON(_ raw: String) throws -> MealRecommendationOutput {
+        // Strip markdown fences if the model wraps JSON in ```json ... ```
+        var clean = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        if clean.hasPrefix("```") {
+            clean = clean.components(separatedBy: "\n").dropFirst().joined(separator: "\n")
+            if clean.hasSuffix("```") { clean = String(clean.dropLast(3)) }
+        }
+        guard let data = clean.data(using: .utf8),
+              let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            throw AIBrainError.parsingFailed
+        }
+
+        let obs    = json["observationLine"]    as? String ?? ""
+        let subObs = json["subObservationLine"] as? String ?? ""
+        let rawFoods = json["foods"] as? [[String: Any]] ?? []
+
+        let foods: [FoodCard] = rawFoods.compactMap { s in
+            guard
+                let name         = s["name"]         as? String,
+                let primaryMacro = s["primaryMacro"]  as? String,
+                let description  = s["description"]   as? String,
+                let calories     = s["calories"]      as? String,
+                let impactTag    = s["impactTag"]     as? String,
+                let colorHint    = s["colorHint"]     as? String
+            else { return nil }
+            return FoodCard(
+                name: name,
+                primaryMacro: primaryMacro,
+                description: description,
+                calories: calories,
+                impactTag: impactTag,
+                colorHint: colorHint
+            )
+        }
+        return MealRecommendationOutput(
+            observationLine: obs,
+            subObservationLine: subObs,
+            foods: foods
         )
-        return response.content
     }
 
 
+    // MARK: - Daily Goals
+    private var goalsInstructions: String { """
+        Generate exactly 2 personalized daily health goals for a woman with PCOS.
+
+        PRIORITY ORDER — pick the top 2 that apply, in this order:
+        1. Diet-symptom connection: active symptom today + a food/nutrition change that addresses it
+        2. Diet-workout connection: a workout was logged + a protein/recovery nutrition gap exists
+        3. Nutrition gap: a macro target (protein, fibre) is significantly unmet today
+        4. Workout gap: no strength training or movement logged in the past 7 days
+
+        HARD RULES:
+        - CRITICAL: Use ONLY the exact numbers from the context. Read protein target from the "Targets: ...PXg..." line. Never invent or assume typical values.
+        - Never generate a sleep goal — sleep is excluded entirely
+        - ONLY generate goals based on data explicitly present in the context.
+        - If "Symptoms today: none" — do not generate any symptom-based goal.
+        - Never invent or assume symptoms, food logs, or patterns not in the context.
+        - Never suggest weight loss or calorie restriction if BMI is Underweight or Normal.
+        - Both goals must be different categories (nutrition / exercise / symptoms).
+        - Sentences must be under 12 words. No vague goals — name a specific food or action.
+        - icon: Use a valid SF Symbol name (e.g. "fork.knife", "figure.walk", "heart.fill").
+        """ }
+
     func generateDailyGoals(context: String) async throws -> DailyGoalsOutput {
-        guard case .available = SystemLanguageModel.default.availability else {
-            throw AIBrainError.modelUnavailable
+        if foundationModelsAvailable {
+            do {
+                let session = LanguageModelSession(instructions: goalsInstructions)
+                let response = try await session.respond(
+                    to: context,
+                    generating: DailyGoalsOutput.self
+                )
+                return response.content
+            } catch {
+                print("⚠️ FoundationModels goals generation failed (\(error)), falling back to Cloud")
+                // Fall through to cloud
+            }
         }
-        let session = LanguageModelSession(
-            instructions: """
-            Generate exactly 2 personalized daily health goals for a woman with PCOS.
 
-            PRIORITY ORDER — pick the top 2 that apply, in this order:
-            1. Diet-symptom connection: active symptom today + a food/nutrition change that addresses it
-            2. Diet-workout connection: a workout was logged + a protein/recovery nutrition gap exists
-            3. Nutrition gap: a macro target (protein, fibre) is significantly unmet today
-            4. Workout gap: no strength training or movement logged in the past 7 days
+        // Cloud path — also the fallback when FoundationModels throws
+        let jsonString = try await cloudEngine.generateDailyGoalsJSON(
+            context: context,
+            instructions: goalsInstructions
+        )
+        return try parseGoalsJSON(jsonString)
+    }
 
-            HARD RULES:
-            - CRITICAL: Use ONLY the exact numbers from the context. Read protein target from the "Targets: ...PXg..." line. Never invent or assume typical values.
-            - Never generate a sleep goal — sleep is excluded entirely
-            - ONLY generate goals based on data explicitly present in the context. If a symptom is not listed under "Symptoms today:", do not reference it.
-            - If "Symptoms today: none" — do not generate any symptom-based goal. Move to nutrition or workout gap instead.
-            - If "Workout: none" and "strengthSessions: 0" are both present — only then generate a workout gap goal.
-            - Never invent or assume symptoms, food logs, or patterns that are not explicitly stated in the context string.
-            - Never suggest weight loss or calorie restriction if BMI is Underweight or Normal
-            - Read PCOS phenotype: Type A/B → insulin and cortisol goals; Type C → androgen-reducing foods; Type D → cycle and ovulation support foods
-            - Each goal must reference one real number from today's logs or 7-day patterns
-            - Both goals must be different categories (nutrition / exercise / symptoms)
-            - Sentences must be under 12 words
-            - No vague goals — every goal must name a specific food or action
-            """
-        )
-        let response = try await session.respond(
-            to: context,
-            generating: DailyGoalsOutput.self
-        )
-        return response.content
+    /// Parses the raw JSON string returned by the cloud engine into a `DailyGoalsOutput`.
+    private func parseGoalsJSON(_ raw: String) throws -> DailyGoalsOutput {
+        var clean = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        if clean.hasPrefix("```") {
+            clean = clean.components(separatedBy: "\n").dropFirst().joined(separator: "\n")
+            if clean.hasSuffix("```") { clean = String(clean.dropLast(3)) }
+        }
+        guard let data = clean.data(using: .utf8),
+              let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let rawGoals = json["goals"] as? [[String: Any]] else {
+            throw AIBrainError.parsingFailed
+        }
+        let goals: [GoalCard] = rawGoals.compactMap { g in
+            guard
+                let title    = g["title"]    as? String,
+                let sentence = g["sentence"]  as? String,
+                let category = g["category"] as? String
+            else { return nil }
+            return GoalCard(title: title, sentence: sentence, category: category)
+        }
+        return DailyGoalsOutput(goals: goals)
     }
    
 
     // MARK: - Reset
     func resetChat() {
         chatSession = nil
+        cloudChatHistory = []
     }
 
     var isAvailable: Bool {
-        if case .available = SystemLanguageModel.default.availability { return true }
-        return false
+        foundationModelsAvailable || cloudEngine.isAvailable
     }
 }
 
 // MARK: - Errors
 enum AIBrainError: LocalizedError {
     case modelUnavailable
+    case parsingFailed
 
     var errorDescription: String? {
         switch self {
         case .modelUnavailable:
-            return "Apple Intelligence is not available. Please enable it in Settings > Apple Intelligence & Siri."
+            return "No AI engine is available. Please check your internet connection or enable Apple Intelligence."
+        case .parsingFailed:
+            return "Failed to parse the AI response. Please try again."
         }
     }
 }

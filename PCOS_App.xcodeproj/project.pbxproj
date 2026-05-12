@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		19AAC9322ED5C04F00B83D7B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 19AAC9312ED5C04700B83D7B /* README.md */; };
 		19AAC9342ED5C1BC00B83D7B /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 19AAC9332ED5C1B000B83D7B /* .gitignore */; };
+		1CA7707A2FB304D000309433 /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 1CA770792FB304D000309433 /* Secrets.xcconfig */; };
 		1F2B2E4BBD120A4F4DE65271 /* GuidedTourManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BB5ABEC156975EF76963C1 /* GuidedTourManager.swift */; };
 		1F832979208BE074C0306F1F /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38848CDF9FF987B704A7D9F8 /* ActivityKit.framework */; };
 		41624167DD70FF899CC27DDD /* WorkoutWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 7ACD8A682EF94CC66992A097 /* WorkoutWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -53,6 +54,7 @@
 		190B1DF02ED1B5FF0014994E /* PCOS_App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PCOS_App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		19AAC9312ED5C04700B83D7B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		19AAC9332ED5C1B000B83D7B /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		1CA770792FB304D000309433 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		3230E231209626D8683E5DCE /* WorkoutWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WorkoutWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		38848CDF9FF987B704A7D9F8 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ActivityKit.framework; sourceTree = "<group>"; };
 		38E287544AC930323A21D9F9 /* WorkoutLiveActivity.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorkoutLiveActivity.swift; sourceTree = "<group>"; };
@@ -125,6 +127,7 @@
 				194230C82EEBFF3500BD748F /* Frameworks */,
 				C525960E53003DBD3E4E6066 /* WorkoutWidgetExtension */,
 				D5934FE5F17B50E52E14C5EE /* PCOS_App */,
+				1CA770792FB304D000309433 /* Secrets.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -313,6 +316,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				19AAC9322ED5C04F00B83D7B /* README.md in Resources */,
+				1CA7707A2FB304D000309433 /* Secrets.xcconfig in Resources */,
 				19AAC9342ED5C1BC00B83D7B /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -364,6 +368,7 @@
 /* Begin XCBuildConfiguration section */
 		190B1E042ED1B6000014994E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1CA770792FB304D000309433 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -402,6 +407,7 @@
 		};
 		190B1E052ED1B6000014994E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1CA770792FB304D000309433 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

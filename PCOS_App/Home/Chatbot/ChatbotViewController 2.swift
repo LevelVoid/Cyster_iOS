@@ -240,7 +240,7 @@ final class ChatbotViewController: UIViewController {
                 }
             } catch {
                 await MainActor.run {
-                    self.addAIMessage("I'm having trouble connecting right now. Please make sure Apple Intelligence is enabled in Settings. ")
+                    self.addAIMessage("I'm having trouble connecting right now. Please check your internet connection and try again.")
                 }
             }
         }
