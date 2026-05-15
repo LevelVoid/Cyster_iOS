@@ -344,7 +344,7 @@ extension ChatbotViewController: WalkthroughManagerDelegate {
 
         WalkthroughCongratsView.present(
             in: keyWindow,
-            title: "You're All Set! 🎉",
+            title: "You're All Set!",
             body: "Welcome to your PCOS journey with Adira!\nAsk me anything — I'm here to help every step of the way.",
             continueTitle: "Start Exploring"
         ) {

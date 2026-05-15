@@ -12,21 +12,21 @@ struct LogPeriodTip: Tip {
 struct LogSymptomTip: Tip {
     var title: Text { Text("Log Your Symptoms") }
     var message: Text? { Text("How are you feeling today? Tap here to log your symptoms.") }
-    var image: Image? { Image(systemName: "sparkles") }
+    var image: Image? { Image(systemName: "list.clipboard.fill") }
 }
 
 @available(iOS 17.0, *)
 struct ChatbotTip: Tip {
     var title: Text { Text("Meet Adira, Your AI Coach") }
     var message: Text? { Text("Ask Adira anything about PCOS — diet, symptoms, cycle, you name it! Tap to chat now.") }
-    var image: Image? { Image(systemName: "message.fill") }
+    var image: Image? { Image(systemName: "bubble.left.and.bubble.right.fill") }
 }
 
 @available(iOS 17.0, *)
 struct CustomRoutineTip: Tip {
     var title: Text { Text("Custom Routines") }
     var message: Text? { Text("Create your own custom workout routine by tapping here.") }
-    var image: Image? { Image(systemName: "figure.walk") }
+    var image: Image? { Image(systemName: "figure.run") }
 }
 
 @available(iOS 17.0, *)
@@ -66,21 +66,21 @@ struct EditNameTip: Tip {
 struct AddMealScanBarcodeTip: Tip {
     var title: Text { Text("Scan Barcode") }
     var message: Text? { Text("Instantly log packaged foods by scanning their barcode.") }
-    var image: Image? { Image(systemName: "barcode.viewfinder") }
+    var image: Image? { Image(systemName: "viewfinder") }
 }
 
 @available(iOS 17.0, *)
 struct AddMealScanImageTip: Tip {
     var title: Text { Text("Scan Image") }
     var message: Text? { Text("Take a photo of your plate and let AI instantly analyze the meal.") }
-    var image: Image? { Image(systemName: "camera") }
+    var image: Image? { Image(systemName: "camera.fill") }
 }
 
 @available(iOS 17.0, *)
 struct AddMealDescribeTip: Tip {
     var title: Text { Text("Describe Meal") }
     var message: Text? { Text("Type or dictate what you ate and our AI will calculate the macros.") }
-    var image: Image? { Image(systemName: "text.bubble") }
+    var image: Image? { Image(systemName: "bubble.left.fill") }
 }
 
 @available(iOS 17.0, *)

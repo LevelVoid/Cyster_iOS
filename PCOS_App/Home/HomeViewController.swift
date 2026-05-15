@@ -1171,7 +1171,7 @@ extension HomeViewController: WalkthroughManagerDelegate {
 
         WalkthroughCongratsView.present(
             in: keyWindow,
-            title: "You're All Set! 🎉",
+            title: "You're All Set!",
             body: "You've completed the setup!\nYou are now ready to use the app to manage your PCOS journey.",
             continueTitle: "Start Exploring"
         ) {

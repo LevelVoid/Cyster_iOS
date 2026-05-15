@@ -163,7 +163,7 @@ final class WalkthroughManager {
             
         WalkthroughCongratsView.present(
             in: window,
-            title: "You're All Set! 🎉",
+            title: "You're All Set!",
             body: "Your profile is fully configured. Enjoy using PCOS App!",
             continueTitle: "Get Started"
         ) {}

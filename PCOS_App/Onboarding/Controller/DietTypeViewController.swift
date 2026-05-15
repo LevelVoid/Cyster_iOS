@@ -117,7 +117,7 @@ class DietTypeViewController: UIViewController {
                         
                     WalkthroughCongratsView.present(
                         in: window,
-                        title: "Great Choice! 🥗",
+                        title: "Great Choice!",
                         body: "Your diet type is set.\nNext, let's explore your workout options!",
                         continueTitle: "Go to Workout"
                     ) {
