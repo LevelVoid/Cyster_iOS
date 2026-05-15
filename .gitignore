@@ -67,3 +67,4 @@ Library/Developer/CoreSimulator
 .env
 
 build_log.txt
+Secrets.xcconfig
