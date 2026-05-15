@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import FoundationModels
 
 class SymptomInsightModel {
     
@@ -94,11 +93,9 @@ class SymptomInsightModel {
             return cachedInsight
         }
         
-        let session = LanguageModelSession(instructions: systemInstructions)
-        
         do {
-            let result = try await session.respond(to: prompt)
-            let insight = result.content
+            let result = try await AIBrain.shared.generateResponse(prompt: prompt, instructions: systemInstructions)
+            let insight = result
                 .trimmingCharacters(in: .whitespacesAndNewlines)
                 .trimmingCharacters(in: CharacterSet(charactersIn: "\""  ))
             
@@ -109,7 +106,7 @@ class SymptomInsightModel {
             
             return insight
         } catch {
-            print("ERROR: Foundation Model failed to analyze symptom pattern: \(error)")
+            print("ERROR: AI failed to analyze symptom pattern: \(error)")
             throw error
         }
     }

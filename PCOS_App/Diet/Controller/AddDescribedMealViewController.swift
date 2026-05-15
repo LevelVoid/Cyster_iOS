@@ -27,7 +27,7 @@ class AddDescribedMealViewController: UIViewController {
     var food: Food?
     weak var delegate: AddDescribedMealDelegate?
     var isReadOnlyIngredients: Bool = false
-    
+    private var loadingView: UIView?
     private var servingMultiplier: Double = 1.0
     private var headerView: FoodLogIngredientHeader!
     private var ingredients: [Ingredient] = []
@@ -99,17 +99,7 @@ class AddDescribedMealViewController: UIViewController {
             totalFat     += ingredient.fats    * factor
             totalFibre   += ingredient.fibre   * factor
         }
-        // After the loop, add:
-        let totalRecipeWeight = ingredients.reduce(0.0) { $0 + $1.quantity }
-        let servingSize = foodItem?.servingSize ?? food?.servingSize ?? 100
-
-        // Scale macros from full recipe to one serving
-        if totalRecipeWeight > 0 && totalRecipeWeight != servingSize {
-            let scaleFactor = servingSize / totalRecipeWeight
-            totalProtein *= scaleFactor
-            totalCarbs *= scaleFactor
-            totalFat *= scaleFactor
-        }
+        // Remove incorrect scaling logic — the sum of ingredients IS the serving.
 
         totalProtein *= servingMultiplier
         totalCarbs   *= servingMultiplier
@@ -165,12 +155,15 @@ class AddDescribedMealViewController: UIViewController {
             .joined(separator: ", ")
         let tagLine = tagLabels.isEmpty ? "No specific health tags available." : "Verified tags: \(tagLabels)."
         
-        // Use a fresh dedicated session — never reuse the shared chat session
         let instructions = """
-        You are a nutrition assistant. Reply in exactly 1-2 short sentences — no lists, no headings. \
-        Base your assessment ONLY on the verified tags provided. \
-        Do not use your own knowledge about the food name and output shouldn't have based on impact tags wording as we are not showing any impact tag in UI. \
-        Be warm and direct. Stop after 2 sentences.
+        You are a supportive, realistic nutrition coach for a woman with PCOS.
+        Reply in exactly 1-2 short, simple sentences.
+        
+        Evaluation Rules:
+        1. IF the meal already contains a good source of protein or fiber (e.g., veggies, beans, dal, eggs, meat), PRAISE her and DO NOT suggest any improvements. Be fully satisfied with the meal.
+        2. IF it is a "cheat meal" or highly unbalanced (e.g., mostly sweets or refined carbs with no protein/fiber), be warm and guilt-free (e.g., "It's totally okay to enjoy your favorite treats!"). Suggest ONE simple addition (like pairing with nuts or taking a short walk) to help balance blood sugar.
+        
+        CRITICAL: Never nitpick. If she already added healthy elements, just appreciate it.
         """
         
         let prompt = """
@@ -178,14 +171,13 @@ class AddDescribedMealViewController: UIViewController {
         Ingredients: \(ingredientNames)
         \(tagLine)
         
-        Based only on the verified tags above, give 1-2 sentences of feedback. Suggest one improvement if the tags indicate an issue.
+        Provide 1-2 short sentences following the Evaluation Rules exactly.
         """
 
         
         do {
-            let session = LanguageModelSession(instructions: instructions)
-            let response = try await session.respond(to: prompt)
-            let insight = response.content
+            let result = try await AIBrain.shared.generateResponse(prompt: prompt, instructions: instructions)
+            let insight = result
             
             await MainActor.run {
                 guard let label = recommendationLabel, let card = recommendationView else { return }
@@ -450,18 +442,7 @@ class AddDescribedMealViewController: UIViewController {
             totalFat += ingredient.fats * factor
         }
         
-        // After the loop, add:
-        let totalRecipeWeight = ingredients.reduce(0.0) { $0 + $1.quantity }
-        let servingSize = foodItem?.servingSize ?? food?.servingSize ?? 100
-
-        // Scale macros from full recipe to one serving
-        if totalRecipeWeight > 0 && totalRecipeWeight != servingSize {
-            let scaleFactor = servingSize / totalRecipeWeight
-            totalProtein *= scaleFactor
-            totalCarbs *= scaleFactor
-            totalFat *= scaleFactor
-        }
-        
+        // Remove incorrect scaling logic — the sum of ingredients IS the serving.
         totalProtein *= servingMultiplier
         totalCarbs *= servingMultiplier
         totalFat *= servingMultiplier
@@ -556,13 +537,7 @@ class AddDescribedMealViewController: UIViewController {
                 totalFat += ingredient.fats * factor
             }
             
-            // Scale macros from full recipe to one serving
-            if totalRecipeWeight > 0 && totalRecipeWeight != servingSize {
-                let scaleFactor = servingSize / totalRecipeWeight
-                totalProtein *= scaleFactor
-                totalCarbs *= scaleFactor
-                totalFat *= scaleFactor
-            }
+            // Remove incorrect scaling logic — the sum of ingredients IS the serving.
            
             totalProtein *= servingMultiplier
             totalCarbs *= servingMultiplier
@@ -653,8 +628,41 @@ extension AddDescribedMealViewController: UITableViewDelegate, UITableViewDataSo
         return activeCell
     }
     
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Edit Ingredients"
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView()
+        headerView.backgroundColor = .clear
+        
+        let titleLabel = UILabel()
+        titleLabel.text = "Edit Ingredients"
+        titleLabel.font = .systemFont(ofSize: 15, weight: .semibold)
+        titleLabel.textColor = .secondaryLabel
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        headerView.addSubview(titleLabel)
+        
+        let addButton = UIButton(type: .system)
+        let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)
+        addButton.setImage(UIImage(systemName: "plus", withConfiguration: config), for: .normal)
+        addButton.tintColor = UIColor(red: 0.996, green: 0.478, blue: 0.588, alpha: 1.0)
+        addButton.translatesAutoresizingMaskIntoConstraints = false
+        addButton.addTarget(self, action: #selector(addIngredientTapped), for: .touchUpInside)
+        
+        if isReadOnlyIngredients {
+            addButton.isHidden = true
+        }
+        
+        headerView.addSubview(addButton)
+        
+        NSLayoutConstraint.activate([
+            titleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            titleLabel.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
+            
+            addButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+            addButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
+            addButton.widthAnchor.constraint(equalToConstant: 44),
+            addButton.heightAnchor.constraint(equalToConstant: 44)
+        ])
+        
+        return headerView
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -799,19 +807,154 @@ extension AddDescribedMealViewController: UITableViewDelegate, UITableViewDataSo
             let quantityText = alert.textFields?[0].text ?? "100"
             let unitText = alert.textFields?[1].text ?? "g"
             
-            var updatedIngredient = ingredient
-            updatedIngredient.quantity = Double(quantityText) ?? 100
-            updatedIngredient.unit = unitText.isEmpty ? "g" : unitText
-            
-            self.ingredients[indexPath.row] = updatedIngredient
-            self.tableView.reloadRows(at: [indexPath], with: .automatic)
-            
-            self.updateHeaderWithCurrentIngredients()
-            self.updateWeightLabel()
-            
-            print("DEBUG: Updated ingredient: \(updatedIngredient.name) - \(updatedIngredient.quantity)\(updatedIngredient.unit)")
+            if let newQuantity = Double(quantityText) {
+                self.ingredients[indexPath.row].quantity = newQuantity
+                self.ingredients[indexPath.row].unit = unitText
+                
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
+                self.updateHeaderWithCurrentIngredients()
+                self.updateWeightLabel()
+                
+                Task { await self.fetchMealInsight() }
+            }
         })
         
         present(alert, animated: true)
+    }
+
+    // MARK: - Add Ingredient
+    
+    @objc private func addIngredientTapped() {
+        let alert = UIAlertController(
+            title: "Add Ingredient",
+            message: "Describe the ingredient and amount (e.g. '1 boiled egg' or '50g paneer')",
+            preferredStyle: .alert
+        )
+        
+        alert.addTextField { textField in
+            textField.placeholder = "e.g. 50g paneer"
+        }
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Add", style: .default) { [weak self] _ in
+            guard let self = self, let text = alert.textFields?.first?.text, !text.isEmpty else { return }
+            Task {
+                await self.fetchIngredientNutritionalData(description: text)
+            }
+        })
+        
+        present(alert, animated: true)
+    }
+    
+    private func fetchIngredientNutritionalData(description: String) async {
+        let instructions = """
+        You are a professional nutritionist specializing in Indian and international foods.
+        When given an ingredient and its amount, return ONLY a valid JSON object with NO extra text,
+        NO markdown, NO code blocks, NO explanation — just raw JSON.
+
+        The JSON must follow this exact structure representing a SINGLE ingredient:
+        {
+          "name": "ingredient name",
+          "quantity": 50.0,
+          "unit": "g",
+          "protein": 5.0,
+          "carbs": 20.0,
+          "fats": 3.0,
+          "fibre": 1.0
+        }
+
+        Rules:
+        - All numeric values must be doubles or integers (no strings for numbers)
+        - quantity is the ACTUAL weight of the ingredient described in grams (e.g. if user says 1 boiled egg, quantity is ~50.0)
+        - protein, carbs, fats, fibre are the macros PER 100G of that ingredient.
+        - Return ONLY the JSON, nothing else.
+        """
+        
+        await MainActor.run { self.showLoadingIndicator(message: "Analyzing ingredient...") }
+        
+        do {
+            let responseText = try await AIBrain.shared.analyzeMealDescription(description: description, instructions: instructions)
+            print("DEBUG: Ingredient AI Model response:\n\(responseText)")
+            
+            var cleaned = responseText.trimmingCharacters(in: .whitespacesAndNewlines)
+            if cleaned.hasPrefix("```json") {
+                cleaned = String(cleaned.dropFirst(7))
+            } else if cleaned.hasPrefix("```") {
+                cleaned = String(cleaned.dropFirst(3))
+            }
+            if cleaned.hasSuffix("```") {
+                cleaned = String(cleaned.dropLast(3))
+            }
+            cleaned = cleaned.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            guard let data = cleaned.data(using: .utf8) else { throw URLError(.badServerResponse) }
+            let rawIngredient = try JSONDecoder().decode(AIIngredient.self, from: data)
+            
+            let newIngredient = Ingredient(
+                id: UUID(),
+                name: rawIngredient.name,
+                quantity: rawIngredient.quantity,
+                weight: rawIngredient.quantity,
+                unit: rawIngredient.unit,
+                protein: rawIngredient.protein,
+                carbs: rawIngredient.carbs,
+                fats: rawIngredient.fats,
+                fibre: rawIngredient.fibre,
+                tags: [.none]
+            )
+            
+            await MainActor.run {
+                self.hideLoadingIndicator()
+                self.ingredients.append(newIngredient)
+                self.tableView.reloadData()
+                self.updateHeaderWithCurrentIngredients()
+                self.updateWeightLabel()
+                
+                Task { await self.fetchMealInsight() }
+            }
+            
+        } catch {
+            print("ERROR: AI Ingredient parsing failed: \(error)")
+            await MainActor.run {
+                self.hideLoadingIndicator()
+                self.showAlert(message: "Could not add ingredient. Please try a clearer description.")
+            }
+        }
+    }
+    
+    // MARK: - Loading Indicator
+    
+    
+    private func showLoadingIndicator(message: String) {
+        let overlay = UIView(frame: view.bounds)
+        overlay.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        overlay.tag = 888
+
+        let activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.center = overlay.center
+        activityIndicator.color = .white
+        activityIndicator.startAnimating()
+
+        let label = UILabel()
+        label.text = message
+        label.textColor = .white
+        label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.textAlignment = .center
+        label.frame = CGRect(
+            x: 0,
+            y: activityIndicator.frame.maxY + 20,
+            width: view.bounds.width,
+            height: 30
+        )
+
+        overlay.addSubview(activityIndicator)
+        overlay.addSubview(label)
+        view.addSubview(overlay)
+        view.isUserInteractionEnabled = false
+    }
+
+    private func hideLoadingIndicator() {
+        view.viewWithTag(888)?.removeFromSuperview()
+        view.isUserInteractionEnabled = true
     }
 }

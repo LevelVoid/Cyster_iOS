@@ -232,9 +232,12 @@ final class AIBrain {
         - emoji: A single relevant food emoji.
 
         FOOD SELECTION PRIORITY:
-        - Check the Gap values in context. Focus on the nutrient with the LARGEST remaining gap.
-        - If Protein gap > 0: Include at least 1 protein-rich food.
-        - Suggest diverse DISHES — 3 different meals covering different nutritional needs.
+        - Analyze the Gap values in the context.
+        - CRITICAL RULE: If a Gap is 0g (e.g. Carbs Gap: 0g), it means the user has already exceeded their daily limit. You MUST NOT suggest foods high in that macro!
+        - If Carbs Gap is 0g, ALL 3 suggestions MUST be extremely low carb (NO rice, NO roti, NO bread, NO potatoes).
+        - If Fats Gap is 0g, avoid heavy curries or fried items.
+        - Focus heavily on the nutrient with the LARGEST remaining gap (e.g., if Protein Gap is largest, prioritize protein-heavy dishes).
+        - Ensure variety, but never violate the 0g gap rule.
 
         IMPACT TAG RULES — Allowed tags: High Protein, Low GI, High Fibre, Healthy Fats, Whole Food
         - High Protein → dal, paneer, eggs, chicken, legumes
@@ -382,6 +385,36 @@ final class AIBrain {
         return DailyGoalsOutput(goals: goals)
     }
    
+    // MARK: - Generic Fallback Text Generation
+    func generateResponse(prompt: String, instructions: String) async throws -> String {
+        if foundationModelsAvailable {
+            do {
+                let session = LanguageModelSession(instructions: instructions)
+                let response = try await session.respond(to: prompt)
+                return response.content
+            } catch {
+                print("⚠️ FoundationModels generation failed (\(error)), falling back to Cloud")
+            }
+        }
+        return try await cloudEngine.generate(prompt: prompt, systemPrompt: instructions)
+    }
+   
+    // MARK: - Meal Description Parsing
+    func analyzeMealDescription(description: String, instructions: String) async throws -> String {
+        if foundationModelsAvailable {
+            do {
+                let session = LanguageModelSession(instructions: instructions)
+                let response = try await session.respond(to: description)
+                return response.content
+            } catch {
+                print("⚠️ FoundationModels meal parsing failed (\(error)), falling back to Cloud")
+                // Fall through to cloud
+            }
+        }
+
+        // Cloud fallback
+        return try await cloudEngine.generate(prompt: description, systemPrompt: instructions)
+    }
 
     // MARK: - Reset
     func resetChat() {

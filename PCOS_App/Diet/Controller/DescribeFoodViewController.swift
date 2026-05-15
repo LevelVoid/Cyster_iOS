@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import FoundationModels
 
 class DescribeFoodViewController: UIViewController {
     
@@ -87,13 +86,10 @@ class DescribeFoodViewController: UIViewController {
             - Return ONLY the JSON, nothing else
             """
 
-        let session = LanguageModelSession(instructions: instructions)
-
         do {
-            let result = try await session.respond(to: description)
-            let responseText = result.content
+            let responseText = try await AIBrain.shared.analyzeMealDescription(description: description, instructions: instructions)
 
-            print("DEBUG: Foundation Model response:\n\(responseText)")
+            print("DEBUG: AI Model response:\n\(responseText)")
 
             await MainActor.run {
                 self.hideLoadingIndicator()
@@ -101,7 +97,7 @@ class DescribeFoodViewController: UIViewController {
             }
 
         } catch {
-            print("ERROR: Foundation Model failed: \(error)")
+            print("ERROR: AI Model failed: \(error)")
             await MainActor.run {
                 self.hideLoadingIndicator()
                 self.showAlert(message: "AI analysis failed. Please try again.\n\nError: \(error.localizedDescription)")

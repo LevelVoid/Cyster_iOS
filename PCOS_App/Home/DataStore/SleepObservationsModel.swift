@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import FoundationModels
 
 class SleepObservationsModel {
     
@@ -71,11 +70,9 @@ class SleepObservationsModel {
         }
         
         let prompt = generateSleepPrompt(from: chartData, timeRange: timeRange)
-        let session = LanguageModelSession(instructions: systemInstructions)
-        
         do {
-            let result = try await session.respond(to: prompt)
-            let insight = result.content
+            let result = try await AIBrain.shared.generateResponse(prompt: prompt, instructions: systemInstructions)
+            let insight = result
                 .trimmingCharacters(in: .whitespacesAndNewlines)
                 .trimmingCharacters(in: CharacterSet(charactersIn: "\""  ))
             
@@ -90,7 +87,7 @@ class SleepObservationsModel {
             
             return insight
         } catch {
-            print("ERROR: Foundation Model failed to analyze sleep: \(error)")
+            print("ERROR: AI failed to analyze sleep: \(error)")
             return fallbackInsight(from: chartData)
         }
     }
