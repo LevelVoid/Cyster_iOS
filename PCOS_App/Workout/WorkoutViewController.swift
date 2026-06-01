@@ -35,6 +35,9 @@ class WorkoutViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // MARK: - Accessibility Identifiers (for XCUITests)
+        collectionView.accessibilityIdentifier = "workout_collectionView"
+        
         // Cards are (re)built in viewWillAppear with live GoalEngine values.
         // Build defaults here just to satisfy the non-optional array before first appear.
         cards = [

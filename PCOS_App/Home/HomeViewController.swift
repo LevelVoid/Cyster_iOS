@@ -34,7 +34,10 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
 
         override func viewDidLoad() {
             super.viewDidLoad()
-
+            
+            // MARK: - Accessibility Identifiers (for XCUITests)
+            collectionView.accessibilityIdentifier = "home_collectionView"
+            
             tabBarItem.title = "Today"
             navigationItem.title = ""
 
@@ -48,6 +51,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
                 target: self,
                 action: #selector(leftBarButtonTapped)
             )
+            calendar.accessibilityIdentifier = "home_calendarBarButton"
             calendarBarButton = calendar
             let profile = UIBarButtonItem(
                 image: UIImage(systemName: "person.circle"),
@@ -55,6 +59,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
                 target: self,
                 action: #selector(addTapped)
             )
+            profile.accessibilityIdentifier = "home_profileBarButton"
             navigationItem.rightBarButtonItems = [profile, calendar]
 
             registerCells()
@@ -285,6 +290,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             chatbotButton.layer.shadowRadius = 8
             
             chatbotButton.addTarget(self, action: #selector(ChatbotButtonTapped(_:)), for: .touchUpInside)
+            chatbotButton.accessibilityIdentifier = "home_chatbotButton"
             view.addSubview(chatbotButton)
 
             NSLayoutConstraint.activate([

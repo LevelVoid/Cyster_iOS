@@ -30,6 +30,11 @@ class DietViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Diet"
+        
+        // MARK: - Accessibility Identifiers (for XCUITests)
+        collectionView.accessibilityIdentifier = "diet_collectionView"
+        AddMealButton.accessibilityIdentifier = "diet_addMealButton"
+        
         setupNavigation()
         setupCollectionView()
         setupAddButtonStyle()
