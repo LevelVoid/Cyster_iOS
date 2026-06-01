@@ -9,24 +9,20 @@ public class CDCycleData: NSManagedObject {
         endDate != nil
     }
     
-    /// Effective cycle length — stored value for completed, estimated for ongoing
-    var effectiveCycleLength: Int {
-        if cycleLength > 0 {
-            return Int(cycleLength)
-        }
-        // Ongoing cycle: days elapsed so far
-        let today = Calendar.current.startOfDay(for: Date())
-        guard let start = startDate else { return 35 }
-        let daysSoFar = Calendar.current.dateComponents([.day], from: start, to: today).day ?? 0
-        return max(daysSoFar + 7, 35) // PCOS-friendly estimate
-    }
-    
     /// Convert to the existing CycleData struct for backward compatibility
     /// This lets all existing UI code keep working without changes
     func toCycleData(using dataStore: CycleDataStore) -> CycleData {
         let start = startDate ?? Date()
         let pLength = Int(periodLength)
-        let cLength = effectiveCycleLength
+        
+        let cLength: Int
+        if cycleLength > 0 {
+            cLength = Int(cycleLength)
+        } else {
+            let today = Calendar.current.startOfDay(for: Date())
+            let daysSoFar = Calendar.current.dateComponents([.day], from: start, to: today).day ?? 0
+            cLength = max(dataStore.averageCompletedCycleLength, daysSoFar + 7)
+        }
         
         // Generate CycleDay array exactly like rebuildCycles currently does
         let days: [CycleDay] = (1...cLength).map { day in

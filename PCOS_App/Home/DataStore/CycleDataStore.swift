@@ -13,7 +13,13 @@ final class CycleDataStore {
     static let shared = CycleDataStore()
     private let calendar = Calendar.current
     private let predictionEngine = PeriodPredictionEngine()
+    // Injectable context for testing
+    var injectedContext: NSManagedObjectContext?
+    
     private var context: NSManagedObjectContext {
+        if let injected = injectedContext {
+            return injected
+        }
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         return appDelegate.viewContext
     }
@@ -305,8 +311,14 @@ extension CycleDataStore {
             // Delete all CDCycleData
             let deleteRequest: NSFetchRequest<NSFetchRequestResult> = CDCycleData.fetchRequest()
             let batchDelete = NSBatchDeleteRequest(fetchRequest: deleteRequest)
-            _ = try? context.execute(batchDelete)
-            _ = try? context.save()
+            batchDelete.resultType = .resultTypeObjectIDs
+            if let result = try? context.execute(batchDelete) as? NSBatchDeleteResult,
+               let objectIDs = result.result as? [NSManagedObjectID] {
+                NSManagedObjectContext.mergeChanges(
+                    fromRemoteContextSave: [NSDeletedObjectsKey: objectIDs],
+                    into: [context]
+                )
+            }
             return
         }
 
@@ -399,9 +411,16 @@ extension CycleDataStore {
         // Delete all existing CDCycleData (we rebuild from scratch each time)
         let deleteRequest: NSFetchRequest<NSFetchRequestResult> = CDCycleData.fetchRequest()
         let batchDelete = NSBatchDeleteRequest(fetchRequest: deleteRequest)
+        batchDelete.resultType = .resultTypeObjectIDs
         
         do {
-            try context.execute(batchDelete)
+            let result = try context.execute(batchDelete) as? NSBatchDeleteResult
+            if let objectIDs = result?.result as? [NSManagedObjectID] {
+                NSManagedObjectContext.mergeChanges(
+                    fromRemoteContextSave: [NSDeletedObjectsKey: objectIDs],
+                    into: [context]
+                )
+            }
         } catch {
             print("❌ Failed to delete old CDCycleData: \(error)")
         }
