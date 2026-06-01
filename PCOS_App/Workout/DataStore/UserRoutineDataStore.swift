@@ -15,8 +15,14 @@ class UserRoutineDataStore {
     static let shared = UserRoutineDataStore()
     private init() {}
     
+    // Injectable context for testing
+    var injectedContext: NSManagedObjectContext?
+    
     private var context: NSManagedObjectContext {
-        (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        if let injected = injectedContext {
+            return injected
+        }
+        return (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     }
     
     func save(_ routine: Routine) {

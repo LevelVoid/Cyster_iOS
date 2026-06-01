@@ -13,7 +13,13 @@ class SymptomDataStore {
     
     static let shared = SymptomDataStore()
     
+    // Injectable context for testing
+    static var injectedContext: NSManagedObjectContext?
+    
     private static var context: NSManagedObjectContext {
+        if let injected = injectedContext {
+            return injected
+        }
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         return appDelegate.viewContext
     }
