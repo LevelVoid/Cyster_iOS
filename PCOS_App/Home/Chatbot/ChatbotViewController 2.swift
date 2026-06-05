@@ -70,7 +70,7 @@ final class ChatbotViewController: UIViewController {
         if saved.isEmpty {
             // First launch today or after clear — show welcome and persist it
             let welcome = ChatMessage(
-                text: "Hi! I'm Adira, your PCOS health coach.\n\nI can help with meal ideas, understanding your symptoms, cycle questions, or anything PCOS-related. \n\nWhat's on your mind today?",
+                text: "Hi! I'm Cyster, your PCOS health coach.\n\nI can help with meal ideas, understanding your symptoms, cycle questions, or anything PCOS-related. \n\nWhat's on your mind today?",
                 sender: .ai
             )
             messages.append(welcome)
@@ -122,12 +122,12 @@ final class ChatbotViewController: UIViewController {
 
     // MARK: - Setup
     private func setupNavigationBar() {
-        title = "Adira"
+        title = "Cyster"
         navigationController?.navigationBar.prefersLargeTitles = false
 
         // Subtitle "PCOS Coach" via attributed title workaround
         let titleLabel = UILabel()
-        titleLabel.text = "Adira"
+        titleLabel.text = "Cyster"
         titleLabel.font = .systemFont(ofSize: 17, weight: .semibold)
 
         let subtitleLabel = UILabel()
@@ -173,7 +173,7 @@ final class ChatbotViewController: UIViewController {
     // MARK: - Welcome
     private func sendWelcomeMessage() {
         let welcome = ChatMessage(
-            text: "Hi! I'm Adira, your PCOS health coach.\n\nI can help with meal ideas, understanding your symptoms, cycle questions, or anything PCOS-related. \n\nWhat's on your mind today?",
+            text: "Hi! I'm Cyster, your PCOS health coach.\n\nI can help with meal ideas, understanding your symptoms, cycle questions, or anything PCOS-related. \n\nWhat's on your mind today?",
             sender: .ai
         )
         messages.append(welcome)
@@ -257,7 +257,7 @@ final class ChatbotViewController: UIViewController {
 
     // MARK: - Actions
     @objc private func clearChatTapped() {
-        let alert = UIAlertController(title: "Clear Chat", message: "Start a new conversation with Adira?", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Clear Chat", message: "Start a new conversation with Cyster?", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Clear", style: .destructive) { _ in
             self.brain.resetChat()
             ChatPersistenceManager.shared.clearAllMessages()
@@ -345,7 +345,7 @@ extension ChatbotViewController: WalkthroughManagerDelegate {
         WalkthroughCongratsView.present(
             in: keyWindow,
             title: "You're All Set!",
-            body: "Welcome to your PCOS journey with Adira!\nAsk me anything — I'm here to help every step of the way.",
+            body: "Welcome to your PCOS journey with Cyster!\nAsk me anything — I'm here to help every step of the way.",
             continueTitle: "Start Exploring"
         ) {
             WalkthroughManager.shared.completeWalkthrough()

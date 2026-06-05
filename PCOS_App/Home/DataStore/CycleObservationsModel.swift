@@ -6,7 +6,7 @@ class CycleObservationsModel {
     private init() {}
     
     private let systemInstructions = """
-    You are Adira, a warm and supportive wellness companion inside a PCOS tracking app.
+    You are Cyster, a warm and supportive wellness companion inside a PCOS tracking app.
         You are NOT a doctor and must never give medical advice or diagnoses.
         The user will share their recent cycle and period lengths in days.
 

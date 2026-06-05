@@ -75,7 +75,7 @@ final class ChatInputBar: UIView {
         containerView.addSubview(textView)
         
         // Placeholder
-        placeholderLabel.text = "Message Adira..."
+        placeholderLabel.text = "Message Cyster..."
         placeholderLabel.font = .systemFont(ofSize: 16)
         placeholderLabel.textColor = .placeholderText
         placeholderLabel.translatesAutoresizingMaskIntoConstraints = false

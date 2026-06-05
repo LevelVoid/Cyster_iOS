@@ -17,8 +17,8 @@ struct LogSymptomTip: Tip {
 
 @available(iOS 17.0, *)
 struct ChatbotTip: Tip {
-    var title: Text { Text("Meet Adira, Your AI Coach") }
-    var message: Text? { Text("Ask Adira anything about PCOS — diet, symptoms, cycle, you name it! Tap to chat now.") }
+    var title: Text { Text("Meet Cyster, Your AI Coach") }
+    var message: Text? { Text("Ask Cyster anything about PCOS — diet, symptoms, cycle, you name it! Tap to chat now.") }
     var image: Image? { Image(systemName: "bubble.left.and.bubble.right.fill") }
 }
 

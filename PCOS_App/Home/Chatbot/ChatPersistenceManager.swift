@@ -91,7 +91,7 @@ final class ChatPersistenceManager {
 
         var lines: [String] = []
         for msg in recentMessages {
-            let role = msg.sender == .user ? "User" : "Adira"
+            let role = msg.sender == .user ? "User" : "Cyster"
             // Truncate long AI responses to keep summary compact
             let content = msg.sender == .ai
                 ? String(msg.text.prefix(100)) + (msg.text.count > 100 ? "..." : "")
