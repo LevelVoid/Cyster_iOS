@@ -25,11 +25,5 @@
 			</array>
 		</dict>
 	</dict>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>workout-processing</string>
-		<string>processing</string>
-		<string>fetch</string>
-	</array>
 </dict>
 </plist>

@@ -428,13 +428,14 @@
 				INFOPLIST_FILE = PCOS_App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Cyster;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Please give camera access to scan barcode.";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "PCOS App reads your steps, calories, heart rate, and sleep data to help you track your health journey.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "PCOS App may write workout summaries to Apple Health for a complete picture of your activity.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Cyster - Your PCOS companion reads your steps, calories, heart rate, and sleep data to help you track your health journey.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Cyster may write workout summaries to Apple Health for a complete picture of your activity.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -466,13 +467,14 @@
 				INFOPLIST_FILE = PCOS_App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Cyster;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Please give camera access to scan barcode.";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "PCOS App reads your steps, calories, heart rate, and sleep data to help you track your health journey.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "PCOS App may write workout summaries to Apple Health for a complete picture of your activity.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Cyster - Your PCOS companion reads your steps, calories, heart rate, and sleep data to help you track your health journey.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Cyster may write workout summaries to Apple Health for a complete picture of your activity.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
