@@ -1,17 +1,10 @@
-//
-//  RoutinePreviewViewController.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 05/01/26.
-//
-
 import UIKit
 
 class RoutinePreviewViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         routine.exercises.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(
                     withIdentifier: "routine_preview_cell",
@@ -21,10 +14,10 @@ class RoutinePreviewViewController: UIViewController, UITableViewDelegate, UITab
                 }
 
                 let routineExercise = routine.exercises[indexPath.row]
-       
+
         let completedWorkout = CompletedWorkoutsDataStore.shared.loadAll()
                     .first { $0.routineName == routine.name }
-        
+
         let workoutExercise = completedWorkout?.exercises.first {
             $0.id == routineExercise.id || $0.exercise.name == routineExercise.exercise.name
         }
@@ -34,14 +27,12 @@ class RoutinePreviewViewController: UIViewController, UITableViewDelegate, UITab
             workoutExercise: workoutExercise
         )
 
-
         cell.onInfoTapped = { [weak self] in
             self?.showExerciseInfo(routineExercise.exercise)
         }
 
             return cell
     }
-    
 
     @IBOutlet weak var EstRoutineTimeOutlet: UILabel!
     @IBOutlet weak var NoOfExerciseOutlet: UILabel!
@@ -55,7 +46,7 @@ class RoutinePreviewViewController: UIViewController, UITableViewDelegate, UITab
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         title = routine.name
         view.backgroundColor=UIColor(hex: "#FCEEED")
         navigationController?.navigationBar.prefersLargeTitles = false
@@ -63,14 +54,14 @@ class RoutinePreviewViewController: UIViewController, UITableViewDelegate, UITab
         configureRoutineHeader()
         setupTable()
         setupPlayTap()
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(handleWorkoutEndedEarly), name: Notification.Name("WorkoutEndedEarly"), object: nil)
     }
-    
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-    
+
     @objc private func handleWorkoutEndedEarly() {
         self.navigationController?.popToRootViewController(animated: true)
     }
@@ -99,7 +90,6 @@ class RoutinePreviewViewController: UIViewController, UITableViewDelegate, UITab
 
         let manager = WorkoutSessionManager.shared
 
-        // Check if we can resume
         if let completedWorkout = CompletedWorkoutsDataStore.shared.loadAll().first(
                     where: { $0.routineName == routine.name }
         ),
@@ -120,11 +110,10 @@ class RoutinePreviewViewController: UIViewController, UITableViewDelegate, UITab
             return
         }
 
-        //  Else start fresh
         var workoutExercises = routine.exercises.map {
             $0.generateWorkoutExercise()
         }
-        
+
         let estimatedDuration = routine.estimatedDurationSeconds
         if estimatedDuration < 600 {
             if let cardioExercise = ExerciseDataStore.shared.allExercises.first(where: { $0.name == "Electric Bicycle" }) {
@@ -179,7 +168,6 @@ class RoutinePreviewViewController: UIViewController, UITableViewDelegate, UITab
         present(countdownVC, animated: false)
     }
 
-
     private func setupContainerStyle() {
         timeTagContainer.backgroundColor = UIColor.white.withAlphaComponent(0.95)
         timeTagContainer.layer.cornerRadius = exerciseTagContainer.frame.height / 2
@@ -188,7 +176,7 @@ class RoutinePreviewViewController: UIViewController, UITableViewDelegate, UITab
         RoutineImageOutlet.layer.cornerRadius=0
     }
     private func configureRoutineHeader() {
-       // RoutineNameOutlet.text = routine.name
+
         NoOfExerciseOutlet.text = "\(routine.totalExercises) Exercises"
         EstRoutineTimeOutlet.text = routine.formattedDuration
         setRoutineImage()
@@ -215,18 +203,15 @@ class RoutinePreviewViewController: UIViewController, UITableViewDelegate, UITab
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "InfoModal" {
-            
+
             if let nav = segue.destination as? UINavigationController,
                let infoVC = nav.topViewController as? InfoModalViewController,
                let exercise = sender as? Exercise {
                 infoVC.exercise = exercise
             }
-            
-            
+
         }
-           
+
     }
-    
-    
 
 }

@@ -7,21 +7,17 @@ final class AIBrain {
     static let shared = AIBrain()
     private init() {}
 
-    // ── Engine dispatch ───────────────────────────────────────────────────
-    /// True when Apple Intelligence is available on this device.
     private var foundationModelsAvailable: Bool {
         if case .available = SystemLanguageModel.default.availability { return true }
         return false
     }
 
-    /// Cloud fallback — used whenever FoundationModels is unavailable.
     private let cloudEngine = CloudModelEngine()
 
     private var chatSession: LanguageModelSession?
-    /// Cloud chat history (stateless per-session substitute).
+
     private var cloudChatHistory: [[String: String]] = []
 
-    // MARK: - System Prompt
     private var systemPrompt: String {
         """
         You are a compassionate and evidence-based PCOS health coach. You are warm, \
@@ -64,14 +60,14 @@ final class AIBrain {
             - If user asks about their next period: answer the period question using cycle data, do not pivot to symptoms
             - If user asks about food: answer the food question, you may reference symptoms as supporting context
             - Never summarise or respond to the context block itself
-        
+
         BMI-AWARE ADVICE:
         - ALWAYS check BMI category in context before any weight-related suggestion
         - BMI "Normal weight" or "Underweight": NEVER suggest weight loss, calorie restriction, or weight management
         - For Normal/Underweight: focus only on food quality, nutrient density, hormonal balance
         - BMI "Overweight" or "Obese": you may mention that modest weight loss supports cycle regularity, but keep it brief and non-shaming
         - When in doubt, do not mention weight at all — focus on the nutrient being discussed
-        
+
         QUESTIONS YOU MUST ALWAYS ANSWER DIRECTLY:
         - "When is my next period" → read "Next period:" from context and state the date directly
         - "When will I ovulate" → subtract 14 days from the next period date in context and state it
@@ -79,7 +75,7 @@ final class AIBrain {
         - "What cycle day am I on" → read "Current cycle day:" from context and state it
         - These are data-retrieval questions, NOT medical advice. The data is already in your context.
         - Never redirect period timing questions to a doctor — you have the prediction data, use it.
-        
+
         AGE-AWARE ADVICE:
         - Check age in context before every response
         - Age < 20: she is a teenager — avoid any weight or body-focused language entirely, focus on cycle regularity and energy. Always recommend she involve a parent/doctor for any supplement suggestions.
@@ -128,12 +124,10 @@ final class AIBrain {
         - Only bring in health context when the user asks a health-related question or mentions a symptom/food/cycle.
         - Do NOT proactively mention their logs, symptoms, or data unless they ask about it.
         - A simple "hey" deserves a simple "hey back" — not a health lecture.
-        
 
         """
     }
 
-    // MARK: - Chat
     func sendChatMessage(_ text: String, context: String) async throws -> String {
 
         let trimmed    = text.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
@@ -150,7 +144,6 @@ final class AIBrain {
         let isCasual = casualPhrases.contains(where: { trimmed == $0 || trimmed.hasPrefix($0 + " ") })
                       || wordCount <= 2
 
-        // Build the contextual message (shared by both engines)
         let contextualMessage: String
         if isCasual {
             contextualMessage = text
@@ -174,9 +167,8 @@ final class AIBrain {
             """
         }
 
-        // ── Route to the available engine ────────────────────────────────
         if foundationModelsAvailable {
-            // On-device path
+
             if chatSession == nil {
                 chatSession = LanguageModelSession(
                     tools: [PCOSResearchTool(), IndianFoodTool()],
@@ -189,11 +181,10 @@ final class AIBrain {
             } catch {
                 print("⚠️ FoundationModels chat failed (\(error)), falling back to Cloud")
                 chatSession = nil
-                // Fall through to cloud path below
+
             }
         }
 
-        // Cloud path — also the fallback when FoundationModels throws
         if cloudChatHistory.isEmpty {
             cloudChatHistory = [["role": "system", "content": systemPrompt]]
         }
@@ -211,8 +202,7 @@ final class AIBrain {
             throw error
         }
     }
-    
-    // MARK: - Meal Recommendations
+
     private var mealInstructions: String { """
         Generate exactly 3 personalized Indian meal suggestions based on the user's PCOS context.
 
@@ -253,7 +243,7 @@ final class AIBrain {
     func generateMealRecommendations(context: String) async throws -> MealRecommendationOutput {
         if foundationModelsAvailable {
             do {
-                // On-device structured generation
+
                 let session = LanguageModelSession(instructions: mealInstructions)
                 let response = try await session.respond(
                     to: context,
@@ -262,11 +252,10 @@ final class AIBrain {
                 return response.content
             } catch {
                 print("⚠️ FoundationModels meal generation failed (\(error)), falling back to Cloud")
-                // Fall through to cloud
+
             }
         }
 
-        // Cloud path — also the fallback when FoundationModels throws
         let jsonString = try await cloudEngine.generateMealRecommendationsJSON(
             context: context,
             instructions: mealInstructions
@@ -274,9 +263,8 @@ final class AIBrain {
         return try parseMealJSON(jsonString)
     }
 
-    /// Parses the raw JSON string returned by the cloud engine into a `MealRecommendationOutput`.
     private func parseMealJSON(_ raw: String) throws -> MealRecommendationOutput {
-        // Strip markdown fences if the model wraps JSON in ```json ... ```
+
         var clean = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         if clean.hasPrefix("```") {
             clean = clean.components(separatedBy: "\n").dropFirst().joined(separator: "\n")
@@ -316,8 +304,6 @@ final class AIBrain {
         )
     }
 
-
-    // MARK: - Daily Goals
     private var goalsInstructions: String { """
         Generate exactly 2 personalized daily health goals for a woman with PCOS.
 
@@ -350,11 +336,10 @@ final class AIBrain {
                 return response.content
             } catch {
                 print("⚠️ FoundationModels goals generation failed (\(error)), falling back to Cloud")
-                // Fall through to cloud
+
             }
         }
 
-        // Cloud path — also the fallback when FoundationModels throws
         let jsonString = try await cloudEngine.generateDailyGoalsJSON(
             context: context,
             instructions: goalsInstructions
@@ -362,7 +347,6 @@ final class AIBrain {
         return try parseGoalsJSON(jsonString)
     }
 
-    /// Parses the raw JSON string returned by the cloud engine into a `DailyGoalsOutput`.
     private func parseGoalsJSON(_ raw: String) throws -> DailyGoalsOutput {
         var clean = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         if clean.hasPrefix("```") {
@@ -384,8 +368,7 @@ final class AIBrain {
         }
         return DailyGoalsOutput(goals: goals)
     }
-   
-    // MARK: - Generic Fallback Text Generation
+
     func generateResponse(prompt: String, instructions: String) async throws -> String {
         if foundationModelsAvailable {
             do {
@@ -398,8 +381,7 @@ final class AIBrain {
         }
         return try await cloudEngine.generate(prompt: prompt, systemPrompt: instructions)
     }
-   
-    // MARK: - Meal Description Parsing
+
     func analyzeMealDescription(description: String, instructions: String) async throws -> String {
         if foundationModelsAvailable {
             do {
@@ -408,15 +390,13 @@ final class AIBrain {
                 return response.content
             } catch {
                 print("⚠️ FoundationModels meal parsing failed (\(error)), falling back to Cloud")
-                // Fall through to cloud
+
             }
         }
 
-        // Cloud fallback
         return try await cloudEngine.generate(prompt: description, systemPrompt: instructions)
     }
 
-    // MARK: - Reset
     func resetChat() {
         chatSession = nil
         cloudChatHistory = []
@@ -427,7 +407,6 @@ final class AIBrain {
     }
 }
 
-// MARK: - Errors
 enum AIBrainError: LocalizedError {
     case modelUnavailable
     case parsingFailed

@@ -1,10 +1,3 @@
-//
-//  SymptomStoryPageViewController.swift
-//  PCOS_App
-//
-//  Created by Abhinaya Rajarajan on 18/02/26.
-//
-
 import UIKit
 
 final class SymptomStoryPageViewController: UIPageViewController {
@@ -40,8 +33,6 @@ final class SymptomStoryPageViewController: UIPageViewController {
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
     }
 
-
-
     private func configurePages() {
 
         let storyboard = UIStoryboard(name: "Home", bundle: nil)
@@ -66,7 +57,7 @@ final class SymptomStoryPageViewController: UIPageViewController {
 
         setViewControllers([pages[0]], direction: .forward, animated: false)
     }
-    
+
     private func disableSwipe() {
         for gesture in view.gestureRecognizers ?? [] {
             if gesture is UIPanGestureRecognizer {
@@ -74,7 +65,7 @@ final class SymptomStoryPageViewController: UIPageViewController {
             }
         }
     }
-    
+
     private func addTapNavigation() {
         let tapGesture = UITapGestureRecognizer(
             target: self,
@@ -111,10 +102,9 @@ final class SymptomStoryPageViewController: UIPageViewController {
                            direction: .reverse,
                            animated: true)
     }
-    
+
     @objc private func closeTapped() {
         dismiss(animated: true)
     }
-
 
 }

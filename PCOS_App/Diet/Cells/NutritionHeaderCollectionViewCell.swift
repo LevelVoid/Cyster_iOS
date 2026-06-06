@@ -1,6 +1,5 @@
 import UIKit
 
-// Reuse the same delegate
 protocol NutritionCellDelegate: AnyObject {
     func didTapProteinView()
     func didTapCarbsView()
@@ -9,7 +8,6 @@ protocol NutritionCellDelegate: AnyObject {
 
 class NutritionHeaderCollectionViewCell: UICollectionViewCell {
 
-    // Copy ALL @IBOutlets from NutritionHeader.swift here:
     @IBOutlet weak var nutritionCard: UIView!
     @IBOutlet weak var proteinView: UIView!
     @IBOutlet weak var carbsView: UIView!
@@ -48,17 +46,12 @@ class NutritionHeaderCollectionViewCell: UICollectionViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Reset progress bars from XIB defaults
+
         proteinProgress.progress = 0
         carbsProgress.progress = 0
         fatsProgress.progress = 0
         progressCircle.setProgress(to: 0)
     }
-
-    // Copy the configure(), setGoalLabels(), setupTapGestures(),
-    // setValues(), updateValues(_:), subtractValues(_:),
-    // updateLabelsAndBars(), and animateTap(_:) methods
-    // EXACTLY from NutritionHeader.swift — they work the same way.
 
     func configure() {
         nutritionCard.layer.cornerRadius = 20
@@ -171,7 +164,6 @@ class NutritionHeaderCollectionViewCell: UICollectionViewCell {
         carbsGm.text          = "\(iCarbs)"
         fatsGm.text           = "\(iFats)"
 
-        // Use Int-truncated values so bars match labels (e.g. 0.3g → label "0", bar 0)
         let pProg = Float(min(Double(iProtein) / goalProtein, 1.0))
         let cProg = Float(min(Double(iCarbs)   / goalCarbs,   1.0))
         let fProg = Float(min(Double(iFats)    / goalFats,    1.0))
@@ -180,7 +172,6 @@ class NutritionHeaderCollectionViewCell: UICollectionViewCell {
         carbsProgress.progress   = cProg
         fatsProgress.progress    = fProg
 
-        // Hide tint at zero to avoid iOS's tiny-sliver rendering bug
         proteinProgress.progressTintColor = pProg > 0 ? .systemGreen  : .clear
         carbsProgress.progressTintColor   = cProg > 0 ? .systemOrange : .clear
         fatsProgress.progressTintColor    = fProg > 0 ? .systemIndigo : .clear

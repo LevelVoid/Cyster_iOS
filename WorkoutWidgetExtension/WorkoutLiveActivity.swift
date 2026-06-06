@@ -6,7 +6,7 @@ import SwiftUI
 struct WorkoutLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: WorkoutLiveActivityAttributes.self) { context in
-            // Lock screen / banner UI
+
             HStack {
                 Image(systemName: "figure.strengthtraining.traditional")
                     .foregroundColor(.pink)

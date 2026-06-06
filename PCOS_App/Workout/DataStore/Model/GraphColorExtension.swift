@@ -1,10 +1,3 @@
-//
-//  ColorExtension.swift
-//  PCOS_App
-//
-//  Created by Dnyaneshwari Gogawale on 23/01/26.
-//
-
 import SwiftUI
 
 extension Color {
@@ -15,9 +8,9 @@ extension Color {
 
         let a, r, g, b: UInt64
         switch hex.count {
-        case 6: // RGB (24-bit)
+        case 6: 
             (a, r, g, b) = (255, (int >> 16) & 0xFF, (int >> 8) & 0xFF, int & 0xFF)
-        case 8: // ARGB (32-bit)
+        case 8: 
             (a, r, g, b) = ((int >> 24) & 0xFF,
                             (int >> 16) & 0xFF,
                             (int >> 8) & 0xFF,

@@ -1,10 +1,3 @@
-//
-//  PCOSSignalStore.swift
-//  PCOS_App
-//
-//  Created by Abhinaya Rajarajan on 17/02/26.
-//
-
 import Foundation
 
 struct PCOSSignalStore {
@@ -30,12 +23,12 @@ struct PCOSSignalStore {
         diarrheaPCOSSignal,
         gasPCOSSignal,
         skinTagsPCOSSignal,
-        
+
         lightFlowPCOSSignal,
         mediumFlowPCOSSignal,
         heavyFlowPCOSSignal,
         superHeavyFlowPCOSSignal,
-        
+
         dryDischargePCOSSignal,
         stickyDischargePCOSSignal,
         creamyDischargePCOSSignal,

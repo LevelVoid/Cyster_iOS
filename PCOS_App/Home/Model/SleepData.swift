@@ -1,22 +1,10 @@
-//
-//  SleepData.swift
-//  PCOS_App
-//
-//  Created by PCOS_App on 06/03/26.
-//
-//
-//
-
-
 import Foundation
 
-// MARK: - Sleep Quality
-
 enum SleepQuality {
-    case poor       // < 5 h
-    case fair       // 5 – 6.9 h
-    case good       // 7 – 8.9 h
-    case excellent  // ≥ 9 h
+    case poor       
+    case fair       
+    case good       
+    case excellent  
 
     init(hours: Double) {
         switch hours {
@@ -36,7 +24,6 @@ enum SleepQuality {
         }
     }
 
-    /// Emoji indicator shown in the cell
     var emoji: String {
         switch self {
         case .poor:      return "😴"
@@ -47,15 +34,12 @@ enum SleepQuality {
     }
 }
 
-// MARK: - Sleep Data
-
 struct SleepData {
-    let totalHours: Double       // Total asleep time in hours
-    let inBedMinutes: Int        // Minutes in bed (including light sleep)
-    let asleepMinutes: Int       // Minutes actually asleep
+    let totalHours: Double       
+    let inBedMinutes: Int        
+    let asleepMinutes: Int       
     let quality: SleepQuality
 
-    /// Formatted string like "7h 24m"
     var formattedDuration: String {
         let hours = Int(totalHours)
         let minutes = Int((totalHours - Double(hours)) * 60)

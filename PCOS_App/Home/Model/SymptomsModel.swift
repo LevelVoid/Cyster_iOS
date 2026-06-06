@@ -1,10 +1,3 @@
-//
-//  SymptomsModel.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 12/12/25.
-//
-
 import Foundation
 
 struct SymptomItem: Encodable,Decodable {
@@ -18,7 +11,7 @@ struct SymptomItem: Encodable,Decodable {
         self.icon = icon
         self.category=category
     }
-    
+
     init(name: String, icon: String, isSelected: Bool, date: Date,category:String){
         self.name = name
         self.icon = icon

@@ -3,7 +3,7 @@ import CoreData
 
 @objc(CDRoutineExercise)
 public class CDRoutineExercise: NSManagedObject {
-    
+
     var exercise: Exercise? {
         get {
             guard let data = exerciseData else { return nil }
@@ -13,7 +13,7 @@ public class CDRoutineExercise: NSManagedObject {
             exerciseData = try? JSONEncoder().encode(newValue)
         }
     }
-    
+
     func toRoutineExercise() -> RoutineExercise? {
         guard let exercise = exercise else { return nil }
         return RoutineExercise(
@@ -27,7 +27,7 @@ public class CDRoutineExercise: NSManagedObject {
             notes: notes
         )
     }
-    
+
     @discardableResult
     static func from(_ re: RoutineExercise, context: NSManagedObjectContext) -> CDRoutineExercise {
         let cd = CDRoutineExercise(context: context)

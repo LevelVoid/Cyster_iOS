@@ -1,10 +1,3 @@
-//
-//  WorkoutChartView.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 21/01/26.
-//
-
 import SwiftUI
 import Charts
 
@@ -12,47 +5,36 @@ struct WorkoutChartView: View {
     let dataPoints: [WorkoutChartDataPoint]
     let goalType: GoalType
     let timeRange: WorkoutChartTimeRange
-    
+
     private var periodDailyAverage: Double {
         guard !dataPoints.isEmpty else { return 0 }
         return dataPoints.map { $0.value }.reduce(0, +) / Double(dataPoints.count)
     }
-    
+
     private var shouldShowGoalLine: Bool {
         true
     }
 
-    
-//    private var displayGoalValue: Double {
-//        if timeRange == .week {
-//            return goalType.recommendedValue
-//        } else if timeRange == .month || timeRange == .year {
-//            return goalType.recommendedValue * 0.6
-//        } else {
-//            return goalType.recommendedValue
-//        }
-//    }
     private var displayGoalValue: Double {
         goalType.recommendedValue
     }
 
-    
     private var maxChartValue: Double {
         let maxDataValue = dataPoints.map { $0.value }.max() ?? 0
         let referenceValue = shouldShowGoalLine ? displayGoalValue : maxDataValue
         let maxValue = max(maxDataValue, referenceValue)
         return maxValue * 1.2
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Header
+
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Average")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     HStack(alignment: .firstTextBaseline, spacing: 2) {
                         Text("\(formatValue(periodDailyAverage))")
                             .font(.system(size: 24, weight: .bold))
@@ -61,15 +43,15 @@ struct WorkoutChartView: View {
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 Spacer()
-                
+
                 if shouldShowGoalLine {
                     VStack(alignment: .trailing, spacing: 2) {
                         Text("Goal")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        
+
                         HStack(alignment: .firstTextBaseline, spacing: 2) {
                             Text("\(formatValue(displayGoalValue))")
                                 .font(.system(size: 16, weight: .semibold))
@@ -82,8 +64,7 @@ struct WorkoutChartView: View {
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)
-            
-            // Chart
+
             if dataPoints.isEmpty {
                 VStack {
                     Spacer()
@@ -103,7 +84,7 @@ struct WorkoutChartView: View {
                         .foregroundStyle(goalType.gradient)
                         .cornerRadius(6)
                     }
-                    
+
                     if shouldShowGoalLine {
                         RuleMark(y: .value("Goal", displayGoalValue))
                             .foregroundStyle(.gray)
@@ -142,7 +123,7 @@ struct WorkoutChartView: View {
         }
         .background(Color(.systemBackground))
     }
-    
+
     private func formatValue(_ value: Double) -> String {
         if goalType == .steps {
             return String(format: "%.0f", value)

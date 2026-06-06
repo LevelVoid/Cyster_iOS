@@ -1,10 +1,3 @@
-//
-//  IngredientsModel.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 09/12/25.
-//
-
 import Foundation
 
 struct Ingredient: Codable, Identifiable {
@@ -19,8 +12,6 @@ struct Ingredient: Codable, Identifiable {
     var fibre: Double
     var tags: [ImpactTags]
 
-    /// Actual kcal for this ingredient at its current quantity.
-    /// Macros are stored per-100g, so we scale by quantity.
     var calories: Double? {
         let factor = quantity / 100.0
         return ((protein * 4) + (carbs * 4) + (fats * 9)) * factor
@@ -28,7 +19,7 @@ struct Ingredient: Codable, Identifiable {
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
-        // JSON has UUID as a string like "7236a3bf-..."
+
         if let uuidString = try? c.decode(String.self, forKey: .id),
            let parsed = UUID(uuidString: uuidString) {
             id = parsed
@@ -46,7 +37,6 @@ struct Ingredient: Codable, Identifiable {
         tags     = try c.decodeIfPresent([ImpactTags].self, forKey: .tags) ?? []
     }
 
-    // Manual init for creating Ingredients in code
     init(id: UUID = UUID(), name: String, quantity: Double, weight: Double? = nil,
          unit: String = "g", protein: Double, carbs: Double, fats: Double,
          fibre: Double, tags: [ImpactTags] = []) {

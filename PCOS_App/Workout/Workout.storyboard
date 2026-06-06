@@ -1453,9 +1453,6 @@
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="nqH-Rs-cSf">
                                         <rect key="frame" x="0.0" y="409" width="393" height="390"/>
                                         <color key="backgroundColor" red="0.9882352941176471" green="0.93333333333333335" blue="0.92941176470588238" alpha="1" colorSpace="calibratedRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="390" id="DvT-5e-PCp"/>
-                                        </constraints>
                                     </tableView>
                                 </subviews>
                                 <color key="backgroundColor" red="0.9882352941176471" green="0.93333333333333335" blue="0.92941176470588238" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1469,7 +1466,6 @@
                                     <constraint firstItem="aHc-0I-eH9" firstAttribute="centerX" secondItem="p60-zy-G4m" secondAttribute="centerX" id="aoH-At-QXi"/>
                                     <constraint firstItem="nqH-Rs-cSf" firstAttribute="leading" secondItem="p60-zy-G4m" secondAttribute="leading" id="o7M-fC-tz8"/>
                                     <constraint firstItem="OSN-lJ-zkx" firstAttribute="top" secondItem="aHc-0I-eH9" secondAttribute="bottom" constant="12" id="qbG-ZS-7A4"/>
-                                    <constraint firstAttribute="height" constant="1000" id="upp-MB-avT"/>
                                     <constraint firstItem="aHc-0I-eH9" firstAttribute="trailing" secondItem="nqH-Rs-cSf" secondAttribute="trailing" id="v1J-wm-EHW"/>
                                 </constraints>
                             </scrollView>
@@ -1480,6 +1476,8 @@
                             <constraint firstItem="p60-zy-G4m" firstAttribute="top" secondItem="s8u-IM-YKB" secondAttribute="top" id="SZz-uK-blS"/>
                             <constraint firstItem="p60-zy-G4m" firstAttribute="leading" secondItem="Aee-IE-rfy" secondAttribute="leading" id="pf0-2h-rcc"/>
                             <constraint firstItem="Aee-IE-rfy" firstAttribute="trailing" secondItem="p60-zy-G4m" secondAttribute="trailing" id="ybm-do-tep"/>
+                            <constraint firstItem="Aee-IE-rfy" firstAttribute="bottom" secondItem="p60-zy-G4m" secondAttribute="bottom" id="NEW-BOT-SCR"/>
+                            <constraint firstItem="Aee-IE-rfy" firstAttribute="bottom" secondItem="nqH-Rs-cSf" secondAttribute="bottom" id="NEW-BOT-TBL"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="6HG-pI-NtP"/>

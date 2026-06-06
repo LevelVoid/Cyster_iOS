@@ -1,7 +1,3 @@
-//
-//  SharedContextEngine.swift
-//  PCOS_App
-//
 import Foundation
 import CoreData
 
@@ -18,14 +14,13 @@ final class SharedContextEngine {
     func buildContext() async -> String {
         let user      = fetchUser()
         let goals     = computeGoals(for: user)
-        let todayCtx  = fetchTodayContext()   // always non-nil now
+        let todayCtx  = fetchTodayContext()   
         let patterns  = fetchSevenDayPatterns()
         let cycleInfo = fetchCycleInfo(user: user)
         return format(user: user, goals: goals, todayCtx: todayCtx,
                       patterns: patterns, cycleInfo: cycleInfo)
     }
 
-    // ── CDUser → UserProfile ──────────────────────────────────────────────
     private func fetchUser() -> UserProfile? {
         let request = NSFetchRequest<NSManagedObject>(entityName: "CDUser")
         request.fetchLimit = 1
@@ -46,7 +41,6 @@ final class SharedContextEngine {
         return GoalEngine.generateGoals(for: user)
     }
 
-    // ── TodayContext ──────────────────────────────────────────────────────
     private struct TodayContext {
         var sleepTime: Date?
         var wakeTime: Date?
@@ -83,7 +77,6 @@ final class SharedContextEngine {
         let todayStart = cal.startOfDay(for: Date())
         let todayEnd   = cal.date(byAdding: .day, value: 1, to: todayStart) ?? Date()
 
-        // Try to load CDDailyContext row for today (optional — may not exist)
         let request = NSFetchRequest<NSManagedObject>(entityName: "CDDailyContext")
         request.predicate = NSPredicate(format: "date >= %@ AND date < %@",
                                         todayStart as NSDate, todayEnd as NSDate)
@@ -100,15 +93,11 @@ final class SharedContextEngine {
             sleepHours = wake.timeIntervalSince(s) / 3600.0
         }
 
-        // Primary: fetch CDFoodLog directly by date — this always works regardless
-        // of whether the CDDailyContext → CDFoodLog relationship is correctly set up.
         let directFoodRequest = NSFetchRequest<NSManagedObject>(entityName: "CDFoodLog")
         directFoodRequest.predicate = NSPredicate(format: "timeStamp >= %@ AND timeStamp < %@",
                                                   todayStart as NSDate, todayEnd as NSDate)
         let directLogs = (try? context.fetch(directFoodRequest)) ?? []
 
-        // Supplement: also check the CDDailyContext.foodLogs relationship in case it
-        // contains entries whose timeStamp falls outside the predicate (edge case).
         let relationshipSet = cd?.value(forKey: "foodLogs") as? Set<NSManagedObject> ?? []
         let rawLogs: [NSManagedObject] = directLogs.count >= relationshipSet.count
             ? directLogs : Array(relationshipSet)
@@ -153,7 +142,6 @@ final class SharedContextEngine {
         )
     }
 
-    // ── 7-Day Patterns ────────────────────────────────────────────────────
     private struct SevenDayPatterns {
         var avgSleepHours: Double
         var highGIMealCount: Int
@@ -230,7 +218,6 @@ final class SharedContextEngine {
         )
     }
 
-    // ── Cycle Info ────────────────────────────────────────────────────────
     private struct CycleInfo {
         let currentPhase: String
         let cycleDay: Int
@@ -248,7 +235,6 @@ final class SharedContextEngine {
             let endDate = cd.value(forKey: "endDate") as? Date
             let storedCycleLength = Int(cd.value(forKey: "cycleLength") as? Int16 ?? 0)
 
-            // For ongoing cycle, compute actual length from startDate to today
             let actualLength: Int
             if endDate == nil {
                 actualLength = Calendar.current.dateComponents(
@@ -259,7 +245,6 @@ final class SharedContextEngine {
                 actualLength = storedCycleLength
             }
 
-            // Build enough stub days so cycleLength computed property returns correct value
             let stubDays = (0..<max(1, actualLength)).map { i in
                 CycleDay(dayIndex: i, phase: .follicular, symptoms: [])
             }
@@ -270,7 +255,7 @@ final class SharedContextEngine {
                 startDate: startDate,
                 endDate: endDate,
                 isOvulationConfirmed: cd.value(forKey: "isOvulationConfirmed") as? Bool ?? false,
-                days: stubDays  // ← gives cycleLength = actualLength
+                days: stubDays  
             )
         }
 
@@ -295,7 +280,6 @@ final class SharedContextEngine {
         )
     }
 
-    // ── Format ────────────────────────────────────────────────────────────
     private func format(
         user: UserProfile?,
         goals: UserGoals?,
@@ -304,7 +288,6 @@ final class SharedContextEngine {
         cycleInfo: CycleInfo
     ) -> String {
 
-        // Profile — include BMI category explicitly so model never suggests weight loss incorrectly
         let profileBlock: String
         if let u = user {
             profileBlock = "User: \(u.name), Age \(u.age), BMI \(String(format: "%.1f", u.bmi)) (\(u.bmiCategory.displayName)), PCOS \(u.phenotype.rawValue), \(u.activityLevel.displayName), \(u.dietPattern.displayName) diet"
@@ -312,12 +295,10 @@ final class SharedContextEngine {
             profileBlock = "User: No profile"
         }
 
-        // Goals
         let goalsBlock = goals.map {
             "Targets: \($0.diet.dailyCalories)kcal | P\($0.diet.proteinGrams)g C\($0.diet.carbsGrams)g F\($0.diet.fatsGrams)g | \($0.workout.workoutMinutesPerDay)min workout | \(Int($0.sleep.sleepHours))h sleep"
         } ?? "Targets: unavailable"
 
-        // ── Cycle — calendar date so model never does arithmetic ──────────
         let df = DateFormatter()
         df.dateFormat = "MMMM d, yyyy"
         let cal = Calendar.current
@@ -346,7 +327,6 @@ final class SharedContextEngine {
         Next period: \(nextStr).\(cycleInfo.avgCycleLength != nil ? " Average cycle length: \(cycleInfo.avgCycleLength!) days." : "")
         """
 
-        // Today
         let todayBlock: String
         if let t = todayCtx {
             let totalP   = Int(t.foodLogs.reduce(0.0) { $0 + $1.protein })
@@ -358,7 +338,6 @@ final class SharedContextEngine {
                 : t.completedWorkouts.map { $0.routineName }.joined(separator: ", ")
             let symptomsStr = t.symptoms.isEmpty ? "none" : t.symptoms.joined(separator: ", ")
 
-            // Use startingXxxGrams rounded to nearest 5 — MUST match the UI macro tracker
             let goalP = Int(round(Double(goals?.diet.startingProteinGrams ?? 0) / 5.0)) * 5
             let goalC = Int(round(Double(goals?.diet.startingCarbsGrams ?? 0) / 5.0)) * 5
             let goalF = Int(round(Double(goals?.diet.startingFatsGrams ?? 0) / 5.0)) * 5
@@ -383,7 +362,6 @@ final class SharedContextEngine {
             todayBlock = "Today: no data logged"
         }
 
-        // 7-day
         let patternsBlock = """
         7-day: avg sleep \(patterns.avgSleepHours)h (target \(goals?.sleep.sleepHours ?? 8.0)h), \(patterns.highGIMealCount) high-GI meals, \(patterns.totalWorkoutSessions) workouts (\(patterns.strengthSessions) strength).
         Recurring symptoms:   \(patterns.recurringSymptoms.isEmpty ? "none" : patterns.recurringSymptoms.joined(separator: ", "))
@@ -393,7 +371,6 @@ final class SharedContextEngine {
             .joined(separator: "\n")
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────
     private func decodeTags(from data: Data?) -> [String] {
         guard let data else { return [] }
         if let tags = try? JSONDecoder().decode([ImpactTags].self, from: data) {
@@ -403,7 +380,6 @@ final class SharedContextEngine {
     }
 }
 
-// MARK: - Extensions
 private extension BMICategory {
     var displayName: String {
         switch self {

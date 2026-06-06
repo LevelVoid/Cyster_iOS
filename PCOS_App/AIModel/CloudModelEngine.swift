@@ -1,25 +1,16 @@
 import Foundation
 
-// MARK: - Cloud Model Engine (Groq API)
-/// Privacy-first cloud fallback for devices where Apple Intelligence is unavailable.
-/// - No PII is sent: all prompts are pre-sanitised by AIBrain.
-/// - Groq operates a Zero Data Retention policy.
-/// - Stateless: every call is independent (no persistent session).
 @MainActor
 final class CloudModelEngine: AIModelEngineProtocol {
 
-    // Always ready — no download required.
     var isAvailable: Bool { true }
 
-    // Reads the API key injected via Secrets.xcconfig → Info.plist → GroqAPIKey
     private var apiKey: String {
         Bundle.main.object(forInfoDictionaryKey: "GroqAPIKey") as? String ?? ""
     }
 
     private let endpoint = URL(string: "https://api.groq.com/openai/v1/chat/completions")!
     private let model    = "meta-llama/llama-4-scout-17b-16e-instruct"
-
-    // MARK: - Public API
 
     func generate(prompt: String, systemPrompt: String) async throws -> String {
         let messages: [[String: String]] = [
@@ -30,7 +21,7 @@ final class CloudModelEngine: AIModelEngineProtocol {
     }
 
     func generateMealRecommendationsJSON(context: String, instructions: String) async throws -> String {
-        // Schema matches FoodCard exactly: name, primaryMacro, description, calories, impactTag, colorHint
+
         let schema = """
         {"observationLine": "string (max 12 words referencing logged numbers)",
          "subObservationLine": "string (short encouragement, max 12 words)",
@@ -51,7 +42,7 @@ final class CloudModelEngine: AIModelEngineProtocol {
     }
 
     func generateDailyGoalsJSON(context: String, instructions: String) async throws -> String {
-        // Schema matches GoalCard exactly: title, sentence, category
+
         let schema = """
         {"goals": [
           {"title": "string (1-3 words, sharp and direct)",
@@ -65,8 +56,6 @@ final class CloudModelEngine: AIModelEngineProtocol {
         ]
         return try await request(messages: messages, maxTokens: 512, temperature: 0.5)
     }
-
-    // MARK: - HTTP Layer
 
     func request(messages: [[String: String]], maxTokens: Int, temperature: Double) async throws -> String {
         guard !apiKey.isEmpty, apiKey != "YOUR_GROQ_API_KEY" else {
@@ -111,7 +100,6 @@ final class CloudModelEngine: AIModelEngineProtocol {
     }
 }
 
-// MARK: - Errors
 enum CloudEngineError: LocalizedError {
     case missingAPIKey
     case invalidResponse

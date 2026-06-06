@@ -1,10 +1,3 @@
-//
-//  HealthKitManager.swift
-//  PCOS_App
-//
-//  Created by PCOS_App on 06/03/26.
-//
-
 import Foundation
 import HealthKit
 
@@ -14,8 +7,6 @@ final class HealthKitManager {
     private let store = HKHealthStore()
 
     private init() {}
-
-    // MARK: - HealthKit Types
 
     private let readTypes: Set<HKObjectType> = {
         var types = Set<HKObjectType>()
@@ -32,9 +23,6 @@ final class HealthKitManager {
         return types
     }()
 
-    // MARK: - Authorization
-
-    /// Request HealthKit authorization. Call once at app launch or before first use.
     func requestAuthorization(completion: @escaping (Bool, Error?) -> Void) {
         guard HKHealthStore.isHealthDataAvailable() else {
             completion(false, nil)
@@ -43,9 +31,6 @@ final class HealthKitManager {
         store.requestAuthorization(toShare: writeTypes, read: readTypes, completion: completion)
     }
 
-    // MARK: - Steps
-
-    /// Fetches today's total step count from HealthKit.
     func fetchTodaySteps(completion: @escaping (Int) -> Void) {
         guard let stepType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
             completion(0); return
@@ -62,8 +47,6 @@ final class HealthKitManager {
         store.execute(query)
     }
 
-    /// Fetches per-day step counts from HealthKit over a date range.
-    /// Returns a dictionary keyed by start-of-day Date → step count.
     func fetchDailySteps(from start: Date, to end: Date, completion: @escaping ([Date: Int]) -> Void) {
         guard let stepType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
             completion([:]); return
@@ -91,9 +74,6 @@ final class HealthKitManager {
         store.execute(query)
     }
 
-    // MARK: - Active Calories
-
-    /// Fetches today's total active calories burned from HealthKit (Apple Watch / Fitness app).
     func fetchTodayActiveCalories(completion: @escaping (Double) -> Void) {
         guard let calType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) else {
             completion(0); return
@@ -110,8 +90,6 @@ final class HealthKitManager {
         store.execute(query)
     }
 
-    /// Fetches per-day active calories from HealthKit over a date range.
-    /// Returns a dictionary keyed by start-of-day Date → kilocalories.
     func fetchDailyActiveCalories(from start: Date, to end: Date, completion: @escaping ([Date: Double]) -> Void) {
         guard let calType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) else {
             completion([:]); return
@@ -139,15 +117,11 @@ final class HealthKitManager {
         store.execute(query)
     }
 
-    // MARK: - Active Calories (time-windowed)
-
-    /// Fetches active calories burned within a specific time window (e.g. a single workout session).
-    /// Uses no strict option so Apple Watch batch-writes that overlap the boundary are included.
     func fetchActiveCalories(from start: Date, to end: Date, completion: @escaping (Double) -> Void) {
         guard let calType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) else {
             completion(0); return
         }
-        // No strict option — include any sample that overlaps the window (handles Watch batch writes)
+
         let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: [])
         let query = HKStatisticsQuery(
             quantityType: calType,
@@ -160,18 +134,11 @@ final class HealthKitManager {
         store.execute(query)
     }
 
-    // MARK: - Heart Rate
-
-    /// Fetches average heart rate for a workout session using a two-pass strategy:
-    /// Pass 1 — exact session window (most accurate, uses real exercise HR)
-    /// Pass 2 — ±5 min expanded window (fallback for passive Watch sampling cadence)
-    /// Returns nil only when both passes find no data.
     func fetchHeartRate(from start: Date, to end: Date, completion: @escaping (Double?) -> Void) {
         guard let hrType = HKObjectType.quantityType(forIdentifier: .heartRate) else {
             completion(nil); return
         }
 
-        // PASS 1: exact session window
         let exactPredicate = HKQuery.predicateForSamples(withStart: start, end: end, options: [])
         let exactQuery = HKSampleQuery(
             sampleType: hrType,
@@ -181,12 +148,12 @@ final class HealthKitManager {
         ) { [weak self] _, samples, _ in
             guard let self = self else { return }
             if let samples = samples as? [HKQuantitySample], !samples.isEmpty {
-                
+
                 let avg = samples.reduce(0.0) { $0 + $1.quantity.doubleValue(for: HKUnit(from: "count/min")) }
                     / Double(samples.count)
                 completion(avg)
             } else {
-                // PASS 2: expand ±5 min (handles passive Watch sampling cadence)
+
                 let expandedStart = start.addingTimeInterval(-5 * 60)
                 let expandedEnd   = end.addingTimeInterval(5 * 60)
                 let expandedPredicate = HKQuery.predicateForSamples(withStart: expandedStart, end: expandedEnd, options: [])
@@ -210,17 +177,6 @@ final class HealthKitManager {
         store.execute(exactQuery)
     }
 
-
-    // MARK: - Keytel Heart-Rate Calorie Formula
-
-    /// Estimates calories burned using the Keytel et al. gender-specific formula.
-    /// - Parameters:
-    ///   - avgHR: Average heart rate in bpm
-    ///   - ageYears: User age in years
-    ///   - weightKg: User weight in kilograms
-    ///   - durationMin: Workout duration in minutes
-    ///   - isFemale: true for female, false for male
-    /// - Returns: Estimated kilocalories burned
     func estimateCaloriesFromHeartRate(
         avgHR: Double,
         ageYears: Int,
@@ -228,9 +184,7 @@ final class HealthKitManager {
         durationMin: Double,
         isFemale: Bool = true
     ) -> Double {
-        // Keytel (2005) formula
-        // Female: (-20.4022 + 0.4472×HR − 0.1263×W + 0.074×A) / 4.184 × T
-        // Male:   (-55.0969 + 0.6309×HR − 0.1988×W + 0.2017×A) / 4.184 × T
+
         let age = Double(ageYears)
         let calPerMin: Double
         if isFemale {
@@ -241,16 +195,13 @@ final class HealthKitManager {
         return max(0, calPerMin * durationMin)
     }
 
-    // MARK: - Sleep Analysis
-
-    /// Fetches last night's sleep data from HealthKit (covers 8 PM yesterday → now).
     func fetchSleepLastNight(completion: @escaping (SleepData?) -> Void) {
         guard let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) else {
             completion(nil); return
         }
         let calendar = Calendar.current
         let now = Date()
-        // Look back 24 hours for sleep samples
+
         guard let start = calendar.date(byAdding: .hour, value: -24, to: now) else {
             completion(nil); return
         }
@@ -298,9 +249,6 @@ final class HealthKitManager {
         store.execute(query)
     }
 
-    // MARK: - Helpers
-    
-    /// Fetches per-day sleep durations from HealthKit over a date range.
     func fetchDailySleep(from startDate: Date, to endDate: Date, completion: @escaping ([Date: Double]) -> Void) {
         guard let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) else {
             completion([:])
@@ -318,7 +266,7 @@ final class HealthKitManager {
 
             var dailySleep: [Date: Double] = [:]
             let calendar = Calendar.current
-            
+
             let asleepValues: Set<Int> = [
                 HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue,
                 HKCategoryValueSleepAnalysis.asleepCore.rawValue,
@@ -330,8 +278,7 @@ final class HealthKitManager {
                 if asleepValues.contains(sample.value) {
                     let duration = sample.endDate.timeIntervalSince(sample.startDate)
                     let hours = duration / 3600.0
-                    
-                    // Group by start of day of the sample's end date (wake up day)
+
                     let dayDate = calendar.startOfDay(for: sample.endDate)
                     dailySleep[dayDate, default: 0.0] += hours
                 }
@@ -351,17 +298,14 @@ final class HealthKitManager {
     }
 }
 
-// MARK: - User Profile Helper (reads from UserDefaults set during onboarding)
-
 extension HealthKitManager {
-    /// Returns the user's age in years from onboarding data, defaulting to 27.
+
     var userAge: Int {
         let dob = UserDefaults.standard.object(forKey: "userDOB") as? Date
         guard let dob = dob else { return 27 }
         return Calendar.current.dateComponents([.year], from: dob, to: Date()).year ?? 27
     }
 
-    /// Returns the user's weight in kg from onboarding data, defaulting to 60.
     var userWeightKg: Double {
         let weight = UserDefaults.standard.double(forKey: "userWeightKg")
         return weight > 0 ? weight : 60.0

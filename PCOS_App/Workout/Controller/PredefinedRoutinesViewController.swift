@@ -1,10 +1,3 @@
-//
-//  PredefinedRoutinesViewController.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 11/12/25.
-//
-
 import UIKit
 
 class PredefinedRoutinesViewController: UIViewController,UITableViewDelegate, UITableViewDataSource {
@@ -13,11 +6,10 @@ class PredefinedRoutinesViewController: UIViewController,UITableViewDelegate, UI
     @IBOutlet weak var routineNameLabel: UILabel!
     @IBOutlet weak var exercisesTableView: UITableView!
     @IBOutlet weak var saveButtonOutlet: UIButton!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        routineNameLabel.text = routine.name
+
         saveButtonOutlet.tintColor = UIColor(hex: "#FE7A96")
         title = routine.name
         navigationController?.navigationBar.prefersLargeTitles = false
@@ -29,22 +21,22 @@ class PredefinedRoutinesViewController: UIViewController,UITableViewDelegate, UI
                     forCellReuseIdentifier: "predefined_exercise_cell"
                 )
     }
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
             return routine.exercises.count
         }
-        
+
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            
+
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: "predefined_exercise_cell",
                 for: indexPath
             ) as! PredefinedExerciseTableViewCell
-            
+
             let item = routine.exercises[indexPath.row]
-            
+
             cell.exerciseNameLabel.text = item.exercise.name
-            
+
             if item.exercise.isTimeBased {
                 let duration = item.durationSeconds ?? 0
                 let mins = duration / 60
@@ -59,23 +51,20 @@ class PredefinedRoutinesViewController: UIViewController,UITableViewDelegate, UI
             } else {
                 cell.detailLabel.text = "\(item.numberOfSets) sets • \(item.reps) reps"
             }
-            
+
             cell.thumbnailImage.image = UIImage(named: item.exercise.image ?? "placeholder")
-            
+
             return cell
         }
-    
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         60
     }
-        
-        // MARK: - Save Routine
+
         @IBAction func saveRoutineTapped(_ sender: UIButton) {
             UserRoutineDataStore.shared.save(routine)
-            
+
             navigationController?.popViewController(animated: true)
         }
     }
-    
-
 

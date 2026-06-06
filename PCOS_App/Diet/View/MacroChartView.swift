@@ -1,10 +1,3 @@
-//
-//  MacroChartView.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 21/01/26.
-//
-
 import SwiftUI
 import Charts
 
@@ -17,36 +10,35 @@ struct MacroChartView: View {
         dataPoints.map { $0.value }.reduce(0, +)
     }
 
-    
     private var currentAverage: Double {
         guard !dataPoints.isEmpty else { return 0 }
         return dataPoints.map { $0.value }.reduce(0, +) / Double(dataPoints.count)
     }
-    
+
     private var shouldShowGoalLine: Bool {
         return true
     }
-    
+
     private var displayGoalValue: Double {
         return goalValue
     }
-    
+
     private var maxChartValue: Double {
         let maxDataValue = dataPoints.map { $0.value }.max() ?? 0
         let referenceValue = shouldShowGoalLine ? displayGoalValue : maxDataValue
         let maxValue = max(maxDataValue, referenceValue)
         return maxValue * 1.2
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Header with current average and unit
+
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(timeRange == .day ? "Today's Total" : "Average")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     HStack(alignment: .firstTextBaseline, spacing: 2) {
                         Text("\(Int(timeRange == .day ? dailyTotal : currentAverage))")
                             .font(.system(size: 24, weight: .bold))
@@ -55,16 +47,15 @@ struct MacroChartView: View {
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 Spacer()
-                
-                // Goal info
+
                 if shouldShowGoalLine {
                     VStack(alignment: .trailing, spacing: 2) {
                         Text("Goal")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        
+
                         HStack(alignment: .firstTextBaseline, spacing: 2) {
                             Text("\(Int(displayGoalValue))")
                                 .font(.system(size: 16, weight: .semibold))
@@ -77,8 +68,7 @@ struct MacroChartView: View {
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)
-            
-            // Chart
+
             if dataPoints.isEmpty {
                 VStack(alignment: .center, spacing: 12) {
                     Spacer()
@@ -109,8 +99,7 @@ struct MacroChartView: View {
                         .foregroundStyle(macroType.color.gradient)
                         .cornerRadius(6)
                     }
-                    
-                    // Goal line (only show for week, month, year)
+
                     if shouldShowGoalLine {
                         RuleMark(y: .value("Goal", displayGoalValue))
                             .foregroundStyle(.gray)

@@ -1,20 +1,9 @@
-
-//
-//  WalkthroughCongratsView.swift
-//  PCOS_App
-//
-
 import UIKit
 
-// MARK: - Congratulations Card
-
-/// Animated congratulations card shown between walkthrough steps.
 final class WalkthroughCongratsView: UIView {
 
-    // MARK: Callback
     var onContinue: (() -> Void)?
 
-    // MARK: Sub-views
     private let blurBackground = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterialDark))
     private let card           = UIView()
     private let checkCircle    = UIView()
@@ -22,8 +11,6 @@ final class WalkthroughCongratsView: UIView {
     private let titleLabel     = UILabel()
     private let bodyLabel      = UILabel()
     private let continueButton = UIButton(type: .system)
-
-    // MARK: - Factory
 
     @discardableResult
     static func present(
@@ -42,17 +29,13 @@ final class WalkthroughCongratsView: UIView {
         return v
     }
 
-    // MARK: - Build
-
     private func buildUI(title: String, body: String, continueTitle: String) {
         let pink = UIColor(hex: "#FE7A96")
 
-        // Blur background
         blurBackground.frame = bounds
         blurBackground.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         addSubview(blurBackground)
 
-        // Card
         card.backgroundColor = .white
         card.layer.cornerRadius = 24
         card.layer.shadowColor = UIColor.black.cgColor
@@ -68,7 +51,6 @@ final class WalkthroughCongratsView: UIView {
             card.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.82),
         ])
 
-        // ── Check circle ─────────────────────────────────────────────────────
         checkCircle.backgroundColor = pink.withAlphaComponent(0.12)
         checkCircle.layer.cornerRadius = 40
         checkCircle.layer.borderWidth  = 2.5
@@ -83,7 +65,6 @@ final class WalkthroughCongratsView: UIView {
         checkLabel.translatesAutoresizingMaskIntoConstraints = false
         checkCircle.addSubview(checkLabel)
 
-        // ── Title ─────────────────────────────────────────────────────────────
         titleLabel.text = title
         titleLabel.font = .systemFont(ofSize: 20, weight: .bold)
         titleLabel.textColor = UIColor(hex: "#1A1A2E")
@@ -92,7 +73,6 @@ final class WalkthroughCongratsView: UIView {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         card.addSubview(titleLabel)
 
-        // ── Body ──────────────────────────────────────────────────────────────
         bodyLabel.text = body
         bodyLabel.font = .systemFont(ofSize: 14, weight: .regular)
         bodyLabel.textColor = .secondaryLabel
@@ -101,7 +81,6 @@ final class WalkthroughCongratsView: UIView {
         bodyLabel.translatesAutoresizingMaskIntoConstraints = false
         card.addSubview(bodyLabel)
 
-        // ── Continue Button ───────────────────────────────────────────────────
         var config = UIButton.Configuration.filled()
         config.title = continueTitle
         config.cornerStyle = .capsule
@@ -117,7 +96,6 @@ final class WalkthroughCongratsView: UIView {
         continueButton.translatesAutoresizingMaskIntoConstraints = false
         card.addSubview(continueButton)
 
-        // ── Constraints inside card ───────────────────────────────────────────
         NSLayoutConstraint.activate([
             checkCircle.topAnchor.constraint(equalTo: card.topAnchor, constant: 32),
             checkCircle.centerXAnchor.constraint(equalTo: card.centerXAnchor),
@@ -143,8 +121,6 @@ final class WalkthroughCongratsView: UIView {
         ])
     }
 
-    // MARK: - Animations
-
     private func animateIn() {
         blurBackground.alpha = 0
         card.alpha = 0
@@ -168,7 +144,7 @@ final class WalkthroughCongratsView: UIView {
             self.checkLabel.transform = .identity
             self.checkLabel.alpha = 1
         }
-        // Ripple on circle
+
         let ripple = UIView(frame: checkCircle.bounds)
         ripple.layer.cornerRadius = 40
         ripple.layer.borderWidth = 2
@@ -191,8 +167,6 @@ final class WalkthroughCongratsView: UIView {
             completion()
         }
     }
-
-    // MARK: - Action
 
     @objc private func continueTapped() {
         animateOut { [weak self] in

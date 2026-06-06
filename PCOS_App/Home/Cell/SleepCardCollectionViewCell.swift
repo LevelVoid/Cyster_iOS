@@ -1,14 +1,5 @@
-//
-//  SleepCardCollectionViewCell.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 04/02/26.
-//
-
-
 import UIKit
 
-// MARK: - Delegate
 protocol SleepCardCollectionViewCellDelegate: AnyObject {
     func sleepCardDidTapLogSleep(_ cell: SleepCardCollectionViewCell)
 }
@@ -28,7 +19,6 @@ class SleepCardCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var subtitleLabel: UILabel!
     @IBOutlet weak var emptyStateLabel: UILabel!
 
-    // MARK: - Log Button
     private let logSleepButton = PillButton(type: .system)
 
     override func awakeFromNib() {
@@ -39,24 +29,20 @@ class SleepCardCollectionViewCell: UICollectionViewCell {
         setupButton()
     }
 
-    // MARK: - Button Setup
-
     private func setupButton() {
-        // Log sleep button removed
-    }
 
-    // MARK: - Configure
+    }
 
     func configure(with healthKitSleep: SleepData?, manualLog: SleepLog?) {
 
         hideAll()
 
         if let data = healthKitSleep {
-            // Cap at 24h to handle HealthKit overlapping-sample anomalies
+
             let capped = min(data.totalHours, 24.0)
             let h = Int(capped)
             let m = Int((capped - Double(h)) * 60)
-            
+
             hoursValueLabel.text = "\(h)"
             minutesValueLabel.text = "\(m)"
             subtitleLabel.text = tipText(for: data.quality)
@@ -81,13 +67,9 @@ class SleepCardCollectionViewCell: UICollectionViewCell {
         }
     }
 
-    // MARK: - Actions
-
     @objc private func logSleepTapped() {
         delegate?.sleepCardDidTapLogSleep(self)
     }
-
-    // MARK: - Helpers
 
     private func showDataElements() {
         lastNightTitle.isHidden = false
@@ -141,11 +123,10 @@ class SleepCardCollectionViewCell: UICollectionViewCell {
     }
 }
 
-// Custom button class to handle its own corner radius updates
 class PillButton: UIButton {
     override func layoutSubviews() {
         super.layoutSubviews()
-        // Ensure pill shape on every layout update
+
         layer.cornerRadius = bounds.height / 2
         layer.masksToBounds = true
     }

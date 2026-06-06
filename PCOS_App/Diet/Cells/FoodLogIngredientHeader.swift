@@ -1,114 +1,99 @@
-//
-//  FoodLogIngredientHeader.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 10/12/25.
-//
-
 import UIKit
 
 class FoodLogIngredientHeader: UIView {
-    
+
     @IBOutlet weak var FoodImageView: UIImageView!
 
     @IBOutlet weak var caloriesLabel: UILabel!
     @IBOutlet weak var carbsLabel: UILabel!
     @IBOutlet weak var fatsLabel: UILabel!
     @IBOutlet weak var proteinLabel: UILabel!
-    
+
     @IBOutlet weak var macrosContainerStack: UIStackView!
-    
+
     private var foodItem: FoodItem?
     private var food: Food?
     private var constraintsSetUp = false
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         setupUI()
     }
-    
+
     private func setupUI() {
-        // Image view styling
+
         FoodImageView.contentMode = .scaleAspectFill
         FoodImageView.clipsToBounds = true
         FoodImageView.layer.cornerRadius = 16
         FoodImageView.backgroundColor = .systemGray5
-        
-        // Macros container styling - glass effect overlay
+
         macrosContainerStack.backgroundColor = UIColor.white.withAlphaComponent(0.95)
         macrosContainerStack.layer.cornerRadius = 16
         macrosContainerStack.layer.shadowColor = UIColor.black.cgColor
         macrosContainerStack.layer.shadowOpacity = 0.15
         macrosContainerStack.layer.shadowOffset = CGSize(width: 0, height: 4)
         macrosContainerStack.layer.shadowRadius = 12
-        
-        // Add blur effect
+
         addBlurEffect()
-        
+
         macrosContainerStack.spacing = 0
         macrosContainerStack.distribution = .fillEqually
         macrosContainerStack.axis = .horizontal
         macrosContainerStack.layoutMargins = UIEdgeInsets(top: 16, left: 12, bottom: 16, right: 12)
         macrosContainerStack.isLayoutMarginsRelativeArrangement = true
-        
-        // Style the macro labels
+
         styleMacroLabels()
-        
-        // Setup constraints immediately
+
         setupConstraints()
     }
-    
+
     private func setupConstraints() {
         guard !constraintsSetUp else { return }
         constraintsSetUp = true
-        
+
         FoodImageView.translatesAutoresizingMaskIntoConstraints = false
         macrosContainerStack.translatesAutoresizingMaskIntoConstraints = false
-        
+
         NSLayoutConstraint.activate([
-            // Image fills the entire view
+
             FoodImageView.topAnchor.constraint(equalTo: topAnchor),
             FoodImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             FoodImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
             FoodImageView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            
-            // Macros container overlays on bottom of image
+
             macrosContainerStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             macrosContainerStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             macrosContainerStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
             macrosContainerStack.heightAnchor.constraint(equalToConstant: 70)
         ])
-        
+
         print("DEBUG: FoodLogIngredientHeader constraints set up")
     }
-    
+
     private func addBlurEffect() {
-        // Remove any existing blur
+
         macrosContainerStack.subviews.filter { $0 is UIVisualEffectView }.forEach { $0.removeFromSuperview() }
-        
-        // Create blur effect
+
         let blurEffect = UIBlurEffect(style: .systemMaterial)
         let blurView = UIVisualEffectView(effect: blurEffect)
         blurView.translatesAutoresizingMaskIntoConstraints = false
         blurView.layer.cornerRadius = 16
         blurView.clipsToBounds = true
-        
-        // Insert blur as background
+
         macrosContainerStack.insertSubview(blurView, at: 0)
-        
+
         NSLayoutConstraint.activate([
             blurView.topAnchor.constraint(equalTo: macrosContainerStack.topAnchor),
             blurView.leadingAnchor.constraint(equalTo: macrosContainerStack.leadingAnchor),
             blurView.trailingAnchor.constraint(equalTo: macrosContainerStack.trailingAnchor),
             blurView.bottomAnchor.constraint(equalTo: macrosContainerStack.bottomAnchor)
         ])
-        
-        // Make container background clear so blur shows
+
         macrosContainerStack.backgroundColor = .clear
     }
-    
+
     private func styleMacroLabels() {
-        // Style each macro label
+
         [caloriesLabel, carbsLabel, fatsLabel, proteinLabel].forEach { label in
             label?.font = .systemFont(ofSize: 15, weight: .semibold)
             label?.textAlignment = .center
@@ -116,23 +101,22 @@ class FoodLogIngredientHeader: UIView {
             label?.textColor = .label
         }
     }
-    
-    // MARK: - Configure
+
     func configure(with food: Food) {
         self.food = food
         self.foodItem = nil
-        
+
         if let imageName = food.image, imageName.hasPrefix("http"),
            let url = URL(string: imageName) {
             FoodImageView.image = UIImage(named: "dietPlaceholder")
             FoodImageView.backgroundColor = .systemGray5
             loadImage(from: url)
         } else if let imageName = food.image, imageName.hasPrefix("/") {
-            // Legacy absolute path (will break across restarts, but keeping for compatibility if fresh)
+
             FoodImageView.image = UIImage(contentsOfFile: imageName)
             FoodImageView.backgroundColor = .clear
         } else if let imageName = food.image, !imageName.isEmpty {
-            // Relative file path (e.g. food_UUID.jpg) or bundle assert
+
             let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
             let fileURL = documentsDir.appendingPathComponent("FoodImages").appendingPathComponent(imageName)
             if FileManager.default.fileExists(atPath: fileURL.path) {
@@ -149,11 +133,10 @@ class FoodLogIngredientHeader: UIView {
             FoodImageView.image = UIImage(named: "dietPlaceholder")
             FoodImageView.backgroundColor = .systemGray5
         }
-        
+
         updateMacros()
     }
 
-    
     private func loadImage(from url: URL) {
         URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
             guard let data = data, let image = UIImage(data: data) else { return }
@@ -163,11 +146,11 @@ class FoodLogIngredientHeader: UIView {
             }
         }.resume()
     }
-        
+
     func configure(with foodItem: FoodItem) {
         self.foodItem = foodItem
         self.food = nil
-        
+
         let img = foodItem.image
         if img.hasPrefix("/") {
             FoodImageView.image = UIImage(contentsOfFile: img)
@@ -181,13 +164,12 @@ class FoodLogIngredientHeader: UIView {
             }
         }
         FoodImageView.backgroundColor = .systemGray5
-        
+
         updateMacros()
     }
 
-        
         private func updateMacros() {
-            // Handle both Food and FoodItem types
+
             if let food = food {
                 updateMacrosForFood(food)
             } else if let foodItem = foodItem {
@@ -196,57 +178,56 @@ class FoodLogIngredientHeader: UIView {
                 print("DEBUG: No food data available to update macros")
             }
         }
-        
+
         private func updateMacrosForFood(_ food: Food) {
             let calories = food.customCalories ?? ((food.proteinContent * 4) + (food.carbsContent * 4) + (food.fatsContent * 9))
-            
+
             caloriesLabel.attributedText = formatMacroText(value: "\(Int(calories)) kcal", label: "Calories")
             carbsLabel.attributedText = formatMacroText(value: "\(Int(food.carbsContent)) g", label: "Carbs")
             fatsLabel.attributedText = formatMacroText(value: "\(Int(food.fatsContent)) g", label: "Fat")
             proteinLabel.attributedText = formatMacroText(value: "\(Int(food.proteinContent)) g", label: "Protein")
-            
+
             print("DEBUG: Macros updated for Food - Cal: \(Int(calories)), Carbs: \(Int(food.carbsContent)), Fat: \(Int(food.fatsContent)), Protein: \(Int(food.proteinContent))")
         }
-        
+
         private func updateMacrosForFoodItem(_ foodItem: FoodItem) {
-            // Calculate calories from macros
+
             let calories = (foodItem.protein * 4) + (foodItem.carbs * 4) + (foodItem.fat * 9)
-            
+
             caloriesLabel.attributedText = formatMacroText(value: "\(Int(calories)) kcal", label: "Calories")
             carbsLabel.attributedText = formatMacroText(value: "\(Int(foodItem.carbs)) g", label: "Carbs")
             fatsLabel.attributedText = formatMacroText(value: "\(Int(foodItem.fat)) g", label: "Fat")
             proteinLabel.attributedText = formatMacroText(value: "\(Int(foodItem.protein)) g", label: "Protein")
-            
+
             print("DEBUG: Macros updated for FoodItem - Cal: \(Int(calories)), Carbs: \(Int(foodItem.carbs)), Fat: \(Int(foodItem.fat)), Protein: \(Int(foodItem.protein))")
         }
-        
+
         private func formatMacroText(value: String, label: String) -> NSAttributedString {
             let attributed = NSMutableAttributedString()
-            
+
             let labelAttributes: [NSAttributedString.Key: Any] = [
                 .font: UIFont.systemFont(ofSize: 13, weight: .medium),
                 .foregroundColor: UIColor.secondaryLabel
             ]
             attributed.append(NSAttributedString(string: label + "\n", attributes: labelAttributes))
-            
+
             let valueAttributes: [NSAttributedString.Key: Any] = [
                 .font: UIFont.systemFont(ofSize: 15, weight: .semibold),
                 .foregroundColor: UIColor.label
             ]
             attributed.append(NSAttributedString(string: value, attributes: valueAttributes))
-            
+
             return attributed
         }
-    
-    // MARK: - Static Loading
+
     static func loadFromNib() -> FoodLogIngredientHeader {
         let bundle = Bundle(for: FoodLogIngredientHeader.self)
         let nib = UINib(nibName: "FoodLogIngredientHeader", bundle: bundle)
-        
+
         guard let view = nib.instantiate(withOwner: nil, options: nil).first as? FoodLogIngredientHeader else {
             fatalError("Could not load FoodLogIngredientHeader from nib")
         }
-        
+
         print("DEBUG: FoodLogIngredientHeader loaded from nib")
         return view
     }

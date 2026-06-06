@@ -1,10 +1,3 @@
-//
-//  FoodListDataSource.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 09/12/25.
-//
-
 import Foundation
 
 struct FoodItem: Codable, Identifiable {
@@ -45,7 +38,6 @@ struct FoodItem: Codable, Identifiable {
         ingredients  = try c.decodeIfPresent([Ingredient].self, forKey: .ingredients) ?? []
     }
 
-    // Manual init for creating FoodItems in code (DescribeFoodVC, AddDescribedMealVC)
     init(id: Int, name: String, calories: Int, image: String = "dietPlaceholder",
          servingSize: Double, unit: String = "g", protein: Double, carbs: Double,
          fat: Double, fiber: Double = 0, category: String = "", mealType: String = "",

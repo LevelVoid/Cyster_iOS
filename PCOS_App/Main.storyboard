@@ -9,7 +9,7 @@
         <!--MainTabBarController-->
         <scene sceneID="tabbar-scene">
             <objects>
-                <tabBarController storyboardIdentifier="MainTabBarController" title="MainTabBarController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="TabBarRoot" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="MainTabBarController" customClass="MainTabBarController" customModule="PCOS_App" customModuleProvider="target" title="MainTabBarController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="TabBarRoot" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" id="wMD-Wr-ReT">
                         <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>

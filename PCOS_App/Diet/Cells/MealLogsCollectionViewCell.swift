@@ -28,7 +28,7 @@ class MealLogsCollectionViewCell: UICollectionViewCell {
         tableView.delegate = self
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
-        tableView.isScrollEnabled = false // parent collection view handles scrolling
+        tableView.isScrollEnabled = false 
     }
 
     func configure(with foods: [Food], quote: String) {
@@ -36,14 +36,10 @@ class MealLogsCollectionViewCell: UICollectionViewCell {
         tableView.reloadData()
     }
 
-    // MARK: - Quote Card (same logic from DietViewController)
-    /// Calculate the total height the embedded table needs
     func desiredHeight() -> CGFloat {
         return CGFloat(todaysFoods.count) * 100
     }
 }
-
-// MARK: - UITableViewDataSource & UITableViewDelegate
 
 extension MealLogsCollectionViewCell: UITableViewDataSource, UITableViewDelegate {
 

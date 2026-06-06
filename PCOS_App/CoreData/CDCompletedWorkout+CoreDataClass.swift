@@ -3,8 +3,7 @@ import CoreData
 
 @objc(CDCompletedWorkout)
 public class CDCompletedWorkout: NSManagedObject {
-    
-    /// Converts the `exercisesData` (Data) back into our `[WorkoutExercise]` struct array
+
     var exercises: [WorkoutExercise] {
         get {
             guard let data = exercisesData,
@@ -19,8 +18,7 @@ public class CDCompletedWorkout: NSManagedObject {
             }
         }
     }
-    
-    // Bridge to struct for UI consistency
+
     func toCompletedWorkout() -> CompletedWorkout {
         CompletedWorkout(
             id: id ?? UUID(),

@@ -1,22 +1,12 @@
-//
-//  ChatbotViewController.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 23/03/26.
-//
-
 import UIKit
 
 final class ChatbotViewController: UIViewController {
 
-    
-    // MARK: - Properties
     private var messages: [ChatMessage] = []
     private var isAITyping = false
     private let inputBar = ChatInputBar()
     private let brain = AIBrain.shared
 
-    // Quick prompt suggestions shown on empty state
     private let quickPrompts = [
         "What should I eat today? ",
         "Why do I have cramps? ",
@@ -24,7 +14,6 @@ final class ChatbotViewController: UIViewController {
         "I'm craving sugar badly "
     ]
 
-    // MARK: - TableView (programmatic, no IBOutlet needed)
     private lazy var tableView: UITableView = {
         let tv = UITableView(frame: .zero, style: .plain)
         tv.register(ChatBubbleCell.self, forCellReuseIdentifier: ChatBubbleCell.identifier)
@@ -39,22 +28,19 @@ final class ChatbotViewController: UIViewController {
         return tv
     }()
 
-    // MARK: - inputAccessoryView (the iMessage magic)
     override var inputAccessoryView: UIView? { inputBar }
     override var canBecomeFirstResponder: Bool { true }
 
-    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(hex:"fceeed")
         setupNavigationBar()
         setupTableView()
         setupInputBar()
-        setupKeyboardObservers()   // ← add this
+        setupKeyboardObservers()   
         loadPersistedMessages()
     }
 
-    // Add this new method:
     private func setupKeyboardObservers() {
         NotificationCenter.default.addObserver(
             self,
@@ -63,12 +49,12 @@ final class ChatbotViewController: UIViewController {
             object: nil
         )
     }
-    
+
     private func loadPersistedMessages() {
         let saved = ChatPersistenceManager.shared.loadTodaysMessages()
 
         if saved.isEmpty {
-            // First launch today or after clear — show welcome and persist it
+
             let welcome = ChatMessage(
                 text: "Hi! I'm Cyster, your PCOS health coach.\n\nI can help with meal ideas, understanding your symptoms, cycle questions, or anything PCOS-related. \n\nWhat's on your mind today?",
                 sender: .ai
@@ -82,7 +68,6 @@ final class ChatbotViewController: UIViewController {
         tableView.reloadData()
         scrollToBottom(animated: false)
     }
-
 
     @objc private func keyboardWillChange(_ notification: Notification) {
         guard
@@ -98,7 +83,7 @@ final class ChatbotViewController: UIViewController {
             self.tableView.contentInset.bottom = bottomInset
             self.tableView.verticalScrollIndicatorInsets.bottom = bottomInset
         }
-        // Scroll to bottom so last message stays visible
+
         scrollToBottom()
     }
 
@@ -110,7 +95,6 @@ final class ChatbotViewController: UIViewController {
         super.viewDidAppear(animated)
         becomeFirstResponder()
 
-        // Walkthrough: if user arrives here during the chatbot step, show final congrats
         if WalkthroughManager.shared.isActive,
            WalkthroughManager.shared.currentStep == .chatbotPrompt {
             WalkthroughManager.shared.addDelegate(self)
@@ -120,12 +104,10 @@ final class ChatbotViewController: UIViewController {
         }
     }
 
-    // MARK: - Setup
     private func setupNavigationBar() {
         title = "Cyster"
         navigationController?.navigationBar.prefersLargeTitles = false
 
-        // Subtitle "PCOS Coach" via attributed title workaround
         let titleLabel = UILabel()
         titleLabel.text = "Cyster"
         titleLabel.font = .systemFont(ofSize: 17, weight: .semibold)
@@ -141,14 +123,13 @@ final class ChatbotViewController: UIViewController {
         stack.spacing = 0
         navigationItem.titleView = stack
 
-        // Clear button
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "arrow.counterclockwise"),
             style: .plain,
             target: self,
             action: #selector(clearChatTapped)
         )
-        //navigationItem.rightBarButtonItem?.tintColor = UIColor(red: 0.52, green: 0.24, blue: 0.76, alpha: 1)
+
     }
 
     private func setupTableView() {
@@ -160,7 +141,6 @@ final class ChatbotViewController: UIViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
 
-        // Tap to dismiss keyboard
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tap.cancelsTouchesInView = false
         tableView.addGestureRecognizer(tap)
@@ -170,7 +150,6 @@ final class ChatbotViewController: UIViewController {
         inputBar.delegate = self
     }
 
-    // MARK: - Welcome
     private func sendWelcomeMessage() {
         let welcome = ChatMessage(
             text: "Hi! I'm Cyster, your PCOS health coach.\n\nI can help with meal ideas, understanding your symptoms, cycle questions, or anything PCOS-related. \n\nWhat's on your mind today?",
@@ -180,7 +159,6 @@ final class ChatbotViewController: UIViewController {
         tableView.reloadData()
     }
 
-    // MARK: - Message Flow
     private func addUserMessage(_ text: String) {
         let msg = ChatMessage(text: text, sender: .user)
         messages.append(msg)
@@ -231,17 +209,16 @@ final class ChatbotViewController: UIViewController {
         }
     }
 
-    // MARK: - AI Call
     private func sendToAI(_ text: String) {
         showTypingIndicator()
 
         Task {
             do {
                 let context = await SharedContextEngine.shared.buildContext()
-                // Re-inject earlier conversation summary if AI session was reset
+
                 let chatSummary = ChatPersistenceManager.shared.buildChatSummary()
                 let fullContext = chatSummary.isEmpty ? context : "\(context)\n\n\(chatSummary)"
-                
+
                 let response = try await brain.sendChatMessage(text, context: fullContext)
 
                 await MainActor.run {
@@ -255,7 +232,6 @@ final class ChatbotViewController: UIViewController {
         }
     }
 
-    // MARK: - Actions
     @objc private func clearChatTapped() {
         let alert = UIAlertController(title: "Clear Chat", message: "Start a new conversation with Cyster?", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Clear", style: .destructive) { _ in
@@ -275,7 +251,6 @@ final class ChatbotViewController: UIViewController {
     }
 }
 
-// MARK: - UITableViewDataSource
 extension ChatbotViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -283,7 +258,7 @@ extension ChatbotViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // Typing indicator is the last row when AI is responding
+
         if isAITyping && indexPath.row == messages.count {
             let cell = tableView.dequeueReusableCell(withIdentifier: TypingIndicatorCell.identifier, for: indexPath) as! TypingIndicatorCell
             cell.startAnimating()
@@ -297,7 +272,6 @@ extension ChatbotViewController: UITableViewDataSource {
     }
 }
 
-// MARK: - UITableViewDelegate
 extension ChatbotViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
@@ -307,7 +281,6 @@ extension ChatbotViewController: UITableViewDelegate {
         return UITableView.automaticDimension
     }
 
-    // Long press to copy
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         guard indexPath.row < messages.count else { return nil }
         let message = messages[indexPath.row]
@@ -320,7 +293,6 @@ extension ChatbotViewController: UITableViewDelegate {
     }
 }
 
-// MARK: - ChatInputBarDelegate
 extension ChatbotViewController: ChatInputBarDelegate {
     func inputBar(_ bar: ChatInputBar, didSend text: String) {
         addUserMessage(text)
@@ -328,14 +300,12 @@ extension ChatbotViewController: ChatInputBarDelegate {
     }
 }
 
-// MARK: - WalkthroughManagerDelegate
 extension ChatbotViewController: WalkthroughManagerDelegate {
 
     func walkthroughDidReachStep(_ step: WalkthroughStep) { }
 
     func walkthroughDidComplete() { }
 
-    // Called from viewDidAppear when the walkthrough is at .chatbotPrompt
     private func showWalkthroughCompletionCongrats() {
         guard let keyWindow = UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })

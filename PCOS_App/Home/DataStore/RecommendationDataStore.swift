@@ -1,10 +1,3 @@
-//
-//  RecommendationDataStore.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 05/01/26.
-//
-
 import Foundation
 
 let recommendations: [Recommendation] = [
@@ -37,7 +30,7 @@ let recommendations: [Recommendation] = [
         priority: 3,
         confidence: 0.78,
         title: "Sugar-heavy days align with acne logs",
-        //summary: "Acne was logged after days with high-glycemic foods",
+
         summary: "A lower-sugar choice today may help support clearer skin",
         evidence: [
             "High-glycemic meals logged on 2 days",
@@ -58,7 +51,7 @@ let recommendations: [Recommendation] = [
         category: .workout,
         priority: 2,
         confidence: 0.65,
-        //title: "Recent activity showed more cardio than strength training",
+
         title: "Recent activity showed more cardio than strength training",
         summary: "One short strength workout today can support PCOS balance",
         evidence: [

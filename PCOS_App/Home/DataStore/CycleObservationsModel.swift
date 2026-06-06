@@ -1,10 +1,10 @@
 import Foundation
 
 class CycleObservationsModel {
-    
+
     static let shared = CycleObservationsModel()
     private init() {}
-    
+
     private let systemInstructions = """
     You are Cyster, a warm and supportive wellness companion inside a PCOS tracking app.
         You are NOT a doctor and must never give medical advice or diagnoses.
@@ -21,23 +21,23 @@ class CycleObservationsModel {
         Speak as if you already know the user has PCOS — this is a PCOS-focused app.
     Keep it short and one line .
     """
-    
+
     private func generateCyclePrompt(from cycles: [CycleData]) -> String {
         var prompt = "Here are the user's recent cycle and period lengths in days:\n"
-        
+
         for cycle in cycles {
             let cycleLen = cycle.isComplete ? "\(cycle.cycleLength)" : "Ongoing"
             prompt += "- Month: \(cycle.month), Cycle: \(cycleLen) days, Period: \(cycle.periodLength) days\n"
         }
-        
+
         return prompt
     }
-    
+
     func fetchCycleInsight(cycles: [CycleData]) async throws -> String {
         guard !cycles.isEmpty else {
             return "Log more period data to unlock personalized AI cycle insights!"
         }
-        
+
         let prompt = generateCyclePrompt(from: cycles)
         do {
             let result = try await AIBrain.shared.generateResponse(prompt: prompt, instructions: systemInstructions)

@@ -1,13 +1,4 @@
-//
-//  PeriodPredictionModel.swift
-//  PCOS_App
-//
-//  Created by Abhinaya Rajarajan on 07/03/26.
-//
-
 import Foundation
-
-// MARK: - Prediction Confidence
 
 enum PredictionConfidence {
     case none, low, medium, high
@@ -21,8 +12,6 @@ enum PredictionConfidence {
         }
     }
 }
-
-// MARK: - Period Prediction Result
 
 struct PeriodPrediction {
     let predictedStartDate: Date?
@@ -54,7 +43,6 @@ struct PeriodPrediction {
         }
     }
 
-    /// Empty prediction for brand-new users.
     static let empty = PeriodPrediction(
         predictedStartDate: nil,
         predictedEndDate: nil,
@@ -66,19 +54,12 @@ struct PeriodPrediction {
     )
 }
 
-// MARK: - Prediction Engine
-
 struct PeriodPredictionEngine {
 
     private let calendar = Calendar.current
 
-    /// PCOS cycles can be very long; cap predictions so the UI doesn't show
-    /// "next period in 90 days" from a single outlier cycle.
     private let maxPredictableCycleLength = 60
 
-    // MARK: - Public API
-
-    /// Main prediction: when is the next period?
     func predict(from cycles: [CycleData]) -> PeriodPrediction {
 
         let sorted = cycles.sorted { $0.startDate < $1.startDate }
@@ -95,7 +76,6 @@ struct PeriodPredictionEngine {
         default:           confidence = .high
         }
 
-        // Need at least one completed cycle to predict anything
         guard !completedCycles.isEmpty else {
             return PeriodPrediction(
                 predictedStartDate: nil,
@@ -108,24 +88,21 @@ struct PeriodPredictionEngine {
             )
         }
 
-        // Use up to 3 most-recent completed cycles (median, not mean — resistant to outliers)
         let recentCompleted = Array(completedCycles.suffix(3))
         let cycleLengths = recentCompleted.map { $0.cycleLength }.filter { $0 > 0 }
 
         let calculatedCycleLength: Int
         if cycleLengths.isEmpty {
-            calculatedCycleLength = 35          // PCOS-friendly default
+            calculatedCycleLength = 35          
         } else {
             calculatedCycleLength = median(of: cycleLengths)
         }
 
         let appliedCycleLength = min(calculatedCycleLength, maxPredictableCycleLength)
 
-        // Period length (for predictedEndDate)
         let periodLengths = recentCompleted.map { $0.periodLength }.filter { $0 > 0 }
         let avgPeriodLength = periodLengths.isEmpty ? 5 : max(1, median(of: periodLengths))
 
-        // Predicted start = last cycle start + avg cycle length
         let lastCycleStart = calendar.startOfDay(for: latestCycle.startDate)
 
         guard let predictedStart = calendar.date(byAdding: .day, value: appliedCycleLength, to: lastCycleStart) else {
@@ -160,7 +137,6 @@ struct PeriodPredictionEngine {
         )
     }
 
-    /// Returns an array of predicted period dates (for calendar display).
     func predictedDates(from cycles: [CycleData]) -> [Date] {
         let prediction = predict(from: cycles)
         guard let start = prediction.predictedStartDate,
@@ -176,9 +152,6 @@ struct PeriodPredictionEngine {
         return dates
     }
 
-    // MARK: - Helpers
-
-    /// Median value — more resistant to outlier cycles than mean.
     private func median(of values: [Int]) -> Int {
         let sorted = values.sorted()
         let count = sorted.count

@@ -1,10 +1,3 @@
-//
-//  FoodScannerViewController.swift
-//  PCOS_App
-//
-//  Created by SDC-USER
-//
-
 import UIKit
 import AVFoundation
 import Vision
@@ -15,20 +8,17 @@ protocol FoodScannerDelegate: AnyObject {
 }
 
 class FoodScannerViewController: UIViewController {
-    
+
     weak var delegate: FoodScannerDelegate?
     weak var dietDelegate: AddDescribedMealDelegate?
-    
-    // Camera
+
     private var captureSession: AVCaptureSession!
     private var previewLayer: AVCaptureVideoPreviewLayer!
     private var photoOutput: AVCapturePhotoOutput!
     private var capturedImage: UIImage?
 
-    // ML Model
     private var foodClassifier: VNCoreMLModel?
-    
-    // UI Elements
+
     private let captureButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = UIColor(red: 0.996, green: 0.478, blue: 0.588, alpha: 1.0)
@@ -39,7 +29,7 @@ class FoodScannerViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-    
+
     private let cancelButton: UIButton = {
         let button = UIButton(type: .system)
         let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold)
@@ -51,7 +41,7 @@ class FoodScannerViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-    
+
     private let instructionLabel: UILabel = {
         let label = UILabel()
         label.text = "Position food within the frame"
@@ -64,7 +54,7 @@ class FoodScannerViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    
+
     private let scanningFrameView: UIView = {
         let view = UIView()
         view.layer.borderColor = UIColor(red: 0.996, green: 0.478, blue: 0.588, alpha: 1.0).cgColor
@@ -74,38 +64,36 @@ class FoodScannerViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
+
     private var loadingView: UIView?
-    
-    // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         view.backgroundColor = .black
         setupMLModel()
         setupCamera()
         setupUI()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+
         if captureSession?.isRunning == true {
             DispatchQueue.global(qos: .userInitiated).async { [weak self] in
                 self?.captureSession.stopRunning()
             }
         }
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         previewLayer?.frame = view.layer.bounds
     }
-    
-    // MARK: - ML Model Setup
+
     private func setupMLModel() {
         do {
-            // Load the FoodClassifier 1.mlmodel
+
             let config = MLModelConfiguration()
             let model = try FoodClassifier_1(configuration: config)
             foodClassifier = try VNCoreMLModel(for: model.model)
@@ -114,94 +102,89 @@ class FoodScannerViewController: UIViewController {
             showError("Could not load food recognition model")
         }
     }
-    
-    // MARK: - Camera Setup
+
     private func setupCamera() {
         captureSession = AVCaptureSession()
         captureSession.sessionPreset = .photo
-        
+
         guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else {
             showError("Camera not available")
             return
         }
-        
+
         do {
             let input = try AVCaptureDeviceInput(device: camera)
-            
+
             if captureSession.canAddInput(input) {
                 captureSession.addInput(input)
             }
-            
+
             photoOutput = AVCapturePhotoOutput()
-            
+
             if captureSession.canAddOutput(photoOutput) {
                 captureSession.addOutput(photoOutput)
             }
-            
+
             previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
             previewLayer.frame = view.layer.bounds
             previewLayer.videoGravity = .resizeAspectFill
             view.layer.addSublayer(previewLayer)
-            
+
             DispatchQueue.global(qos: .userInitiated).async { [weak self] in
                 self?.captureSession.startRunning()
             }
-            
+
         } catch {
             showError("Could not access camera: \(error.localizedDescription)")
         }
     }
-    
-    // MARK: - UI Setup
+
     private func setupUI() {
         view.addSubview(scanningFrameView)
         view.addSubview(instructionLabel)
         view.addSubview(captureButton)
         view.addSubview(cancelButton)
-        
+
         captureButton.addTarget(self, action: #selector(captureButtonTapped), for: .touchUpInside)
         cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
-        
+
         NSLayoutConstraint.activate([
             scanningFrameView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             scanningFrameView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -50),
             scanningFrameView.widthAnchor.constraint(equalToConstant: 280),
             scanningFrameView.heightAnchor.constraint(equalToConstant: 280),
-            
+
             instructionLabel.bottomAnchor.constraint(equalTo: scanningFrameView.topAnchor, constant: -20),
             instructionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             instructionLabel.widthAnchor.constraint(equalToConstant: 300),
             instructionLabel.heightAnchor.constraint(equalToConstant: 44),
-            
+
             captureButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
             captureButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             captureButton.widthAnchor.constraint(equalToConstant: 200),
             captureButton.heightAnchor.constraint(equalToConstant: 70),
-            
+
             cancelButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             cancelButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             cancelButton.widthAnchor.constraint(equalToConstant: 40),
             cancelButton.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
-    
-    // MARK: - Button Actions
+
     @objc private func captureButtonTapped() {
         captureButton.isEnabled = false
-        
+
         let settings = AVCapturePhotoSettings()
         photoOutput.capturePhoto(with: settings, delegate: self)
-        
-        // Haptic feedback
+
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.impactOccurred()
     }
-    
+
     @objc private func cancelButtonTapped() {
         dismiss(animated: true)
     }
-    
-    // MARK: - Food Classification
+
     private func classifyFood(image: UIImage) {
         guard let ciImage = CIImage(image: image),
               let model = foodClassifier else {
@@ -209,10 +192,10 @@ class FoodScannerViewController: UIViewController {
             showError("Could not process image")
             return
         }
-        
+
         let request = VNCoreMLRequest(model: model) { [weak self] request, error in
             guard let self = self else { return }
-            
+
             if let error = error {
                 print("ERROR: Vision request failed: \(error)")
                 DispatchQueue.main.async {
@@ -221,7 +204,7 @@ class FoodScannerViewController: UIViewController {
                 }
                 return
             }
-            
+
             guard let results = request.results as? [VNClassificationObservation],
                   let topResult = results.first else {
                 DispatchQueue.main.async {
@@ -230,13 +213,12 @@ class FoodScannerViewController: UIViewController {
                 }
                 return
             }
-            
+
             let foodName = topResult.identifier
             let confidence = topResult.confidence
-            
+
             print("DEBUG: Identified food: \(foodName) with confidence: \(confidence)")
-            
-            // Only proceed if confidence is reasonable
+
             if confidence > 0.3 {
                 Task {
                     await self.analyzeFoodWithFoundationModel(foodName: foodName)
@@ -248,9 +230,9 @@ class FoodScannerViewController: UIViewController {
                 }
             }
         }
-        
+
         let handler = VNImageRequestHandler(ciImage: ciImage, options: [:])
-        
+
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 try handler.perform([request])
@@ -263,8 +245,7 @@ class FoodScannerViewController: UIViewController {
             }
         }
     }
-    
-    // MARK: - Foundation Model Analysis
+
     private func analyzeFoodWithFoundationModel(foodName: String) async {
         let instructions = """
             You are a professional nutritionist specializing in Indian and international foods.
@@ -324,7 +305,7 @@ class FoodScannerViewController: UIViewController {
             }
         }
     }
-    
+
     private func parseAndNavigate(json: String, foodName: String) {
         var cleaned = json.trimmingCharacters(in: .whitespacesAndNewlines)
         if cleaned.hasPrefix("```json") {
@@ -364,20 +345,18 @@ class FoodScannerViewController: UIViewController {
                 showError("No ingredients found in AI response. Please try again.")
                 return
             }
-            
-            // Normalize serving size to standard defaults
+
             let normalizedUnit = decoded.unit.lowercased()
             let normalizedServingSize: Double
             switch normalizedUnit {
             case "ml", "milliliter", "millilitre":
-                normalizedServingSize = 100   // 100 ml
+                normalizedServingSize = 100   
             case "piece", "pieces", "unit", "units", "pcs", "pc", "slice", "slices":
-                normalizedServingSize = 1     // 1 piece
+                normalizedServingSize = 1     
             default:
-                normalizedServingSize = 100   // 100 g (default)
+                normalizedServingSize = 100   
             }
 
-            // Save captured image to Documents directory
             var savedImageName = "dietPlaceholder"
             if let capturedImage = self.capturedImage {
                 let fileName = "food_\(UUID().uuidString).jpg"
@@ -391,7 +370,6 @@ class FoodScannerViewController: UIViewController {
                     print("DEBUG: Saved food image relative name: \(fileName)")
                 }
             }
-
 
             let foodItem = FoodItem(
                 id: Int.random(in: 100000...999999),
@@ -409,8 +387,7 @@ class FoodScannerViewController: UIViewController {
             )
 
             print("DEBUG: Parsed FoodItem - \(foodItem.name), \(ingredients.count) ingredients")
-            
-            // Show confirmation alert
+
             showFoodConfirmationAlert(foodItem: foodItem)
 
         } catch {
@@ -419,41 +396,39 @@ class FoodScannerViewController: UIViewController {
             showError("Could not parse AI response. Please try again.")
         }
     }
-    
+
     private func showFoodConfirmationAlert(foodItem: FoodItem) {
         let alert = UIAlertController(
             title: "Food Detected",
             message: "Detected: \(foodItem.name)\n\nDo you want to log this item?",
             preferredStyle: .alert
         )
-        
+
         let yesAction = UIAlertAction(title: "Yes", style: .default) { [weak self] _ in
             self?.navigateToAdd(foodItem)
         }
-        
+
         let noAction = UIAlertAction(title: "Retake", style: .cancel) { [weak self] _ in
             self?.captureButton.isEnabled = true
         }
-        
+
         alert.addAction(noAction)
         alert.addAction(yesAction)
-        
+
         present(alert, animated: true)
     }
-    
-    // MARK: - Navigation
+
     private func navigateToAdd(_ foodItem: FoodItem) {
         print("DEBUG: Navigating to AddDescribedMealViewController with \(foodItem.name)")
-        
-        // CRITICAL: Get the presenting VC reference BEFORE dismissing
+
         guard let presentingVC = self.presentingViewController else {
             print("ERROR: No presenting view controller found")
             showError("Navigation error occurred")
             return
         }
-        
+
         let storyboard = UIStoryboard(name: "Diet", bundle: nil)
-        
+
         guard let vc = storyboard.instantiateViewController(
             withIdentifier: "AddDescribedMealViewController"
         ) as? AddDescribedMealViewController else {
@@ -461,21 +436,19 @@ class FoodScannerViewController: UIViewController {
             showError("Could not load meal confirmation screen.")
             return
         }
-        
+
         vc.foodItem = foodItem
         vc.delegate = dietDelegate
-        
+
         print("DEBUG: AddDescribedMealViewController configured with delegate: \(dietDelegate != nil ? "set" : "nil")")
         print("DEBUG: Presenting VC type: \(type(of: presentingVC))")
-        
-        // Dismiss the scanner first
+
         dismiss(animated: true) {
             print("DEBUG: Scanner dismissed, now presenting AddDescribedMealViewController")
-            
-            // Present the AddDescribedMealViewController as a sheet
+
             let nav = UINavigationController(rootViewController: vc)
             nav.modalPresentationStyle = .pageSheet
-            
+
             if let sheet = nav.sheetPresentationController {
                 if #available(iOS 16.0, *) {
                     sheet.detents = [.medium(), .large()]
@@ -483,14 +456,13 @@ class FoodScannerViewController: UIViewController {
                     sheet.selectedDetentIdentifier = .large
                 }
             }
-            
+
             presentingVC.present(nav, animated: true) {
                 print("DEBUG: AddDescribedMealViewController presented successfully")
             }
         }
     }
-    
-    // MARK: - Loading Indicator
+
     private func showLoadingIndicator(message: String = "Processing...") {
         let loadingView = UIView(frame: view.bounds)
         loadingView.backgroundColor = UIColor.black.withAlphaComponent(0.7)
@@ -528,24 +500,22 @@ class FoodScannerViewController: UIViewController {
         view.isUserInteractionEnabled = true
         captureButton.isEnabled = true
     }
-    
-    // MARK: - Alert
+
     private func showError(_ message: String) {
         let alert = UIAlertController(
             title: "Error",
             message: message,
             preferredStyle: .alert
         )
-        
+
         alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
             self?.captureButton.isEnabled = true
         })
-        
+
         present(alert, animated: true)
     }
 }
 
-// MARK: - AVCapturePhotoCaptureDelegate
 extension FoodScannerViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let error = error {
@@ -554,7 +524,7 @@ extension FoodScannerViewController: AVCapturePhotoCaptureDelegate {
             captureButton.isEnabled = true
             return
         }
-        
+
         guard let imageData = photo.fileDataRepresentation(),
               let image = UIImage(data: imageData) else {
             showError("Could not process captured image")
@@ -564,8 +534,7 @@ extension FoodScannerViewController: AVCapturePhotoCaptureDelegate {
         self.capturedImage = image
         print("DEBUG: Photo captured successfully")
         showLoadingIndicator(message: "Identifying food...")
-        
-        // Classify the food
+
         classifyFood(image: image)
     }
 }

@@ -1,28 +1,19 @@
-//
-//  DailyGoalsCollectionViewCell.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 24/03/26.
-//
-
 import UIKit
 
 class DailyGoalsCollectionViewCell: UICollectionViewCell {
-    
-    
+
     @IBOutlet weak var Goal1View: UIView!
     @IBOutlet weak var GoalImage_1: UIImageView!
     @IBOutlet weak var GoalCategory_1: UILabel!
     @IBOutlet weak var GoalTitle_1: UILabel!
     @IBOutlet weak var GoalDescription_1: UILabel!
-    
-    
+
     @IBOutlet weak var Goal2View: UIView!
     @IBOutlet weak var GoalImage_2: UIImageView!
     @IBOutlet weak var GoalCategory_2: UILabel!
     @IBOutlet weak var GoalTitle_2: UILabel!
     @IBOutlet weak var GoalDescription_2: UILabel!
-    
+
     static let identifier = "DailyGoalsCollectionViewCell"
        static func nib() -> UINib {
            return UINib(nibName: identifier, bundle: nil)
@@ -35,7 +26,6 @@ class DailyGoalsCollectionViewCell: UICollectionViewCell {
            showLoadingState()
        }
 
-       // MARK: - Configure
        func configure(with output: DailyGoalsOutput) {
            let goals = output.goals
            if goals.count > 0 { configureGoal(goals[0], view: Goal1View,
@@ -59,7 +49,6 @@ class DailyGoalsCollectionViewCell: UICollectionViewCell {
            }
        }
 
-       // MARK: - Private
        private func configureGoal(
            _ goal: GoalCard,
            view: UIView,
@@ -70,18 +59,14 @@ class DailyGoalsCollectionViewCell: UICollectionViewCell {
        ) {
            let color = categoryColor(goal.category)
 
-           // Card background — clean white with subtle border
            view.backgroundColor = UIColor.systemBackground
            view.layer.cornerRadius = 20
            view.layer.borderWidth = 0
 
-           // Icon — white symbol on colored rounded-square background
            image.image = UIImage(systemName: categoryIcon(goal.category))?
                .withConfiguration(UIImage.SymbolConfiguration(pointSize: 12, weight: .medium))
            image.tintColor = .white
-           //image.contentMode = .scaleAspectFit
 
-           // Add or update the colored rounded-square behind the icon
            let bgTag = 999
            if let existing = image.superview?.viewWithTag(bgTag) {
                existing.backgroundColor = color
@@ -102,19 +87,16 @@ class DailyGoalsCollectionViewCell: UICollectionViewCell {
                ])
            }
 
-           // Category label
            category.text = goal.category.capitalized
            category.textColor = color
            category.font = .systemFont(ofSize: 13, weight: .semibold)
 
-           // Title
            title.text = goal.title
            title.font = .systemFont(ofSize: 16, weight: .medium)
            title.textColor = .label
            title.textAlignment = .left
            title.numberOfLines = 2
 
-           // Description
            desc.text = goal.sentence
            desc.font = .systemFont(ofSize: 14)
            desc.textColor = .secondaryLabel

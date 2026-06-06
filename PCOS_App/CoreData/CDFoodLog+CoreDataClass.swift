@@ -3,8 +3,7 @@ import CoreData
 
 @objc(CDFoodLog)
 public class CDFoodLog: NSManagedObject {
-    
-    // MARK: - Computed: Ingredients
+
     var ingredients: [Ingredient]? {
         get {
             guard let data = ingredientsData else { return nil }
@@ -14,8 +13,7 @@ public class CDFoodLog: NSManagedObject {
             ingredientsData = try? JSONEncoder().encode(newValue)
         }
     }
-    
-    // MARK: - Computed: Tags
+
     var tags: [ImpactTags]? {
         get {
             guard let data = tagsData else { return nil }
@@ -25,8 +23,7 @@ public class CDFoodLog: NSManagedObject {
             tagsData = try? JSONEncoder().encode(newValue)
         }
     }
-    
-    // MARK: - Bridge to Food struct
+
     func toFood() -> Food {
         return Food(
             id: id ?? UUID(),
@@ -44,8 +41,7 @@ public class CDFoodLog: NSManagedObject {
             ingredients: self.ingredients
         )
     }
-    
-    // MARK: - Factory: Food → CDFoodLog
+
     static func from(_ food: Food, context: NSManagedObjectContext) -> CDFoodLog {
         let cd = CDFoodLog(context: context)
         cd.id = food.id
@@ -59,8 +55,7 @@ public class CDFoodLog: NSManagedObject {
         cd.fiberContent = food.fiberContent
         cd.customCalories = food.customCalories ?? 0
         cd.desc = food.desc
-        
-        // Image: detect if it's a URL or local asset
+
         if let img = food.image {
             if img.hasPrefix("http") {
                 cd.imageURL = img
@@ -70,10 +65,10 @@ public class CDFoodLog: NSManagedObject {
                 cd.imageURL = nil
             }
         }
-        
+
         cd.ingredients = food.ingredients
         cd.tags = food.tags
-        
+
         return cd
     }
 }

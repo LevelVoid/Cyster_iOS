@@ -1,10 +1,3 @@
-//
-//  TempFirstScreenViewController.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 14/01/26.
-//
-
 import UIKit
 
 class TempFirstScreenViewController: UIViewController {
@@ -13,7 +6,7 @@ class TempFirstScreenViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         nextButton.tintColor = UIColor(hex: "#fe7a96")
-        // Do any additional setup after loading the view.
+
     }
 
 }

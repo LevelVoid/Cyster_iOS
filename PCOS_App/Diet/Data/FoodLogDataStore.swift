@@ -1,21 +1,13 @@
-//
-//  FoodLogDataStore.swift
-//  PCOS_App
-//
-//  Migrated to Core Data
-//
-
 import Foundation
 import CoreData
 import UIKit
 
 struct FoodLogDataStore {
-    
+
     static var shared = FoodLogDataStore()
-    
-    // Injectable context for testing
+
     static var injectedContext: NSManagedObjectContext?
-    
+
     private static var context: NSManagedObjectContext {
         if let injected = injectedContext {
             return injected
@@ -23,97 +15,81 @@ struct FoodLogDataStore {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         return appDelegate.viewContext
     }
-    
+
     static var ingredient = Ingredient(id: UUID(), name: "Default Ingredient", quantity: 0, protein: 0, carbs: 0, fats: 0, fibre: 0, tags: [.none])
-    
-    // MARK: - Queries
-    
-    /// All foods, sorted newest first
+
     static var sampleFoods: [Food] {
         let request: NSFetchRequest<CDFoodLog> = CDFoodLog.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "timeStamp", ascending: false)]
         return (try? context.fetch(request))?.map { $0.toFood() } ?? []
     }
-    
-    /// Today's foods only
+
     static var todaysMeal: [Food] {
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: Date())
         guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else { return [] }
-        
+
         let request: NSFetchRequest<CDFoodLog> = CDFoodLog.fetchRequest()
         request.predicate = NSPredicate(format: "timeStamp >= %@ AND timeStamp < %@", startOfDay as NSDate, endOfDay as NSDate)
         request.sortDescriptors = [NSSortDescriptor(key: "timeStamp", ascending: false)]
         return (try? context.fetch(request))?.map { $0.toFood() } ?? []
     }
-    
+
     static func filteredFoods() -> [Food] {
         return todaysMeal
     }
-    
-    // MARK: - Add
+
     static func addFoodBarCode(_ food: Food) {
         let cdFood = CDFoodLog.from(food, context: context)
-        
-        // Link to CDDailyContext
+
         let dailyContext = DailyActivityDataStore.shared.getOrCreateContext(for: food.timeStamp)
         cdFood.dailyContext = dailyContext
-        
-        // Compute and save impact tags
+
         CDFoodTag.saveTags(for: cdFood, staticTags: food.tags, context: context)
-        
-        // ── Upsert CDCustomFood ──
+
         upsertCustomFood(from: food)
-        
+
         saveContext()
         print("CDFoodLog saved: \(food.name) with \((cdFood.foodTags as? Set<CDFoodTag>)?.count ?? 0) tags")
     }
-    
-    /// Upserts a CDCustomFood: if a food with the same name exists, increments timesUsed.
-    /// Otherwise creates a new CDCustomFood entry.
+
     private static func upsertCustomFood(from food: Food) {
         let request: NSFetchRequest<CDCustomFood> = CDCustomFood.fetchRequest()
         request.predicate = NSPredicate(format: "name ==[cd] %@", food.name)
         request.fetchLimit = 1
-        
+
         if let existing = try? context.fetch(request).first {
-            // Already exists — just bump the usage count
+
             existing.timesUsed += 1
         } else {
-            // New food — create CDCustomFood entry
+
             let isAI = food.image == "dietPlaceholder" || food.image == nil
             CDCustomFood.from(food, isAI: isAI, context: context)
         }
     }
 
-
-    // MARK: - Remove
-    
     static func removeFood(_ food: Food) {
         let request: NSFetchRequest<CDFoodLog> = CDFoodLog.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", food.id as CVarArg)
         request.fetchLimit = 1
-        
+
         if let result = try? context.fetch(request).first {
             context.delete(result)
             saveContext()
             print("CDFoodLog deleted: \(food.name)")
         }
     }
-    
-    // MARK: - Update
-    
+
     static func updateFood(_ food: Food) {
         let request: NSFetchRequest<CDFoodLog> = CDFoodLog.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", food.id as CVarArg)
         request.fetchLimit = 1
-        
+
         guard let existing = try? context.fetch(request).first else {
             print("CDFoodLog not found for update: \(food.name)")
             return
         }
-        
-        // Update all fields
+
         existing.name = food.name
         existing.servingSize = food.servingSize
         existing.weight = food.weight ?? 0
@@ -123,8 +99,7 @@ struct FoodLogDataStore {
         existing.customCalories = food.customCalories ?? 0
         existing.ingredients = food.ingredients
         existing.tags = food.tags
-        
-        // Update image
+
         if let img = food.image {
             if img.hasPrefix("http") {
                 existing.imageURL = img
@@ -134,23 +109,18 @@ struct FoodLogDataStore {
                 existing.imageURL = nil
             }
         }
-        
+
         saveContext()
         print("CDFoodLog updated: \(food.name)")
     }
 
-    
-    // MARK: - Dates with meals (for calendar)
-    
     static func allMealDates() -> Set<Date> {
         let request: NSFetchRequest<CDFoodLog> = CDFoodLog.fetchRequest()
         let results = (try? context.fetch(request)) ?? []
         let calendar = Calendar.current
         return Set(results.map { calendar.startOfDay(for: $0.timeStamp ?? Date()) })
     }
-    
-    // MARK: - Save
-    
+
     private static func saveContext() {
         if context.hasChanges {
             do {
@@ -160,14 +130,12 @@ struct FoodLogDataStore {
             }
         }
     }
-    
-    // MARK: - Seed Sample Data
-    
+
     static func seedSampleDataIfNeeded() {
         let request: NSFetchRequest<CDFoodLog> = CDFoodLog.fetchRequest()
         let count = (try? context.count(for: request)) ?? 0
-        if count > 0 { return } // Already have data
-        
+        if count > 0 { return } 
+
         let sampleData: [(String, String?, Date, Double, Double, Double, Double, Double?, [ImpactTags], [Ingredient]?)] = [
             ("Greek Yogurt with Berries", "GreekYogurtWithBerries",
              Calendar.current.date(byAdding: .hour, value: -2, to: Date())!,
@@ -211,7 +179,7 @@ struct FoodLogDataStore {
              300, 18, 40, 3, nil,
              [.highProtein, .lowGlycemic, .wholeFood, .pcosFriendly], nil),
         ]
-        
+
         for (name, image, time, serving, protein, carbs, fats, customCal, tags, ingredients) in sampleData {
             let food = Food(
                 id: UUID(), name: name, image: image, timeStamp: time,
@@ -219,12 +187,11 @@ struct FoodLogDataStore {
                 fatsContent: fats, customCalories: customCal, tags: tags, ingredients: ingredients
             )
             let cdFood = CDFoodLog.from(food, context: context)
-            
-            // Link to CDDailyContext (Fix for Problem 4)
+
             let dailyContext = DailyActivityDataStore.shared.getOrCreateContext(for: food.timeStamp)
             cdFood.dailyContext = dailyContext
         }
-        
+
         saveContext()
         print("Seeded \(sampleData.count) sample CDFoodLog records")
     }

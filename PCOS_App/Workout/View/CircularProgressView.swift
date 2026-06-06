@@ -1,9 +1,3 @@
-//
-//  CircularProgressView.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 11/12/25.
-//
 import UIKit
 
 class CircularProgressView: UIView {
@@ -34,7 +28,6 @@ class CircularProgressView: UIView {
         }
     }
 
-    // 0.0 → 1.0
     var progress: CGFloat = 0
 
     override init(frame: CGRect) {
@@ -50,14 +43,12 @@ class CircularProgressView: UIView {
     private func setupLayers() {
         backgroundColor = .clear
 
-        // Background circle
         backgroundLayer.fillColor = UIColor.clear.cgColor
         backgroundLayer.strokeColor = trackColor.cgColor
         backgroundLayer.lineWidth = lineWidth
         backgroundLayer.lineCap = .round
         layer.addSublayer(backgroundLayer)
 
-        // Foreground/progress circle
         progressLayer.fillColor = UIColor.clear.cgColor
         progressLayer.strokeColor = progressColor.cgColor
         progressLayer.lineWidth = lineWidth
@@ -84,10 +75,9 @@ class CircularProgressView: UIView {
         progressLayer.path = circlePath.cgPath
     }
 
-    
     func setProgress(to value: Float, animated: Bool = true) {
                 let clampedValue = max(0, min(1, value))
-                
+
                 if animated {
                 let animation = CABasicAnimation(keyPath: "strokeEnd")
                 animation.fromValue = progressLayer.strokeEnd

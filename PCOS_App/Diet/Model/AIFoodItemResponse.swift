@@ -1,10 +1,3 @@
-//
-//  AIFoodItemResponse.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 22/01/26.
-//
-
 import Foundation
 
 struct AIIngredient: Codable {

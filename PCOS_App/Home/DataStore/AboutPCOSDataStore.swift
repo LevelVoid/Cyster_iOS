@@ -1,10 +1,3 @@
-//
-//  AboutPCOSDataStore.swift
-//  PCOS_App
-//
-//  Created by Dnyaneshwari Gogawale on 23/02/26.
-//
-
 import Foundation
 
 final class AboutPCOSDataStore {
@@ -20,7 +13,6 @@ final class AboutPCOSDataStore {
             imageName: "pcos_diet",
             contentBlocks: [
 
-                // Intro paragraph
                 ContentBlock(
                     heading: nil,
                     body: """
@@ -29,7 +21,6 @@ Up to 50–75% of people with PCOS experience insulin resistance, which can lead
                     imageName: nil
                 ),
 
-                // Foods that worsen symptoms
                 ContentBlock(
                     heading: "Foods That Can Worsen Symptoms",
                     body: """
@@ -38,7 +29,6 @@ Highly processed foods tend to increase inflammation and blood sugar spikes, whi
                     imageName: nil
                 ),
 
-                // Support foods section
                 ContentBlock(
                     heading: "Food Choices That Support PCOS Recovery",
                     body: """
@@ -46,10 +36,9 @@ Food isn’t punishment, it’s daily hormone support. Simple swaps like dal, gr
 
 Easy wins – dal-chawal with veggies, paneer sabzi roti, curd with nuts, roasted chana snacks. Small choices daily matter more than strict diets.
 """,
-                    imageName: "pcos_food_support" // add this asset
+                    imageName: "pcos_food_support" 
                 ),
 
-                // Conclusion
                 ContentBlock(
                     heading: "Conclusion",
                     body: """
@@ -59,7 +48,6 @@ You don’t need to overhaul your entire pantry overnight. Small daily choices a
                 )
             ]
         )
-
 
         let psychologicalSection = AboutPCOSSection(
             title: "Psychosocial Aspects of PCOS",

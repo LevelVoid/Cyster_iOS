@@ -1,10 +1,3 @@
-//
-//  NameViewController.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 17/01/26.
-//
-
 import UIKit
 
 class NameViewController: UIViewController, UITextFieldDelegate {
@@ -20,7 +13,6 @@ class NameViewController: UIViewController, UITextFieldDelegate {
 
         nextButton.alpha = 0.5
 
-        // Listen for text changes
         nameField.addTarget(self, action: #selector(nameFieldChanged), for: .editingChanged)
 
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
@@ -33,13 +25,11 @@ class NameViewController: UIViewController, UITextFieldDelegate {
         nextButton.alpha = hasText ? 1.0 : 0.5
     }
 
-    // Fallback: always dismiss keyboard when touching the view
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
         super.touchesBegan(touches, with: event)
     }
 
-    // Dismiss keyboard when user taps Return key
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true

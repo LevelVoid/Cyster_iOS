@@ -1,33 +1,14 @@
-
-//
-//  WalkthroughOverlayView.swift
-//  PCOS_App
-//
-//  iOS-native TipKit-style walkthrough overlay.
-//  • Semi-transparent dim layer with a clear spotlight cutout over the target
-//  • Pulsing white beacon dot on the target
-//  • Floating white tip card (icon + title + body + close ×) with an arrow
-//    pointing toward the target – identical aesthetics to Apple's TipKit
-//
-
 import UIKit
 import TipKit
 
-// MARK: - Overlay View
-
 final class WalkthroughOverlayView: UIView {
 
-    // MARK: Callbacks
     var onTargetTapped: (() -> Void)?
 
-    // MARK: Sub-views
     private let pulseDot    = UIView()
-    private let tapIndicator = UIView()   // invisible tap zone over the cutout
+    private let tapIndicator = UIView()   
 
-    // MARK: State
     private var cutoutFrame: CGRect = .zero
-
-    // MARK: - Factory
 
     static func install(
         in parent: UIView,
@@ -43,13 +24,10 @@ final class WalkthroughOverlayView: UIView {
         return ov
     }
 
-    // MARK: - Setup
-
     private func setupContents(targetFrame: CGRect) {
         backgroundColor = .clear
         cutoutFrame = targetFrame.insetBy(dx: -8, dy: -8)
 
-        // ── Tap passthrough zone ──────────────────────────────────────────────
         tapIndicator.frame = cutoutFrame
         tapIndicator.backgroundColor = .clear
         addSubview(tapIndicator)
@@ -57,7 +35,6 @@ final class WalkthroughOverlayView: UIView {
         tapIndicator.addGestureRecognizer(
             UITapGestureRecognizer(target: self, action: #selector(cutoutTapped)))
 
-        // ── Pulsing beacon dot ────────────────────────────────────────────────
         let dotSize: CGFloat = 18
         pulseDot.frame = CGRect(
             x: cutoutFrame.midX - dotSize / 2,
@@ -72,8 +49,6 @@ final class WalkthroughOverlayView: UIView {
         addSubview(pulseDot)
     }
 
-    // MARK: - Draw dim + spotlight cutout
-
     override func draw(_ rect: CGRect) {
         super.draw(rect)
         guard let ctx = UIGraphicsGetCurrentContext() else { return }
@@ -87,8 +62,6 @@ final class WalkthroughOverlayView: UIView {
         ctx.fillPath()
         ctx.setBlendMode(.normal)
     }
-
-    // MARK: - Animations
 
     private func animateIn() {
         alpha = 0
@@ -132,15 +105,13 @@ final class WalkthroughOverlayView: UIView {
         }
     }
 
-    // MARK: - Hit testing
-
     @objc private func cutoutTapped() { onTargetTapped?() }
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         if tapIndicator.frame.contains(point) { return tapIndicator }
-        return self   // dim area blocks all other touches
+        return self   
     }
-    
+
     @available(iOS 17.0, *)
     func observeTip(_ tip: any Tip, popover: UIViewController? = nil, onInvalidated: (() -> Void)? = nil) {
         Task {
@@ -161,5 +132,4 @@ final class WalkthroughOverlayView: UIView {
         }
     }
 }
-
 

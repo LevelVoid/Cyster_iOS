@@ -1,14 +1,3 @@
-//
-//  Extensions.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 21/01/26.
-//
-
-//
-//  UIImageView+FullRoundedCorner.swift
-//
-
 import UIKit
 
 extension UIImageView {
@@ -25,8 +14,6 @@ extension UIImageView {
         }
     }
 
-    /// Makes the image view fully rounded (circular) if possible.
-    /// This method is idempotent and can be called multiple times safely.
     func addFullRoundedCorner() {
         guard !isFullRounded else { return }
         isFullRounded = true
@@ -35,8 +22,6 @@ extension UIImageView {
         applyRoundedIfNeeded()
     }
 
-    /// Applies corner radius based on current frame size if `addFullRoundedCorner()` was called.
-    /// Should be called during layout updates to ensure correct rounding.
     func applyRoundedIfNeeded() {
         guard isFullRounded else { return }
         let radius = min(bounds.width, bounds.height) / 2

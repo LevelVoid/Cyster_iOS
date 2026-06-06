@@ -1,51 +1,43 @@
-//
-//  MetricsViewController.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 21/01/26.
-//
-
 import UIKit
 import SwiftUI
 
 class MetricsViewController: UIViewController {
-    
+
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     @IBOutlet weak var contentLabel: UILabel!
     @IBOutlet weak var headerLabel: UILabel!
     @IBOutlet weak var chartView: UIView!
     @IBOutlet weak var contentView: UIView!
-    
+
     var goalType: GoalType = .calories
     private var dataPoints: [WorkoutChartDataPoint] = []
     private var hostingController: UIHostingController<WorkoutChartView>?
     private var currentTimeRange: WorkoutChartTimeRange = .week
-    
-    // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         print("MetricsViewController loaded with goalType: \(goalType.title)")
-        
+
         title = goalType.title
         navigationController?.navigationBar.prefersLargeTitles = false
-        
-        segmentedControl?.selectedSegmentIndex = 0  // Week
+
+        segmentedControl?.selectedSegmentIndex = 0  
         segmentedControl?.addTarget(self, action: #selector(timeSegmentChanged(_:)), for: .valueChanged)
-        
+
         setupStyling()
         loadData(for: .week)
         setupChart()
         updateInsights()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         loadData(for: currentTimeRange)
         updateChart()
         updateInsights()
     }
-    
+
     @objc func timeSegmentChanged(_ sender: UISegmentedControl) {
         let range = WorkoutChartTimeRange(rawValue: sender.selectedSegmentIndex) ?? .week
         print("Time range changed to: \(range)")
@@ -54,8 +46,6 @@ class MetricsViewController: UIViewController {
         updateChart()
         updateInsights()
     }
-    
-    // MARK: - Data Loading
 
     private func loadData(for range: WorkoutChartTimeRange) {
         currentTimeRange = range
@@ -69,8 +59,6 @@ class MetricsViewController: UIViewController {
         }
     }
 
-    // MARK: Calories — HealthKit per-day background + CompletedWorkoutsDataStore session cals
-    // MARK: Calories — Compatible with both HealthKit and CDDailyContext dummy data
     private func loadCaloriesData(for range: WorkoutChartTimeRange) {
         let calendar = Calendar.current
         let now = Date()
@@ -91,12 +79,11 @@ class MetricsViewController: UIViewController {
             func getTotalCals(on day: Date) -> Double {
                 let sessionCals = allSessions.filter { calendar.isDate($0.date, inSameDayAs: day) }.reduce(0.0) { $0 + $1.caloriesBurned }
                 let hkCals = hkCalsByDay[day] ?? 0
-                
-                // If real data exists, use it
+
                 if hkCals > 0 || sessionCals > 0 {
                     return hkCals > 0 ? hkCals + sessionCals : sessionCals
                 }
-                // Otherwise fall back to CDDailyContext dummy data
+
                 let dummy = allDummyActivities.first(where: { calendar.isDate($0.date, inSameDayAs: day) })
                 return Double(dummy?.totalCalories ?? 0)
             }
@@ -115,7 +102,7 @@ class MetricsViewController: UIViewController {
             case .month:
                 for weekOffset in (0..<4).reversed() {
                     guard let weekStart = calendar.date(byAdding: .weekOfYear, value: -weekOffset, to: now)
-//                          let weekEnd   = calendar.date(byAdding: .day, value: 7, to: weekStart)
+
                     else { continue }
                     var weekTotal = 0.0
                     for d in 0..<7 {
@@ -133,7 +120,7 @@ class MetricsViewController: UIViewController {
                     let comps = calendar.dateComponents([.year, .month], from: date)
                     guard let monthStart = calendar.date(from: comps),
                           let monthEnd   = calendar.date(byAdding: .month, value: 1, to: monthStart) else { continue }
-                    
+
                     let days = calendar.range(of: .day, in: .month, for: monthStart)?.count ?? 30
                     var monthTotal = 0.0
                     var cur = monthStart
@@ -153,9 +140,6 @@ class MetricsViewController: UIViewController {
         }
     }
 
-
-    // MARK: Steps — HealthKit per-day (real data)
-    // MARK: Steps — Compatible with both HealthKit and CDDailyContext dummy data
     private func loadStepsData(for range: WorkoutChartTimeRange) {
         let calendar = Calendar.current
         let now = Date()
@@ -169,17 +153,17 @@ class MetricsViewController: UIViewController {
 
         HealthKitManager.shared.fetchDailySteps(from: startDate, to: now) { [weak self] stepsByDay in
             guard let self = self else { return }
-            
+
             let allDummyActivities = DailyActivityDataStore.shared.loadAll()
-            
+
             func getSteps(on day: Date) -> Double {
                 let hkSteps = stepsByDay[day] ?? 0
                 if hkSteps > 0 { return Double(hkSteps) }
-                // Fallback to dummy data
+
                 let dummy = allDummyActivities.first(where: { calendar.isDate($0.date, inSameDayAs: day) })
                 return Double(dummy?.steps ?? 0)
             }
-            
+
             var newData: [WorkoutChartDataPoint] = []
 
             switch range {
@@ -194,7 +178,7 @@ class MetricsViewController: UIViewController {
             case .month:
                 for weekOffset in (0..<4).reversed() {
                     guard let weekStart = calendar.date(byAdding: .weekOfYear, value: -weekOffset, to: now)
-//                          let weekEnd   = calendar.date(byAdding: .day, value: 7, to: weekStart)
+
                     else { continue }
                     var weekTotal = 0.0
                     for d in 0..<7 {
@@ -212,7 +196,7 @@ class MetricsViewController: UIViewController {
                     let comps = calendar.dateComponents([.year, .month], from: date)
                     guard let monthStart = calendar.date(from: comps),
                           let monthEnd   = calendar.date(byAdding: .month, value: 1, to: monthStart) else { continue }
-                    
+
                     let days = calendar.range(of: .day, in: .month, for: monthStart)?.count ?? 30
                     var monthTotal = 0.0
                     var cur = monthStart
@@ -232,22 +216,18 @@ class MetricsViewController: UIViewController {
         }
     }
 
-
-    // MARK: Duration — CompletedWorkoutsDataStore (actual session durations only)
-    // MARK: Duration — Compatible with Real Workouts and CDDailyContext
     private func loadDurationData(for range: WorkoutChartTimeRange) {
         let calendar = Calendar.current
         let now = Date()
         let allWorkouts = CompletedWorkoutsDataStore.shared.loadAll()
         let allDummyActivities = DailyActivityDataStore.shared.loadAll()
-        
+
         var newData: [WorkoutChartDataPoint] = []
 
         func getMinutes(on day: Date) -> Double {
             let sessionDuration = allWorkouts.filter { calendar.isDate($0.date, inSameDayAs: day) }.reduce(0) { $0 + $1.durationSeconds }
             if sessionDuration > 0 { return Double(sessionDuration) / 60.0 }
-            
-            // Fallback
+
             let dummy = allDummyActivities.first(where: { calendar.isDate($0.date, inSameDayAs: day) })
             return Double(dummy?.activeDurationSeconds ?? 0) / 60.0
         }
@@ -279,7 +259,7 @@ class MetricsViewController: UIViewController {
                 let comps = calendar.dateComponents([.year, .month], from: date)
                 guard let monthStart = calendar.date(from: comps),
                       let monthEnd   = calendar.date(byAdding: .month, value: 1, to: monthStart) else { continue }
-                
+
                 let days = calendar.range(of: .day, in: .month, for: monthStart)?.count ?? 30
                 var monthTotal = 0.0
                 var cur = monthStart
@@ -295,45 +275,42 @@ class MetricsViewController: UIViewController {
         self.updateChart()
     }
 
-
-
-    // MARK: - View Setup
     private func setupChart() {
         guard let chartView = chartView else {
             print("chartView outlet is nil!")
             return
         }
-        
+
         print("Setting up chart with \(dataPoints.count) data points")
-        
+
         let swiftUIView = WorkoutChartView(
             dataPoints: dataPoints,
             goalType: goalType,
             timeRange: currentTimeRange
         )
         let hosting = UIHostingController(rootView: swiftUIView)
-        
+
         addChild(hosting)
         hosting.view.frame = chartView.bounds
         hosting.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         hosting.view.backgroundColor = .clear
-        
+
         chartView.addSubview(hosting.view)
         hosting.didMove(toParent: self)
-        
+
         self.hostingController = hosting
-        
+
         print("Chart setup complete")
     }
-    
+
     private func updateChart() {
         print("Updating chart with \(dataPoints.count) data points")
-        
+
         guard hostingController != nil else {
             setupChart()
             return
         }
-        
+
         let swiftUIView = WorkoutChartView(
             dataPoints: dataPoints,
             goalType: goalType,
@@ -341,18 +318,18 @@ class MetricsViewController: UIViewController {
         )
         hostingController?.rootView = swiftUIView
     }
-    
+
     private func setupStyling() {
         chartView?.layer.cornerRadius = 16
         chartView?.clipsToBounds = true
         chartView?.backgroundColor = .white
         contentView?.layer.cornerRadius = 16
     }
-    
+
     private func updateInsights() {
         contentLabel?.text = getImportanceText()
     }
-    
+
     private func getImportanceText() -> String {
         switch goalType {
         case .calories:

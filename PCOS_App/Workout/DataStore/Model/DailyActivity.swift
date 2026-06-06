@@ -6,8 +6,7 @@ struct DailyActivity: Codable {
     var caloriesBurned: Int
     var activeDurationSeconds: Int
     var healthKitCalories: Int
-    
-    // Total calories metric used by Charts
+
     var totalCalories: Int {
         if healthKitCalories > 0 {
             return healthKitCalories + caloriesBurned

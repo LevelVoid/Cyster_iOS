@@ -3,8 +3,7 @@ import CoreData
 
 @objc(CDWorkoutExercise)
 public class CDWorkoutExercise: NSManagedObject {
-    
-    // Decode/encode [ExerciseSet] from setsData blob
+
     var sets: [ExerciseSet] {
         get {
             guard let data = setsData else { return [] }
@@ -14,8 +13,7 @@ public class CDWorkoutExercise: NSManagedObject {
             setsData = try? JSONEncoder().encode(newValue)
         }
     }
-    
-    // Decode/encode Exercise from exerciseData blob
+
     var exercise: Exercise? {
         get {
             guard let data = exerciseData else { return nil }
@@ -25,8 +23,7 @@ public class CDWorkoutExercise: NSManagedObject {
             exerciseData = try? JSONEncoder().encode(newValue)
         }
     }
-    
-    // Convert to WorkoutExercise struct for UI
+
     func toWorkoutExercise() -> WorkoutExercise? {
         guard let exercise = exercise else { return nil }
         return WorkoutExercise(
@@ -36,8 +33,7 @@ public class CDWorkoutExercise: NSManagedObject {
             notes: notes
         )
     }
-    
-    // Create from WorkoutExercise struct
+
     @discardableResult
     static func from(_ we: WorkoutExercise, index: Int, context: NSManagedObjectContext) -> CDWorkoutExercise {
         let cd = CDWorkoutExercise(context: context)

@@ -1,10 +1,3 @@
-//
-//  PCOSResearchTool.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 23/03/26.
-//
-
 import Foundation
 import NaturalLanguage
 import FoundationModels
@@ -47,7 +40,6 @@ struct PCOSResearchTool: Tool {
         var phenotype: String?
     }
 
-    // ── Singleton data store ───────────────────────────────────────────────
     private static var chunks: [ResearchChunk] = []
     private static var isLoaded = false
 

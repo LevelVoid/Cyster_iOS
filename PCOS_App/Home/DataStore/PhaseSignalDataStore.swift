@@ -1,10 +1,3 @@
-//
-//  PhaseSignalDataStore.swift
-//  PCOS_App
-//
-//  Created by Dnyaneshwari Gogawale on 19/02/26.
-//
-// MARK: - PhaseSignalDataStore
 import Foundation
 
 final class PhaseSignalDataStore {
@@ -25,23 +18,19 @@ final class PhaseSignalDataStore {
         switch phase {
         case .menstrual:
             return menstrualSignal
-            //return ovulationSignal
+
         case .ovulation:
             return ovulationSignal
         case .luteal:
             return lutealSignal
         case .follicular:
             return follicularSignal
-            
+
         default:
             return nil
         }
     }
 }
-
-
-
-// MARK: - Menstrual Phase Data
 
 private let menstrualSignal = PhaseSignal(
     phase: .menstrual,
@@ -90,7 +79,6 @@ private let menstrualSignal = PhaseSignal(
 )
 private let menstrualSupportActions: [SupportAction] = [
 
-    // MARK: Physical Care
     SupportAction(
         category: .physicalCare,
         text: "Try gentle stretches like Cat-Cow or Child’s pose to ease cramps."
@@ -104,7 +92,6 @@ private let menstrualSupportActions: [SupportAction] = [
         text: "Avoid intense workouts today and opt for light movement."
     ),
 
-    // MARK: Diet & Nutrition
     SupportAction(
         category: .dietNutrition,
         text: "Eat anti-inflammatory foods like leafy greens, berries, nuts, olive oil, and turmeric."
@@ -118,7 +105,6 @@ private let menstrualSupportActions: [SupportAction] = [
         text: "Drink enough water to help reduce bloating and fatigue."
     ),
 
-    // MARK: Miscellaneous
     SupportAction(
         category: .miscellaneous,
         text: "Prioritize good sleep and give your body permission to rest."
@@ -132,9 +118,6 @@ private let menstrualSupportActions: [SupportAction] = [
         text: "Avoid touching or picking acne-prone skin."
     )
 ]
-// MARK: - Ovulation Phase Data
-
-// MARK: - Ovulation Phase Data
 
 private let ovulationSignal = PhaseSignal(
     phase: .ovulation,
@@ -188,7 +171,6 @@ private let ovulationSignal = PhaseSignal(
 )
 private let ovulationSupportActions: [SupportAction] = [
 
-    // MARK: Physical Care
     SupportAction(
         category: .physicalCare,
         text: "Energy levels may be higher during ovulation. Moderate exercise or strength training can feel easier during this phase."
@@ -199,7 +181,6 @@ private let ovulationSupportActions: [SupportAction] = [
         text: "Stay hydrated and maintain balanced meals to support hormone balance and steady energy."
     ),
 
-    // MARK: Diet & Nutrition
     SupportAction(
         category: .dietNutrition,
         text: "Eating protein, healthy fats, and fiber can help stabilize blood sugar, which is especially important for people with PCOS."
@@ -210,7 +191,6 @@ private let ovulationSupportActions: [SupportAction] = [
         text: "Foods rich in magnesium and zinc may support hormonal health."
     ),
 
-    // MARK: Miscellaneous
     SupportAction(
         category: .miscellaneous,
         text: "Fertility is highest around ovulation. Tracking your cycle can help you better understand your body's patterns."
@@ -221,9 +201,6 @@ private let ovulationSupportActions: [SupportAction] = [
         text: "Some people notice increased confidence, sociability, or sex drive during ovulation due to higher estrogen levels."
     )
 ]
-
-
-// MARK: - Follicular Phase Data
 
 private let follicularSignal = PhaseSignal(
     phase: .follicular,
@@ -277,7 +254,6 @@ private let follicularSignal = PhaseSignal(
 )
 private let follicularSupportActions: [SupportAction] = [
 
-    // MARK: Physical Care
     SupportAction(
         category: .physicalCare,
         text: "Energy may begin to improve during this phase, making it a good time to gradually increase physical activity."
@@ -288,7 +264,6 @@ private let follicularSupportActions: [SupportAction] = [
         text: "Strength training or moderate workouts may feel easier as estrogen rises."
     ),
 
-    // MARK: Diet & Nutrition
     SupportAction(
         category: .dietNutrition,
         text: "Focus on balanced meals with protein, healthy fats, and fiber to support blood sugar stability in PCOS."
@@ -299,7 +274,6 @@ private let follicularSupportActions: [SupportAction] = [
         text: "Include leafy greens, whole grains, and anti-inflammatory foods."
     ),
 
-    // MARK: Miscellaneous
     SupportAction(
         category: .miscellaneous,
         text: "Mental clarity and motivation often increase in this phase, making it a good time for planning or creative work."
@@ -310,7 +284,6 @@ private let follicularSupportActions: [SupportAction] = [
         text: "Tracking your cycle can help you recognize when ovulation may occur."
     )
 ]
-// MARK: - Luteal Phase Data
 
 private let lutealSignal = PhaseSignal(
     phase: .luteal,
@@ -364,7 +337,6 @@ private let lutealSignal = PhaseSignal(
 )
 private let lutealSupportActions: [SupportAction] = [
 
-    // MARK: Physical Care
     SupportAction(
         category: .physicalCare,
         text: "Gentle exercise such as walking, yoga, or stretching may help reduce bloating and discomfort."
@@ -375,7 +347,6 @@ private let lutealSupportActions: [SupportAction] = [
         text: "Prioritize sleep and rest as energy levels may decrease in this phase."
     ),
 
-    // MARK: Diet & Nutrition
     SupportAction(
         category: .dietNutrition,
         text: "Balanced meals with protein and complex carbohydrates may help stabilize blood sugar."
@@ -386,7 +357,6 @@ private let lutealSupportActions: [SupportAction] = [
         text: "Magnesium-rich foods such as nuts, seeds, and leafy greens may support mood and muscle relaxation."
     ),
 
-    // MARK: Miscellaneous
     SupportAction(
         category: .miscellaneous,
         text: "Mood changes are common during this phase. Gentle self-care and stress management can help."

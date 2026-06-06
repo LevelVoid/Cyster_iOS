@@ -1,31 +1,20 @@
-//
-//  OnboardingPeriodLogViewController.swift
-//  PCOS_App
-//
-//  Created by Abhinaya Rajarajan on 06/03/26.
-//
-
 import UIKit
 
 class OnboardingPeriodLogViewController: UIViewController {
 
-    // MARK: - UI
     private var collectionView: UICollectionView!
     private var continueButton: UIButton!
     private var titleLabel: UILabel!
     private var subtitleLabel: UILabel!
 
-    // MARK: - State
     private var selectedDates: Set<Date> = []
     private var displayedMonths: [Date] = []
     private let calendar = Calendar.current
     private var hasScrolledToCurrentMonth = false
 
-    // MARK: - Lifecycle
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        //view.backgroundColor = UIColor(hex: "#FCEEED")
+
         setupLabels()
         setupDisplayedMonths()
         setupCollectionView()
@@ -47,8 +36,6 @@ class OnboardingPeriodLogViewController: UIViewController {
             }
         }
     }
-
-    // MARK: - Setup
 
     private func setupLabels() {
         titleLabel = UILabel()
@@ -114,8 +101,7 @@ class OnboardingPeriodLogViewController: UIViewController {
         continueButton.translatesAutoresizingMaskIntoConstraints = false
         continueButton.addTarget(self, action: #selector(continueTapped), for: .touchUpInside)
         view.addSubview(continueButton)
-        
-        // radius =28,left,right=32,height=56
+
     }
 
     private func setupConstraints() {
@@ -140,10 +126,8 @@ class OnboardingPeriodLogViewController: UIViewController {
         ])
     }
 
-    // MARK: - Data
-
     private func loadSavedDates() {
-        // Load any already-saved period dates (e.g. from a previous onboarding visit)
+
         if let timestamps = UserDefaults.standard.array(forKey: "SavedPeriodDates") as? [TimeInterval] {
             selectedDates = Set(timestamps.map { calendar.startOfDay(for: Date(timeIntervalSince1970: $0)) })
         }
@@ -156,8 +140,6 @@ class OnboardingPeriodLogViewController: UIViewController {
         UserDefaults.standard.synchronize()
     }
 
-    // MARK: - Actions
-
     @objc private func continueTapped() {
         if !selectedDates.isEmpty {
             let sortedDates = selectedDates.sorted()
@@ -166,8 +148,6 @@ class OnboardingPeriodLogViewController: UIViewController {
         }
         performSegue(withIdentifier: "showHeight", sender: nil)
     }
-
-    // MARK: - Calendar Helpers
 
     private func getDaysInMonth(for date: Date) -> [Date?] {
         guard let monthInterval = calendar.dateInterval(of: .month, for: date),
@@ -237,8 +217,6 @@ class OnboardingPeriodLogViewController: UIViewController {
     }
 }
 
-// MARK: - UICollectionViewDataSource
-
 extension OnboardingPeriodLogViewController: UICollectionViewDataSource {
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -271,8 +249,6 @@ extension OnboardingPeriodLogViewController: UICollectionViewDataSource {
     }
 }
 
-// MARK: - UICollectionViewDelegate
-
 extension OnboardingPeriodLogViewController: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -298,8 +274,6 @@ extension OnboardingPeriodLogViewController: UICollectionViewDelegate {
     }
 }
 
-// MARK: - UICollectionViewDelegateFlowLayout
-
 extension OnboardingPeriodLogViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -311,8 +285,6 @@ extension OnboardingPeriodLogViewController: UICollectionViewDelegateFlowLayout 
         CGSize(width: collectionView.bounds.width, height: 90)
     }
 }
-
-// MARK: - OnboardingCalendarDayCell
 
 class OnboardingCalendarDayCell: UICollectionViewCell {
 
@@ -439,8 +411,6 @@ class OnboardingCalendarDayCell: UICollectionViewCell {
         selectionView.layer.sublayers?.removeAll(where: { $0.name == "DashedBorder" })
     }
 }
-
-// MARK: - OnboardingCalendarMonthHeader
 
 class OnboardingCalendarMonthHeader: UICollectionReusableView {
 

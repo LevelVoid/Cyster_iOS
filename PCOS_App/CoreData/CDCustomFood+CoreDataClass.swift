@@ -3,7 +3,7 @@ import CoreData
 
 @objc(CDCustomFood)
 public class CDCustomFood: NSManagedObject {
-    
+
     var ingredients: [Ingredient]? {
         get {
             guard let data = ingredientsData else { return nil }
@@ -13,11 +13,10 @@ public class CDCustomFood: NSManagedObject {
             ingredientsData = try? JSONEncoder().encode(newValue)
         }
     }
-    
-    /// Create a Food struct for logging from this template
+
     func toFood() -> Food {
         Food(
-            id: UUID(),  // new ID each time — it's a new log
+            id: UUID(),  
             name: name ?? "Unknown",
             image: image,
             timeStamp: Date(),
@@ -29,8 +28,7 @@ public class CDCustomFood: NSManagedObject {
             ingredients: ingredients
         )
     }
-    
-    /// Create from a barcode/AI scan result
+
     @discardableResult
     static func from(_ food: Food, isAI: Bool, context: NSManagedObjectContext) -> CDCustomFood {
         let cd = CDCustomFood(context: context)

@@ -6,10 +6,10 @@ class DietViewController: UIViewController {
 
     var todaysFoods: [Food] = []
 
-    @IBOutlet weak var collectionView: UICollectionView!  // ← was tableView
+    @IBOutlet weak var collectionView: UICollectionView!  
     @IBOutlet weak var AddMealButton: UIButton!
-    private var nutritionCell: NutritionHeaderCollectionViewCell?  // ← was headerView
-  
+    private var nutritionCell: NutritionHeaderCollectionViewCell?  
+
     private var mealOutput: MealRecommendationOutput?
     private var isMealLoading = false
     private var mealError: String?
@@ -18,29 +18,25 @@ class DietViewController: UIViewController {
     private weak var tipPopover: UIViewController?
     private var isShowingWalkthroughCongrats: Bool = false
     private var walkthroughMealLogged: Bool = false
- 
-    // Sizing prototype for dynamic height
+
     private lazy var sizingSuggestionCell: FoodSuggestionsCollectionViewCell = {
         let cell = FoodSuggestionsCollectionViewCell.nib().instantiate(withOwner: nil).first as! FoodSuggestionsCollectionViewCell
         return cell
     }()
- 
-    // MARK: - Lifecycle
- 
+
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Diet"
-        
-        // MARK: - Accessibility Identifiers (for XCUITests)
+
         collectionView.accessibilityIdentifier = "diet_collectionView"
         AddMealButton.accessibilityIdentifier = "diet_addMealButton"
-        
+
         setupNavigation()
         setupCollectionView()
         setupAddButtonStyle()
         WalkthroughManager.shared.addDelegate(self)
     }
- 
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -48,16 +44,14 @@ class DietViewController: UIViewController {
         Task { await refreshMealRecommendationsIfNeeded() }
         handleWalkthroughOnAppear()
     }
- 
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         walkthroughOverlay?.dismiss(animated: false)
         walkthroughOverlay = nil
         tipPopover?.dismiss(animated: false)
     }
-    
-    // MARK: - Setup
- 
+
     private func setupNavigation() {
         let calendar = UIBarButtonItem(
             image: UIImage(systemName: "calendar"),
@@ -67,7 +61,7 @@ class DietViewController: UIViewController {
         )
         navigationItem.rightBarButtonItem = calendar
     }
- 
+
     private func setupCollectionView() {
         collectionView.register(
             NutritionHeaderCollectionViewCell.nib(),
@@ -90,21 +84,21 @@ class DietViewController: UIViewController {
             NoFoodCollectionViewCell.nib(),
             forCellWithReuseIdentifier: NoFoodCollectionViewCell.identifier
         )
- 
+
         collectionView.dataSource = self
         collectionView.delegate = self
- 
+
         let bgColor = UIColor(red: 252/255, green: 238/255, blue: 237/255, alpha: 1)
         collectionView.backgroundColor = bgColor
         view.backgroundColor = bgColor
- 
+
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 0
         layout.minimumInteritemSpacing = 0
         collectionView.collectionViewLayout = layout
     }
- 
+
     private func setupAddButtonStyle() {
         var config = UIButton.Configuration.filled()
         config.cornerStyle = .capsule
@@ -114,17 +108,17 @@ class DietViewController: UIViewController {
         config.baseForegroundColor = .white
         AddMealButton.configuration = config
         AddMealButton.setTitle("", for: .normal)
- 
+
         AddMealButton.layer.shadowColor = UIColor(hex: "#fe7a96").cgColor
         AddMealButton.layer.shadowOpacity = 0.3
         AddMealButton.layer.shadowOffset = CGSize(width: 0, height: 4)
         AddMealButton.layer.shadowRadius = 6
- 
+
         if let superview = AddMealButton.superview {
             AddMealButton.removeFromSuperview()
             superview.addSubview(AddMealButton)
         }
- 
+
         AddMealButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             AddMealButton.widthAnchor.constraint(equalToConstant: 44),
@@ -132,19 +126,17 @@ class DietViewController: UIViewController {
             AddMealButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -24),
             AddMealButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24)
         ])
- 
+
         AddMealButton.addTarget(self, action: #selector(addButtonTapped(_:)), for: .touchUpInside)
     }
- 
-    // MARK: - Actions
- 
+
     @objc func calendarTapped() {
         if let vc = storyboard?.instantiateViewController(withIdentifier: "dietLogs")
             as? DietCalendarLogsViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
- 
+
     @IBAction func addButtonTapped(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: "Diet", bundle: nil)
         guard let addVC = storyboard.instantiateViewController(withIdentifier: "AddMealViewController")
@@ -159,31 +151,27 @@ class DietViewController: UIViewController {
         addVC.dietDelegate = self
         navigationController?.pushViewController(addVC, animated: true)
     }
- 
-    // MARK: - Data
- 
+
     private func filterTodaysFoods() {
         todaysFoods = FoodLogDataStore.todaysMeal.sorted { $0.timeStamp > $1.timeStamp }
         collectionView.reloadData()
         print("DietVC — found \(todaysFoods.count) foods for today")
     }
- 
-    // MARK: - Meal Suggestions (cached)
- 
+
     private func refreshMealRecommendationsIfNeeded() async {
         let currentCount = fetchTodayFoodLogCount()
- 
+
         if let _ = mealOutput, currentCount == lastFoodLogCount {
             await MainActor.run {
                 self.collectionView.reloadSections(IndexSet(integer: 1))
             }
             return
         }
- 
+
         guard !isMealLoading else { return }
         isMealLoading = true
         lastFoodLogCount = currentCount
- 
+
         do {
             let context = await SharedContextEngine.shared.buildContext()
             print("DietVC — context built, calling AI for suggestions...")
@@ -204,14 +192,13 @@ class DietViewController: UIViewController {
             }
         }
     }
- 
+
     private func fetchTodayFoodLogCount() -> Int {
         return FoodLogDataStore.todaysMeal.count
     }
- 
-    /// Compute observation lines in Swift — guarantees correct waterfall priority
+
     private func computeObservationLines() -> (observation: String, subObservation: String) {
-        // Use same goal computation as the macro tracker UI
+
         guard let user = ProfileService.shared.buildUserProfile() else {
             return ("Track your meals to get personalized suggestions.", "Start logging to see your macro gaps.")
         }
@@ -219,17 +206,16 @@ class DietViewController: UIViewController {
         let goalP = Int(round(Double(goals.diet.startingProteinGrams) / 5.0)) * 5
         let goalC = Int(round(Double(goals.diet.startingCarbsGrams) / 5.0)) * 5
         let goalF = Int(round(Double(goals.diet.startingFatsGrams) / 5.0)) * 5
-        
+
         let meals = FoodLogDataStore.todaysMeal
         let totalP = Int(meals.reduce(0.0) { $0 + $1.proteinContent })
         let totalC = Int(meals.reduce(0.0) { $0 + $1.carbsContent })
         let totalF = Int(meals.reduce(0.0) { $0 + $1.fatsContent })
-        
+
         let proteinGap = max(0, goalP - totalP)
         let carbsGap   = max(0, goalC - totalC)
         let fatsGap    = max(0, goalF - totalF)
-        
-        // Waterfall: Protein → Carbs → Fats
+
         if proteinGap > 0 {
             return ("You're \(proteinGap)g short on protein today.",
                     "Add a high-protein meal to stay on track.")
@@ -244,29 +230,26 @@ class DietViewController: UIViewController {
                     "Great job keep up the balanced eating.")
         }
     }
- 
-    /// Returns true when all macro goals are met
+
     private func allGoalsMet() -> Bool {
         guard let user = ProfileService.shared.buildUserProfile() else { return false }
         let goals = GoalEngine.generateGoals(for: user)
         let goalP = Int(round(Double(goals.diet.startingProteinGrams) / 5.0)) * 5
         let goalC = Int(round(Double(goals.diet.startingCarbsGrams) / 5.0)) * 5
         let goalF = Int(round(Double(goals.diet.startingFatsGrams) / 5.0)) * 5
-        
+
         let meals = FoodLogDataStore.todaysMeal
         let totalP = Int(meals.reduce(0.0) { $0 + $1.proteinContent })
         let totalC = Int(meals.reduce(0.0) { $0 + $1.carbsContent })
         let totalF = Int(meals.reduce(0.0) { $0 + $1.fatsContent })
-        
+
         return totalP >= goalP && totalC >= goalC && totalF >= goalF
     }
- 
-    // MARK: - Delete
- 
+
     private func deleteMeal(at foodIndex: Int) {
         guard foodIndex >= 0 && foodIndex < todaysFoods.count else { return }
         let mealToDelete = todaysFoods[foodIndex]
- 
+
         let alert = UIAlertController(
             title: "Delete Meal",
             message: "Are you sure you want to delete '\(mealToDelete.name)'?",
@@ -280,31 +263,29 @@ class DietViewController: UIViewController {
             self.todaysFoods.remove(at: foodIndex)
             self.collectionView.reloadData()
             self.lastFoodLogCount = -1
-            // Re-generate suggestions with updated macro gaps
+
             Task { await self.refreshMealRecommendationsIfNeeded() }
         })
         present(alert, animated: true)
     }
 }
- 
-// MARK: - UICollectionViewDataSource & UICollectionViewDelegateFlowLayout
- 
+
 extension DietViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
- 
+
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 3
     }
- 
+
     func collectionView(_ collectionView: UICollectionView,
                         numberOfItemsInSection section: Int) -> Int {
         return 1
     }
- 
+
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
- 
+
         switch indexPath.section {
         case 0:
             let cell = collectionView.dequeueReusableCell(
@@ -318,7 +299,7 @@ extension DietViewController: UICollectionViewDataSource, UICollectionViewDelega
             cell.backgroundColor = .systemBackground
             self.nutritionCell = cell
             return cell
- 
+
         case 1:
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: FoodSuggestionsCollectionViewCell.identifier,
@@ -341,7 +322,7 @@ extension DietViewController: UICollectionViewDataSource, UICollectionViewDelega
                 cell.showLoadingState()
             }
             return cell
- 
+
         case 2:
             if todaysFoods.isEmpty {
                 let cell = collectionView.dequeueReusableCell(
@@ -365,12 +346,12 @@ extension DietViewController: UICollectionViewDataSource, UICollectionViewDelega
                 cell.backgroundColor = .systemBackground
                 return cell
             }
- 
+
         default:
             fatalError("Unexpected section")
         }
     }
- 
+
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
@@ -386,11 +367,10 @@ extension DietViewController: UICollectionViewDataSource, UICollectionViewDelega
                 sizingSuggestionCell.bounds.size.width = width
                 sizingSuggestionCell.contentView.bounds.size.width = width
                 sizingSuggestionCell.configure(with: output)
-                
+
                 sizingSuggestionCell.setNeedsLayout()
                 sizingSuggestionCell.layoutIfNeeded()
 
-                // Calculate height based on width and Auto Layout
                 let size = sizingSuggestionCell.contentView.systemLayoutSizeFitting(
                     CGSize(width: width, height: UIView.layoutFittingCompressedSize.height),
                     withHorizontalFittingPriority: .required,
@@ -398,7 +378,7 @@ extension DietViewController: UICollectionViewDataSource, UICollectionViewDelega
                 )
                 return CGSize(width: width, height: size.height)
             } else {
-                return CGSize(width: width, height: 84) // Loading or Error state
+                return CGSize(width: width, height: 84) 
             }
         case 2:
             if todaysFoods.isEmpty {
@@ -408,7 +388,7 @@ extension DietViewController: UICollectionViewDataSource, UICollectionViewDelega
         default: return CGSize(width: width, height: 0)
         }
     }
- 
+
     func collectionView(
         _ collectionView: UICollectionView,
         viewForSupplementaryElementOfKind kind: String,
@@ -422,7 +402,7 @@ extension DietViewController: UICollectionViewDataSource, UICollectionViewDelega
             withReuseIdentifier: SectionHeaderView.identifier,
             for: indexPath
         ) as! SectionHeaderView
- 
+
         switch indexPath.section {
         case 1: header.configure(title: "Suggestions For Today")
         case 2: header.configure(title: "Today's Meals")
@@ -430,7 +410,7 @@ extension DietViewController: UICollectionViewDataSource, UICollectionViewDelega
         }
         return header
     }
- 
+
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
@@ -441,7 +421,7 @@ extension DietViewController: UICollectionViewDataSource, UICollectionViewDelega
         default:   return .zero
         }
     }
- 
+
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
@@ -453,9 +433,7 @@ extension DietViewController: UICollectionViewDataSource, UICollectionViewDelega
         }
     }
 }
- 
-// MARK: - MealLogsCellDelegate
- 
+
 extension DietViewController: MealLogsCellDelegate {
     func didSelectMeal(_ food: Food) {
         FoodLogIngredientViewController.present(from: self, with: food)
@@ -464,9 +442,7 @@ extension DietViewController: MealLogsCellDelegate {
         deleteMeal(at: index)
     }
 }
- 
-// MARK: - NutritionCellDelegate
- 
+
 extension DietViewController: NutritionCellDelegate {
     func didTapProteinView() {
         let storyboard = UIStoryboard(name: "Diet", bundle: nil)
@@ -493,9 +469,7 @@ extension DietViewController: NutritionCellDelegate {
         }
     }
 }
- 
-// MARK: - AddMealDelegate
- 
+
 extension DietViewController: AddMealDelegate {
     func didAddMeal(_ food: Food) {
         FoodLogDataStore.addFoodBarCode(food)
@@ -512,7 +486,7 @@ extension DietViewController: AddMealDelegate {
             self.isShowingWalkthroughCongrats = true
             self.walkthroughOverlay?.dismiss()
             self.walkthroughOverlay = nil
-            // Pop back to DietVC first so it is the top presenter, then show congrats
+
             self.navigationController?.popToViewController(self, animated: true)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
                 self?.showMealWalkthroughCongrats()
@@ -520,9 +494,7 @@ extension DietViewController: AddMealDelegate {
         }
     }
 }
- 
-// MARK: - AddDescribedMealDelegate
- 
+
 extension DietViewController: AddDescribedMealDelegate {
     func didConfirmMeal(_ food: Food) {
         print("didConfirmMeal called with: \(food.name)")
@@ -547,8 +519,7 @@ extension DietViewController: AddDescribedMealDelegate {
             self.isShowingWalkthroughCongrats = true
             self.walkthroughOverlay?.dismiss()
             self.walkthroughOverlay = nil
-            // Use a longer delay to ensure pop/dismiss animation fully completes
-            // before DietVC tries to present the congrats card
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [weak self] in
                 self?.showMealWalkthroughCongrats()
             }
@@ -556,15 +527,13 @@ extension DietViewController: AddDescribedMealDelegate {
     }
 }
 
-// MARK: - Walkthrough
-
 extension DietViewController: WalkthroughManagerDelegate {
 
     func handleWalkthroughOnAppear() {
         guard WalkthroughManager.shared.isActive,
               !isShowingWalkthroughCongrats,
               walkthroughOverlay == nil else { return }
-              
+
         WalkthroughManager.shared.addDelegate(self)
         if WalkthroughManager.shared.currentStep == .logMeal {
             guard !walkthroughMealLogged else { return }
@@ -583,7 +552,7 @@ extension DietViewController: WalkthroughManagerDelegate {
         } else if step == .workoutIntro {
             walkthroughOverlay?.dismiss()
             walkthroughOverlay = nil
-            // Switch to Workout tab
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
                 self?.tabBarController?.selectedIndex = 2
             }
@@ -614,7 +583,7 @@ extension DietViewController: WalkthroughManagerDelegate {
                 self.addButtonTapped(self.AddMealButton)
             }
         )
-        
+
         if #available(iOS 17.0, *) {
             let tip = LogMealTip()
             if case .invalidated = tip.status {
@@ -636,8 +605,7 @@ extension DietViewController: WalkthroughManagerDelegate {
     }
 
     private func showMealWalkthroughCongrats() {
-        // Use key window as fallback — view.window may be briefly nil during
-        // the navigation animation that pops back to DietViewController.
+
         let window: UIWindow?
         if let w = view.window {
             window = w
@@ -663,13 +631,13 @@ extension DietViewController: WalkthroughManagerDelegate {
     private func presentDietTypeViewController() {
         let onboardingStoryboard = UIStoryboard(name: "Onboarding", bundle: nil)
         guard let dietTypeVC = onboardingStoryboard.instantiateViewController(withIdentifier: "DietTypeViewController") as? DietTypeViewController else { return }
-        
+
         dietTypeVC.modalPresentationStyle = .pageSheet
         if let sheet = dietTypeVC.sheetPresentationController {
             sheet.detents = [.large()]
             sheet.prefersGrabberVisible = true
         }
-        
+
         present(dietTypeVC, animated: true)
     }
 }

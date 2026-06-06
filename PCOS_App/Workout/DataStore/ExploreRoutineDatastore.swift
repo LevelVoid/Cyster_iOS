@@ -1,16 +1,9 @@
-//
-//  ExploreRoutineDatastore.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 10/12/25.
-//
 import Foundation
 
 class RoutineDataStore {
     static let shared = RoutineDataStore()
     private init() {}
 
-    // MARK: - Helper to look up exercise by name
     private func ex(_ name: String) -> Exercise {
         guard let exercise = ExerciseDataStore.shared.allExercises.first(where: { $0.name == name }) else {
             fatalError("Exercise '\(name)' not found in ExerciseDataStore")
@@ -18,14 +11,13 @@ class RoutineDataStore {
         return exercise
     }
 
-    // MARK: - All 35 predefined routines (7 per phase)
     lazy var predefinedRoutines: [Routine] = {
         var all = menstrualRoutines + follicularRoutines + ovulationRoutines + lutealRoutines + unknownRoutines
         let cardios = ["Incline Treadmill Walk", "Elliptical Trainer", "Treadmill Run", "Electric Bicycle"]
-        
+
         for i in 0..<all.count {
             if all[i].estimatedDurationSeconds < 2400 {
-                // If the routine already has one of these cardios, just extend its duration to avoid duplicates!
+
                 if let existingIdx = all[i].exercises.firstIndex(where: { cardios.contains($0.exercise.name) }) {
                     let currentDur = all[i].exercises[existingIdx].durationSeconds ?? 0
                     all[i].exercises[existingIdx].durationSeconds = currentDur + 600
@@ -40,14 +32,10 @@ class RoutineDataStore {
         return all
     }()
 
-    // MARK: - Query Methods
-
-    /// All routines for a given phase
     func routines(for phase: Phase) -> [Routine] {
         return predefinedRoutines.filter { $0.phase == phase }
     }
 
-    /// 4 daily routines for the workout tab (2 yoga + 2 strength), rotating daily
     func dailyRoutines(for phase: Phase) -> [Routine] {
         let phaseRoutines = routines(for: phase)
         let yogaRoutines = phaseRoutines.filter { $0.routineType == .yoga }
@@ -55,7 +43,6 @@ class RoutineDataStore {
 
         let dayOfYear = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 1
 
-        // Pick 2 yoga routines rotating daily
         var selectedYoga: [Routine] = []
         if yogaRoutines.count >= 2 {
             let startIdx = (dayOfYear - 1) % yogaRoutines.count
@@ -65,7 +52,6 @@ class RoutineDataStore {
             selectedYoga = yogaRoutines
         }
 
-        // Pick 2 strength routines rotating daily
         var selectedStrength: [Routine] = []
         if strengthRoutines.count >= 2 {
             let startIdx = (dayOfYear - 1) % strengthRoutines.count
@@ -78,20 +64,15 @@ class RoutineDataStore {
         return selectedYoga + selectedStrength
     }
 
-    /// The single most recommended routine for today (first of dailyRoutines)
     func recommendedRoutine(for phase: Phase) -> Routine {
         let daily = dailyRoutines(for: phase)
         return daily.first ?? predefinedRoutines.first!
     }
 
-    /// Check if a routine is the recommended one for today
     func isRecommendedToday(_ routine: Routine, for phase: Phase) -> Bool {
         return recommendedRoutine(for: phase).id == routine.id
     }
 
-    // MARK: - Menstrual Phase Routines (gentle, restorative — low cortisol impact)
-
-    
     private lazy var menstrualRoutines: [Routine] = [
         Routine(
             id: UUID(), name: "Gentle Flow",
@@ -190,9 +171,6 @@ class RoutineDataStore {
         )
     ]
 
-    // MARK: - Follicular Phase Routines (rising energy — progressive challenge)
-
-    
     private lazy var follicularRoutines: [Routine] = [
         Routine(
             id: UUID(), name: "Energizing Yoga Flow",
@@ -291,9 +269,6 @@ class RoutineDataStore {
         )
     ]
 
-    // MARK: - Ovulation Phase Routines (peak energy — high intensity)
-
-    
     private lazy var ovulationRoutines: [Routine] = [
         Routine(
             id: UUID(), name: "Power Yoga",
@@ -392,9 +367,6 @@ class RoutineDataStore {
         )
     ]
 
-    // MARK: - Luteal Phase Routines (declining energy — moderate, mindful)
-
-    
     private lazy var lutealRoutines: [Routine] = [
         Routine(
             id: UUID(), name: "Calming Yoga",
@@ -492,8 +464,6 @@ class RoutineDataStore {
             phase: .luteal, routineType: .mixed
         )
     ]
-
-    // MARK: - Unknown Phase Routines (general, balanced — safe for any phase)
 
     private lazy var unknownRoutines: [Routine] = [
         Routine(

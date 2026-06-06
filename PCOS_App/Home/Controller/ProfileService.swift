@@ -1,36 +1,25 @@
-//
-//  ProfileService.swift
-//  PCOS_App
-//
-//  Migrated from UserDefaults to Core Data
-//
-
 import Foundation
 import CoreData
 import UIKit
 
 class ProfileService {
     static let shared = ProfileService()
-    
-    // Old key — only used for one-time migration
+
     private let legacyProfileKey = "savedUserProfile"
-    
+
     private var context: NSManagedObjectContext {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         return appDelegate.viewContext
     }
-    
+
     private init() {
         migrateLegacyDataIfNeeded()
     }
-    
-    // MARK: - Read
-    
-    /// Fetches the singleton CDUser. Returns nil if no profile exists yet.
+
     func getProfile() -> CDUser? {
         let request: NSFetchRequest<CDUser> = CDUser.fetchRequest()
         request.fetchLimit = 1
-        
+
         do {
             return try context.fetch(request).first
         } catch {
@@ -38,17 +27,15 @@ class ProfileService {
             return nil
         }
     }
-    
-    /// Converts the stored CDUser into a UserProfile for use with GoalEngine.
-    /// Returns nil only when no profile has been created yet (fresh install before onboarding).
+
     func buildUserProfile() -> UserProfile? {
         guard let user = getProfile(),
               let dob = user.dateOfBirth else { return nil }
-        
+
         let diet     = DietPattern(rawString: user.dietPattern ?? "")
         let activity = ActivityLevel(rawString: user.activityLevel ?? "")
         let phenotype = PCOSPhenotype(rawValue: user.pcosPhenotype ?? "") ?? .unknown
-        
+
         return UserProfile(
             name:         user.name ?? "",
             dateOfBirth:  dob,
@@ -60,24 +47,16 @@ class ProfileService {
         )
     }
 
-    
-    // MARK: - Write
-    
-    /// Creates or updates the singleton CDUser.
-    /// Called from HealthDetailsTableViewController (edit mode)
-    /// and from UserGoalViewController (end of onboarding).
     func setProfile(name: String, dob: Date, heightCm: Double, weightKg: Double,
                     dietPattern: String, activityLevel: String, pcosPhenotype: String?) {
-        
-        // Fetch existing or create new
+
         let user = getProfile() ?? CDUser(context: context)
-        
-        // Only set id + created_at on first creation
+
         if user.id == nil {
             user.id = UUID()
             user.createdAt = Date()
         }
-        
+
         user.name = name
         user.dateOfBirth = dob
         user.heightCm = heightCm
@@ -85,17 +64,13 @@ class ProfileService {
         user.dietPattern = dietPattern
         user.activityLevel = activityLevel
         user.pcosPhenotype = pcosPhenotype
-        
-        // Ensure UserDefaults is kept in sync for old keys
+
         UserDefaults.standard.set(dob, forKey: "userDOB")
         UserDefaults.standard.set(name, forKey: "userName")
-        
+
         saveContext()
     }
-    
-    /// Convenience overload that accepts the old ProfileModel
-    /// so HealthDetailsTableViewController doesn't break immediately.
-    /// We'll remove this once HealthDetailsVC is fully migrated.
+
     func setProfile(to profile: ProfileModel) {
         setProfile(
             name: profile.name,
@@ -108,26 +83,21 @@ class ProfileService {
         )
     }
 
-    /// Updates only the activity level on the existing CDUser record.
-    /// Safe to call at any point — creates a CDUser shell if none exists yet.
     func updateActivityLevel(_ activityLevel: String) {
         guard let user = getProfile() else {
-            // No profile yet — UserDefaults is the fallback (already set by caller)
+
             return
         }
         user.activityLevel = activityLevel
         saveContext()
     }
-    
-    /// Updates only the diet pattern on the existing CDUser record.
+
     func updateDietPattern(_ dietPattern: String) {
         guard let user = getProfile() else { return }
         user.dietPattern = dietPattern
         saveContext()
     }
-    
-    // MARK: - Delete
-    
+
     func deleteProfile() {
         if let user = getProfile() {
             context.delete(user)
@@ -135,9 +105,7 @@ class ProfileService {
             print("🗑️ CDUser deleted")
         }
     }
-    
-    // MARK: - Save Helper
-    
+
     private func saveContext() {
         guard context.hasChanges else { return }
         do {
@@ -147,27 +115,22 @@ class ProfileService {
             print("❌ CoreData save error: \(error)")
         }
     }
-    
-    // MARK: - One-Time Migration
-    
-    /// If the old UserDefaults profile exists and no CDUser exists yet,
-    /// migrate the data to Core Data and delete the old key.
+
     private func migrateLegacyDataIfNeeded() {
         guard let legacyData = UserDefaults.standard.data(forKey: legacyProfileKey),
               getProfile() == nil else {
             return
         }
-        
+
         print("🔄 Migrating profile from UserDefaults → Core Data...")
-        
+
         guard let oldProfile = try? JSONDecoder().decode(ProfileModel.self, from: legacyData) else {
             print("⚠️ Failed to decode legacy ProfileModel")
             return
         }
-        
+
         setProfile(to: oldProfile)
-        
-        // Remove old data so we never migrate again
+
         UserDefaults.standard.removeObject(forKey: legacyProfileKey)
         print("✅ Profile migration complete")
     }

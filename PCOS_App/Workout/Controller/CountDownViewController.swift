@@ -1,10 +1,3 @@
-//
-//  CountdownViewController.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 07/01/26.
-//
-
 import UIKit
 
 class CountdownViewController: UIViewController {
@@ -14,7 +7,7 @@ class CountdownViewController: UIViewController {
 
     private let totalCount = 3
         private var currentCount = 3
-        
+
         private let ringLayer = CAShapeLayer()
         private let trackLayer = CAShapeLayer()
 
@@ -24,10 +17,10 @@ class CountdownViewController: UIViewController {
             super.viewDidLoad()
             setupUI()
         }
-        
+
         override func viewDidLayoutSubviews() {
             super.viewDidLayoutSubviews()
-            // Setup ring after layout to ensure correct bounds
+
             if trackLayer.path == nil {
                 setupRing()
             }
@@ -54,20 +47,18 @@ class CountdownViewController: UIViewController {
             view.backgroundColor = .systemBackground
             isModalInPresentation = true
 
-            // Configure label
             countLabel.textColor = .label
             countLabel.textAlignment = .center
             countLabel.text = "READY"
             countLabel.alpha = 0
-            
-            // Ensure label is on top
+
             view.bringSubviewToFront(countLabel)
         }
 
         private func setupRing() {
-            // Calculate radius based on container size
+
             let size = min(ringContainerView.bounds.width, ringContainerView.bounds.height)
-            let radius = (size - 24) / 2 // Leave space for line width
+            let radius = (size - 24) / 2 
             let center = CGPoint(x: ringContainerView.bounds.midX,
                                  y: ringContainerView.bounds.midY)
 
@@ -79,16 +70,14 @@ class CountdownViewController: UIViewController {
                 clockwise: true
             )
 
-            // Track layer (background)
             trackLayer.path = circularPath.cgPath
             trackLayer.strokeColor = UIColor.systemGray5.cgColor
             trackLayer.lineWidth = 15
             trackLayer.fillColor = UIColor.clear.cgColor
             trackLayer.lineCap = .round
 
-            // Progress layer (animated)
             ringLayer.path = circularPath.cgPath
-            //ringLayer.strokeColor = UIColor.systemGreen.cgColor
+
             ringLayer.strokeColor = UIColor(hex:"FE7A96").cgColor
             ringLayer.lineWidth = 15
             ringLayer.fillColor = UIColor.clear.cgColor
@@ -100,34 +89,31 @@ class CountdownViewController: UIViewController {
         }
 
         private func startCountdown() {
-            // Show "READY" text
+
             countLabel.text = "READY"
-            
-            // Fade in
+
             UIView.animate(withDuration: 0.5) {
                 self.countLabel.alpha = 1
             } completion: { _ in
-                // Wait 1 second then start number countdown
+
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     self.startNumberCountdown()
                 }
             }
         }
-        
+
         private func startNumberCountdown() {
-            // Show first number
+
             currentCount = totalCount
             updateLabel(to: "\(currentCount)")
-            
-            // Reset ring to full
+
             ringLayer.strokeEnd = 1.0
-            
-            // Start countdown
+
             animateCountdownStep()
         }
 
         private func animateCountdownStep() {
-            // Animate ring from full to empty over 1 second
+
             let animation = CABasicAnimation(keyPath: "strokeEnd")
             animation.fromValue = 1.0
             animation.toValue = 0
@@ -135,49 +121,45 @@ class CountdownViewController: UIViewController {
             animation.timingFunction = CAMediaTimingFunction(name: .linear)
             animation.fillMode = .forwards
             animation.isRemovedOnCompletion = false
-            
+
             ringLayer.add(animation, forKey: "countdown")
-            
-            // Haptic feedback
+
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-            
-            // Schedule next count or finish
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
                 guard let self = self else { return }
-                
+
                 self.currentCount -= 1
-                
+
                 if self.currentCount > 0 {
-                    // Update label with animation
+
                     self.animateLabelChange(to: "\(self.currentCount)")
-                    
-                    // Reset ring to full and animate again
+
                     self.ringLayer.removeAllAnimations()
                     self.ringLayer.strokeEnd = 1.0
                     self.animateCountdownStep()
-                    
+
                 } else {
-                    // Countdown finished
+
                     self.finishCountdown()
                 }
             }
         }
-        
+
         private func updateLabel(to text: String) {
             countLabel.text = text
             countLabel.alpha = 1.0
         }
-        
+
         private func animateLabelChange(to text: String) {
-            // Scale down and fade
+
             UIView.animate(withDuration: 0.15, animations: {
                 self.countLabel.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
                 self.countLabel.alpha = 0.3
             }) { _ in
-                // Update text
+
                 self.countLabel.text = text
-                
-                // Scale back up and fade in with bounce
+
                 UIView.animate(withDuration: 0.25, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.8) {
                     self.countLabel.transform = .identity
                     self.countLabel.alpha = 1.0
@@ -186,10 +168,9 @@ class CountdownViewController: UIViewController {
         }
 
         private func finishCountdown() {
-            // Final haptic
+
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-            
-            // Fade out everything
+
             UIView.animate(withDuration: 0.3, animations: {
                 self.countLabel.alpha = 0
                 self.ringContainerView.alpha = 0

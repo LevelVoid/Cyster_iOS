@@ -1,17 +1,8 @@
-//
-//  CreateRoutineViewController.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 28/11/25.
-//
-
 import UIKit
 import TipKit
 
 class CreateRoutineViewController: UIViewController {
-    // Same VC for before and after adding exercise - Apple's Guidelines (Human Interface Guidelines) "Within a screen, adapt content to reflect state changes."
 
-    
     @IBOutlet weak var saveRoutineButton: UIBarButtonItem!
     @IBOutlet weak var addExerciseButton: UIButton!
     @IBOutlet weak var routineNameTextField: UITextField!
@@ -23,42 +14,37 @@ class CreateRoutineViewController: UIViewController {
     @IBOutlet weak var emptyStateLabel: UILabel!
     @IBOutlet weak var emptyStateImageView: UIImageView!
     @IBOutlet weak var emptyStateAddButton: UIButton!
-    
+
     @IBOutlet weak var exerciseTableView: UITableView!
-    
+
     private var routineExercises: [RoutineExercise] = []
-    
-    // Walkthrough State
+
     private var walkthroughOverlay: WalkthroughOverlayView?
     private weak var tipPopover: UIViewController?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Create New Routine"
-        //view.backgroundColor=UIColor(hex: "#FCEEED")
+
         navigationController?.navigationBar.prefersLargeTitles = false
         saveRoutineButton.isEnabled = false
         exerciseTableView.separatorStyle = .none
-        
+
         setupAddExerciseButton()
-       
+
         setupUI()
         registerCells()
         updateUI()
 
-        // Add text field delegate
         routineNameTextField.delegate = self
-            
-        
+
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateUI()
         handleWalkthroughOnAppear()
     }
-        
 
-    
     private func setupAddExerciseButton() {
         var config = UIButton.Configuration.filled()
         config.cornerStyle = .capsule
@@ -67,21 +53,21 @@ class CreateRoutineViewController: UIViewController {
         config.baseBackgroundColor = UIColor(hex: "#fe7a96")
         config.baseForegroundColor = .white
         addExerciseButton.configuration = config
-        
+
         addExerciseButton.setTitle("", for: .normal)
-        
+
         addExerciseButton.layer.shadowColor = UIColor(hex: "#fe7a96").cgColor
         addExerciseButton.layer.shadowOpacity = 0.3
         addExerciseButton.layer.shadowOffset = CGSize(width: 0, height: 4)
         addExerciseButton.layer.shadowRadius = 6
-        
+
         if let superview = addExerciseButton.superview {
             addExerciseButton.removeFromSuperview()
             superview.addSubview(addExerciseButton)
         }
-        
+
         addExerciseButton.translatesAutoresizingMaskIntoConstraints = false
-        
+
         NSLayoutConstraint.activate([
             addExerciseButton.widthAnchor.constraint(equalToConstant: 44),
             addExerciseButton.heightAnchor.constraint(equalToConstant: 44),
@@ -89,22 +75,22 @@ class CreateRoutineViewController: UIViewController {
             addExerciseButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24)
         ])
     }
-    
+
     private func setupUI() {
         containerView.bringSubviewToFront(exerciseTableView)
-        
+
         exerciseTableView.delegate = self
         exerciseTableView.dataSource = self
         exerciseTableView.estimatedRowHeight = 88
         exerciseTableView.rowHeight = UITableView.automaticDimension
         routineNameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-        
+
         routineNameTextField.layer.cornerRadius = 12
         routineNameTextField.layer.masksToBounds = true
         routineNameTextField.layer.borderWidth = 0
         routineNameTextField.backgroundColor = UIColor.white.withAlphaComponent(0.85)
     }
-    
+
     func registerCells() {
         exerciseTableView.register(
             UINib(
@@ -114,43 +100,35 @@ class CreateRoutineViewController: UIViewController {
             forCellReuseIdentifier: "routine_exercise_cell"
         )
     }
-    
+
     private func updateUI() {
         let hasExercises = !routineExercises.isEmpty
-        
-        // Toggle visibility
+
         emptyStateView.isHidden = hasExercises
         exerciseTableView.isHidden = !hasExercises
-        
-        // Update stats
+
         updateStats()
-        
-        //  ADD THIS LINE to update save button properly:
+
         textFieldDidChange()
-        
-        // Reload table
+
         exerciseTableView.reloadData()
     }
-    
+
     private func updateStats() {
 
-        // Exercise count
                 exerciseCountLabel.text = "\(routineExercises.count)"
-                
-                // Total sets (only for non-cardio exercises)
+
                 let totalSets = routineExercises.reduce(0) { total, ex in
                     total + (ex.exercise.isCardio ? 0 : ex.numberOfSets)
                 }
                 setCountLabel.text = "\(totalSets)"
-                
-                // FIXED: Estimated duration calculation
+
                 let totalDuration = routineExercises.reduce(0) { total, ex in
                     if ex.exercise.isTimeBased {
-                        // For cardio/yoga/mobility: use durationSeconds (default or user-inputted)
+
                         return total + (ex.durationSeconds ?? 0)
                     } else {
-                        // For strength exercises:
-                        // Estimate 4 seconds per rep + rest time, multiplied by number of sets
+
                         let secondsPerRep = 4
                         let activeTimePerSet = ex.reps * secondsPerRep
                         let restTimePerSet = ex.restTimerSeconds ?? 0
@@ -158,12 +136,11 @@ class CreateRoutineViewController: UIViewController {
                         return total + (totalTimePerSet * ex.numberOfSets)
                     }
                 }
-                
+
                 estimatedDurationLabel.text = formatDuration(totalDuration)
-            
+
     }
 
-    
     private func formatDuration(_ seconds: Int) -> String {
             let minutes = seconds / 60
             if minutes >= 60 {
@@ -173,14 +150,13 @@ class CreateRoutineViewController: UIViewController {
             }
             return "\(minutes)m"
         }
-    
+
     @IBAction func showAddExerciseOnTap(_ sender: UIButton) {
         performSegue(withIdentifier: "showAddExercise", sender: nil)
     }
-    
-    
+
     @IBAction func saveRoutineButton(_ sender: UIBarButtonItem) {
-        // Enforce max routines limit globally for user-generated content
+
         if UserRoutineDataStore.shared.loadAll().count >= 7 {
             let limitAlert = UIAlertController(
                 title: "Limit Reached",
@@ -192,10 +168,9 @@ class CreateRoutineViewController: UIViewController {
             return
         }
 
-        // 1. Validate routine name
             guard let name = routineNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
                   !name.isEmpty else {
-                // Show alert if name is empty
+
                 let alert = UIAlertController(
                     title: "Missing Name",
                     message: "Please enter a name for your routine.",
@@ -205,8 +180,7 @@ class CreateRoutineViewController: UIViewController {
                 present(alert, animated: true)
                 return
             }
-            
-            // 2. Validate exercises
+
             guard !routineExercises.isEmpty else {
                 let alert = UIAlertController(
                     title: "No Exercises",
@@ -218,7 +192,6 @@ class CreateRoutineViewController: UIViewController {
                 return
             }
 
-            // 3. Create routine
             let usedImages = UserRoutineDataStore.shared.loadAll().compactMap { $0.thumbnailImageName }
             let routine = Routine(
                 id: UUID(),
@@ -228,16 +201,14 @@ class CreateRoutineViewController: UIViewController {
                 routineDescription: nil
             )
 
-            // 4. Save to manager 
             UserRoutineDataStore.shared.save(routine)
-            
-            // 5. Show success message or walkthrough congrats
+
             if WalkthroughManager.shared.isActive && WalkthroughManager.shared.currentStep == .workoutEditName {
                 guard let window = UIApplication.shared.connectedScenes
                     .compactMap({ $0 as? UIWindowScene })
                     .flatMap({ $0.windows })
                     .first(where: { $0.isKeyWindow }) else { return }
-                    
+
                 WalkthroughCongratsView.present(
                     in: window,
                     title: "Step 3 Complete!",
@@ -264,9 +235,7 @@ class CreateRoutineViewController: UIViewController {
                 present(alert, animated: true)
             }
     }
-    
-    
-    
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
             if segue.identifier == "showAddExercise" {
                 if let addVC = segue.destination as? AddExerciseViewController {
@@ -277,7 +246,7 @@ class CreateRoutineViewController: UIViewController {
                         }
             }
         if segue.identifier == "InfoModal2" {
-            // If you embedded InfoModal inside a UINavigationController, handle that:
+
             if let nav = segue.destination as? UINavigationController,
                let infoVC = nav.topViewController as? InfoModalViewController {
                 if let exercise = sender as? Exercise {
@@ -288,26 +257,22 @@ class CreateRoutineViewController: UIViewController {
                     infoVC.exercise = exercise
                 }
             } else {
-                // Optional: Debugging fallback
+
                 print("Warning: destination VC is not InfoModalViewController")
             }
         }
-        
+
 }
-    
-  
-    
+
     private func handleSelectedExercises(_ exercises: [Exercise]) {
         print("📥 Received \(exercises.count) exercises")
-        
-        // 1. Filter out un-ticked exercises to remove them from routine
+
         let selectedIDs = Set(exercises.map { $0.id })
         routineExercises = routineExercises.filter { selectedIDs.contains($0.exercise.id) }
-        
-        // 2. Identify newly ticked exercises that aren't yet in the routine
+
         let existingIDs = Set(routineExercises.map { $0.exercise.id })
         let newlySelected = exercises.filter { !existingIDs.contains($0.id) }
-        
+
         let newRoutineExercises = newlySelected.map { exercise in
             if exercise.isTimeBased {
                 print("🏃 Adding time-based: \(exercise.name)")
@@ -333,29 +298,25 @@ class CreateRoutineViewController: UIViewController {
                 )
             }
         }
-        
+
         routineExercises.append(contentsOf: newRoutineExercises)
         print("📊 Total exercises in routine: \(routineExercises.count)")
-        
+
         updateUI()
-        
+
         if WalkthroughManager.shared.isActive && WalkthroughManager.shared.currentStep == .workoutAddExercise {
             WalkthroughManager.shared.advanceToStep(.workoutEditName)
         }
     }
-    
-    
-    
+
            }
 
-
-// MARK: - UITableViewDataSource
 extension CreateRoutineViewController: UITableViewDataSource {
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return routineExercises.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: "routine_exercise_cell",
@@ -363,30 +324,27 @@ extension CreateRoutineViewController: UITableViewDataSource {
         ) as? RoutineExerciseTableViewCell else {
             return UITableViewCell()
         }
-        
+
         let routineExercise = routineExercises[indexPath.row]
 
         cell.onInfoTapped = { [weak self] in
             guard let self = self else { return }
             self.performSegue(withIdentifier: "InfoModal2", sender: routineExercise.exercise)
         }
-        // IMPORTANT: Pass a reference so cell can notify when values change
+
         cell.configure(with: routineExercise)
-        
-        // CRITICAL: Callback to update stats AND the model when cell values change
+
         cell.onValueChanged = { [weak self] in
             guard let self = self else { return }
-            
-            // Get the updated exercise from the cell (if it has changes)
-            // Since cells store a copy, we need to update our array
+
             if let updatedCell = tableView.cellForRow(at: indexPath) as? RoutineExerciseTableViewCell,
                let updatedExercise = updatedCell.getRoutineExercise() {
                 self.routineExercises[indexPath.row] = updatedExercise
             }
-            
+
             self.updateStats()
         }
-        
+
         return cell
     }
 }
@@ -394,12 +352,12 @@ extension CreateRoutineViewController: UITextFieldDelegate {
     @objc private func textFieldDidChange() {
         let hasName = !(routineNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
         let hasExercises = !routineExercises.isEmpty
-        
+
         saveRoutineButton.isEnabled = hasName && hasExercises
-        
+
         print("📝 Name: '\(routineNameTextField.text ?? "")' | Has exercises: \(hasExercises) | Save enabled: \(saveRoutineButton.isEnabled)")
     }
-    
+
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
@@ -407,13 +365,12 @@ extension CreateRoutineViewController: UITextFieldDelegate {
 }
 
 extension CreateRoutineViewController: UITableViewDelegate {
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        // TODO: Navigate to exercise detail/edit screen
+
     }
-    
-    // Enable swipe to delete
+
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             routineExercises.remove(at: indexPath.row)
@@ -421,23 +378,22 @@ extension CreateRoutineViewController: UITableViewDelegate {
             updateUI()
         }
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         walkthroughOverlay?.dismiss(animated: false)
         walkthroughOverlay = nil
         tipPopover?.dismiss(animated: false)
     }
-    
+
 }
 
-// MARK: - Walkthrough
 extension CreateRoutineViewController: WalkthroughManagerDelegate {
-    
+
     func handleWalkthroughOnAppear() {
         guard WalkthroughManager.shared.isActive, walkthroughOverlay == nil else { return }
         WalkthroughManager.shared.addDelegate(self)
-        
+
         let step = WalkthroughManager.shared.currentStep
         if step == .workoutAddExercise {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
@@ -449,7 +405,7 @@ extension CreateRoutineViewController: WalkthroughManagerDelegate {
             }
         }
     }
-    
+
     func walkthroughDidReachStep(_ step: WalkthroughStep) {
         guard isViewLoaded, view.window != nil else { return }
         if step == .workoutAddExercise {
@@ -463,24 +419,22 @@ extension CreateRoutineViewController: WalkthroughManagerDelegate {
         } else {
             walkthroughOverlay?.dismiss()
             walkthroughOverlay = nil
-            
-            // If the walkthrough just completed the activity level and advanced to .workoutPremade,
-            // we should navigate back to the Workout tab.
+
             if step == .workoutPremade {
                 self.navigationController?.popViewController(animated: true)
             }
         }
     }
-    
+
     func walkthroughDidComplete() {
         walkthroughOverlay?.dismiss()
         walkthroughOverlay = nil
     }
-    
+
     private func showAddExerciseOverlay() {
         guard let window = view.window else { return }
         let btnFrame = addExerciseButton.convert(addExerciseButton.bounds, to: window)
-        
+
         walkthroughOverlay?.dismiss(animated: false)
         walkthroughOverlay = WalkthroughOverlayView.install(
             in: window,
@@ -493,7 +447,7 @@ extension CreateRoutineViewController: WalkthroughManagerDelegate {
                 self.performSegue(withIdentifier: "showAddExercise", sender: nil)
             }
         )
-        
+
         if #available(iOS 17.0, *) {
             let tip = AddExerciseTip()
             if case .invalidated = tip.status {
@@ -514,11 +468,11 @@ extension CreateRoutineViewController: WalkthroughManagerDelegate {
             self.present(popoverVC, animated: true)
         }
     }
-    
+
     private func showEditNameOverlay() {
         guard let window = view.window else { return }
         let targetFrame = routineNameTextField.convert(routineNameTextField.bounds, to: window)
-        
+
         walkthroughOverlay?.dismiss(animated: false)
         walkthroughOverlay = WalkthroughOverlayView.install(
             in: window,
@@ -530,7 +484,7 @@ extension CreateRoutineViewController: WalkthroughManagerDelegate {
                 self?.routineNameTextField.becomeFirstResponder()
             }
         )
-        
+
         if #available(iOS 17.0, *) {
             let tip = EditNameTip()
             if case .invalidated = tip.status {

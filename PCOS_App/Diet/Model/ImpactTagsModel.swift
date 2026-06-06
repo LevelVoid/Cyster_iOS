@@ -1,15 +1,7 @@
-//
-//  ImpactTagsDataSource.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 09/12/25.
-//
-
 import Foundation
 
 enum ImpactTags: String, Codable, CaseIterable {
 
-    // Cycle / Symptom
     case bloatingTrigger
     case bloatingReducer
     case crampTrigger
@@ -17,7 +9,6 @@ enum ImpactTags: String, Codable, CaseIterable {
     case periodPainTrigger
     case periodPainReducer
 
-    // Hormonal
     case estrogenBoosting
     case estrogenLowering
     case progesteroneSupporting
@@ -29,7 +20,6 @@ enum ImpactTags: String, Codable, CaseIterable {
     case glutenSensitive
     case soySensitive
 
-    // Insulin & Metabolism
     case insulinSpiking
     case insulinBalancing
     case highInsulinLoad
@@ -38,7 +28,6 @@ enum ImpactTags: String, Codable, CaseIterable {
     case mediumGlycemic
     case lowGlycemic
 
-    // Macros
     case highProtein
     case lowProtein
     case highFibre
@@ -48,29 +37,23 @@ enum ImpactTags: String, Codable, CaseIterable {
     case highCarb
     case lowCarb
 
-    // Inflammation
     case antiInflammatory
     case proInflammatory
 
-    // Mood / Energy
     case moodBoost
     case energyBoost
 
-    // Processing
     case processed
     case ultraProcessed
     case wholeFood
 
-    // Sugar
     case sugary
     case artificialSweetener
     case noAddedSugar
 
-    // Stimulants
     case caffeine
     case chocolate
 
-    // Digestive
     case gasForming
     case gutFriendly
     case none

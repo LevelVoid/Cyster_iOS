@@ -2,7 +2,7 @@ import UIKit
 import TipKit
 
 class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollectionViewCellDelegate, LogPeriodCalendarDelegate, SleepCardCollectionViewCellDelegate, UIPopoverPresentationControllerDelegate {
-    
+
     @IBOutlet weak var collectionView: UICollectionView!
 
         private var selectedSymptoms: [SymptomItem] = []
@@ -11,7 +11,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         private var allSymptoms: [SymptomItem] = []
         private var aboutPCOSArticles: [AboutPCOSSection] = []
         private var chatbotButton: UIButton!
-        private var calendarBarButton: UIBarButtonItem? // used for TipKit tour anchor
+        private var calendarBarButton: UIBarButtonItem? 
 
         private var sleepData: SleepData? = nil
         private var todaySleepLog: SleepLog? = nil
@@ -20,24 +20,18 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         private var walkthroughOverlay: WalkthroughOverlayView?
     private weak var tipPopover: UIViewController?
     private var isShowingWalkthroughCongrats: Bool = false
-        /// Set to true the moment the user saves symptoms during the walkthrough,
-        /// so that viewWillAppear doesn't re-trigger the symptom overlay.
+
         private var walkthroughSymptomLogged: Bool = false
         private var pulseLayer: CALayer?
 
-
-        // ── Daily Goals AI ────────────────────────────────────────────────────
         private var goalsOutput: DailyGoalsOutput?
         private var isGoalsLoading = false
 
-        // MARK: - Lifecycle
-
         override func viewDidLoad() {
             super.viewDidLoad()
-            
-            // MARK: - Accessibility Identifiers (for XCUITests)
+
             collectionView.accessibilityIdentifier = "home_collectionView"
-            
+
             tabBarItem.title = "Today"
             navigationItem.title = ""
 
@@ -113,15 +107,13 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             loadTodaySleepLog()
             fetchSleepData()
             fetchWorkoutData()
-            loadDailyGoals()   // ← trigger AI goals on every appear
+            loadDailyGoals()   
         }
 
         override func viewDidAppear(_ animated: Bool) {
             super.viewDidAppear(animated)
             handleWalkthroughOnAppear()
         }
-
-        // MARK: - Daily Goals AI
 
         private func loadDailyGoals() {
             guard !isGoalsLoading else { return }
@@ -144,7 +136,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
                 }
             }
         }
-        
+
         override func viewWillDisappear(_ animated: Bool) {
             super.viewWillDisappear(animated)
             walkthroughOverlay?.dismiss(animated: false)
@@ -153,12 +145,9 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             stopChatbotPulse()
         }
 
-        // MARK: - UIPopoverPresentationControllerDelegate
         func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
             return .none
         }
-
-        // MARK: - HealthKit
 
         private func fetchSleepData() {
             HealthKitManager.shared.fetchSleepLastNight { [weak self] data in
@@ -186,8 +175,6 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
                 self.collectionView.reloadSections(IndexSet(integer: 2))
             }
         }
-
-        // MARK: - Setup Logger
 
         private func showSleepLoggerIfNeeded() {
             let todayString = todayDateString()
@@ -233,8 +220,6 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             return f.string(from: Date())
         }
 
-        // MARK: - Data
-
         private func loadTodaysSymptoms() {
             selectedSymptoms = SymptomDataStore.loadSymptoms(for: Date())
         }
@@ -261,34 +246,23 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             return CycleDataStore.shared.currentPhaseInfo().phase
         }
 
-        // MARK: - Chatbot Button
-
         private func setupChatbotButton() {
             chatbotButton = UIButton(type: .custom)
             chatbotButton.translatesAutoresizingMaskIntoConstraints = false
-            
-            // let icon = UIImage(named: "chat3")?.withRenderingMode(.alwaysOriginal)
-            // chatbotButton.setImage(icon, for: .normal)
-            // chatbotButton.imageView?.contentMode = .scaleAspectFill
-            
+
             let symbolConfig = UIImage.SymbolConfiguration(pointSize: 26, weight: .medium)
             let sfIcon = UIImage(systemName: "message.badge.filled.fill", withConfiguration: symbolConfig)
             chatbotButton.setImage(sfIcon, for: .normal)
             chatbotButton.tintColor = .white
-            
+
             chatbotButton.backgroundColor = UIColor(hex: "#fe7a96")
             chatbotButton.layer.cornerRadius = 30
-            
-            // Apply clipping to the imageView so the button's shadow isn't cut off
-            // (Only needed for raster images — SF symbols don't need this)
-            // chatbotButton.imageView?.layer.cornerRadius = 30
-            // chatbotButton.imageView?.clipsToBounds = true
-            
+
             chatbotButton.layer.shadowColor = UIColor.black.cgColor
             chatbotButton.layer.shadowOpacity = 0.15
             chatbotButton.layer.shadowOffset = CGSize(width: 0, height: 6)
             chatbotButton.layer.shadowRadius = 8
-            
+
             chatbotButton.addTarget(self, action: #selector(ChatbotButtonTapped(_:)), for: .touchUpInside)
             chatbotButton.accessibilityIdentifier = "home_chatbotButton"
             view.addSubview(chatbotButton)
@@ -308,8 +282,6 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             navigationController?.pushViewController(chatbotVC, animated: true)
         }
 
-        // MARK: - Register Cells
-
         func registerCells() {
             collectionView.register(
                 UINib(nibName: "HomeHeaderCollectionViewCell", bundle: nil),
@@ -324,7 +296,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
                 UINib(nibName: "QuickActionsCollectionViewCell", bundle: nil),
                 forCellWithReuseIdentifier: "quick_actions_cell")
             collectionView.register(
-                DailyGoalsCollectionViewCell.nib(),                          // ← NEW
+                DailyGoalsCollectionViewCell.nib(),                          
                 forCellWithReuseIdentifier: DailyGoalsCollectionViewCell.identifier)
             collectionView.register(
                 UINib(nibName: "CyclePatternCollectionViewCell", bundle: nil),
@@ -344,8 +316,6 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
                 withReuseIdentifier: "header_cell")
         }
 
-        // MARK: - Actions
-
         @objc func addTapped() {
             if let vc = storyboard?.instantiateViewController(
                 withIdentifier: "ProfileTableViewController") as? ProfileTableViewController {
@@ -360,19 +330,17 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             }
         }
 
-        // MARK: - Compositional Layout
-
         func createCompositionalLayout() -> UICollectionViewLayout {
             return UICollectionViewCompositionalLayout { (sectionIndex, env) -> NSCollectionLayoutSection? in
                 switch sectionIndex {
                 case 0: return self.createHomeHeaderSection()
                 case 1: return self.createSignalsSection()
                 case 2: return self.createQuickActionsSection()
-                case 3: return self.createDailyGoalsSection()    // ← NEW
+                case 3: return self.createDailyGoalsSection()    
                 case 4: return self.createSleepCardSection()
                 case 5: return self.createCycleSection()
                 case 6: return self.createSymptomPatternsSection()
-                //case 7: return self.createAboutPCOSSection()
+
                 default: return nil
                 }
             }
@@ -420,7 +388,6 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             return section
         }
 
-        // ← NEW section layout for Daily Goals
         func createDailyGoalsSection() -> NSCollectionLayoutSection {
             let itemSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1),
@@ -541,27 +508,22 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             section.boundarySupplementaryItems = [headerItem]
         }
 
-        // MARK: - Delegates
-
         func passData(symptoms: [SymptomItem]) -> [SymptomItem] {
             self.selectedSymptoms = symptoms
             SymptomDataStore.saveSymptoms(symptoms, for: Date())
             DispatchQueue.main.async { self.collectionView.reloadData() }
-            
-            // Advance walkthrough after symptom save.
-            // Set both flags FIRST so that viewWillAppear (triggered when this VC
-            // is dismissed) does NOT re-show the symptom overlay.
+
             if WalkthroughManager.shared.isActive && WalkthroughManager.shared.currentStep == .logSymptom {
-                self.walkthroughSymptomLogged = true   // ← prevent re-trigger
+                self.walkthroughSymptomLogged = true   
                 self.isShowingWalkthroughCongrats = true
                 self.walkthroughOverlay?.dismiss()
                 self.walkthroughOverlay = nil
-                // Wait for the sheet dismiss animation before showing congrats
+
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                     self?.showSymptomWalkthroughCongrats()
                 }
             }
-            
+
             return symptoms
         }
 
@@ -601,11 +563,10 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             collectionView.layoutIfNeeded()
             collectionView.contentOffset = savedOffset
 
-            // Advance walkthrough after period is saved
             if WalkthroughManager.shared.isActive && WalkthroughManager.shared.currentStep == .logPeriod {
                 walkthroughOverlay?.dismiss()
                 walkthroughOverlay = nil
-                WalkthroughManager.shared.advanceToNextStep()  // → .logSymptom
+                WalkthroughManager.shared.advanceToNextStep()  
             }
         }
 
@@ -627,8 +588,6 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         }
     }
 
-    // MARK: - QuickActionsDelegate
-
     extension HomeViewController: QuickActionsDelegate {
         func quickActionsDidTapAddMeal() {
             let dietStoryboard = UIStoryboard(name: "Diet", bundle: nil)
@@ -649,8 +608,6 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             navigationController?.pushViewController(routinePreviewVC, animated: true)
         }
     }
-
-    // MARK: - AddMealDelegate
 
     extension HomeViewController: AddMealDelegate {
         func didAddMeal(_ food: Food) {
@@ -674,12 +631,10 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         }
     }
 
-    // MARK: - UICollectionViewDataSource & Delegate
-
     extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
         func numberOfSections(in collectionView: UICollectionView) -> Int {
-            return 8   // 0:header 1:signals 2:quickActions 3:dailyGoals 4:sleep 5:cycle 6:symptoms 7:about
+            return 8   
         }
 
         func collectionView(
@@ -690,13 +645,13 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             case 0: return 1
             case 1: return 1 + displaySignals.count
             case 2: return 1
-            case 3: return 1                              // ← Daily Goals
+            case 3: return 1                              
             case 4: return 1
             case 5: return 1
             case 6:
                 return (CycleDataStore.shared.hasTwoCycles && allSymptoms.count > 0)
                     ? allSymptoms.count : 1
-            //case 7: return aboutPCOSArticles.count
+
             default: return 0
             }
         }
@@ -744,7 +699,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
                 return cell
 
             case 3:
-                // ── Daily Goals ──────────────────────────────────────────────
+
                 let cell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: DailyGoalsCollectionViewCell.identifier,
                     for: indexPath
@@ -785,13 +740,6 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
                 }
                 return cell
 
-//            case 7:
-//                let cell = collectionView.dequeueReusableCell(
-//                    withReuseIdentifier: "about_pcos_cell", for: indexPath
-//                ) as! AboutPCOSCollectionViewCell
-//                cell.configure(with: aboutPCOSArticles[indexPath.item])
-//                return cell
-
             default:
                 return UICollectionViewCell()
             }
@@ -815,7 +763,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             case 4: headerView.configureHeader(with: "Sleep Patterns")
             case 5: headerView.configureHeader(with: "Cycle Trends")
             case 6: headerView.configureHeader(with: "Symptom Patterns")
-            //case 7: headerView.configureHeader(with: "About PCOS")
+
             default: headerView.configureHeader(with: "")
             }
             return headerView
@@ -855,34 +803,23 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
                 }
             case 4:
                 performSegue(withIdentifier: "showSleepReport", sender: nil)
-//            case 7:
-//                let article = aboutPCOSArticles[indexPath.item]
-//                let vc = storyboard?.instantiateViewController(
-//                    withIdentifier: "AboutPCOSViewController") as! AboutPCOSViewController
-//                vc.section = article
-//                navigationController?.pushViewController(vc, animated: true)
+
             default:
                 break
             }
         }
     }
 
-// MARK: - Walkthrough
-
 extension HomeViewController: WalkthroughManagerDelegate {
 
-    // MARK: Entry point (called from viewDidAppear)
-
     func handleWalkthroughOnAppear() {
-        // First launch after onboarding: start walkthrough
+
         if WalkthroughManager.shared.shouldStartWalkthrough && !WalkthroughManager.shared.isActive {
             WalkthroughManager.shared.addDelegate(self)
-            WalkthroughManager.shared.startWalkthrough()  // triggers walkthroughDidReachStep(.logPeriod)
+            WalkthroughManager.shared.startWalkthrough()  
             return
         }
-        // Returning to Home tab while walkthrough is still active.
-        // Guard: never re-show if congrats is up, an overlay is already visible,
-        // or the user already saved symptoms this session.
+
         guard WalkthroughManager.shared.isActive,
               !isShowingWalkthroughCongrats,
               walkthroughOverlay == nil else { return }
@@ -895,7 +832,7 @@ extension HomeViewController: WalkthroughManagerDelegate {
                 self?.showPeriodWalkthroughOverlay()
             }
         case .logSymptom:
-            // Only re-show if the user hasn't saved symptoms yet this session
+
             guard !walkthroughSymptomLogged else { return }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { [weak self] in
                 self?.showSymptomWalkthroughOverlay()
@@ -907,8 +844,6 @@ extension HomeViewController: WalkthroughManagerDelegate {
         default: break
         }
     }
-
-    // MARK: WalkthroughManagerDelegate
 
     func walkthroughDidReachStep(_ step: WalkthroughStep) {
         guard isViewLoaded, view.window != nil else { return }
@@ -922,12 +857,12 @@ extension HomeViewController: WalkthroughManagerDelegate {
                 self?.showSymptomWalkthroughOverlay()
             }
         case .logMeal:
-            // Hand off to Diet tab
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
                 self?.tabBarController?.selectedIndex = 1
             }
         case .workoutIntro:
-            // Switch to Workout tab
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
                 self?.tabBarController?.selectedIndex = 2
             }
@@ -947,15 +882,13 @@ extension HomeViewController: WalkthroughManagerDelegate {
         walkthroughOverlay = nil
     }
 
-    // MARK: Step 1 – Log Period overlay
-
     private func showPeriodWalkthroughOverlay() {
         guard WalkthroughManager.shared.isActive,
               WalkthroughManager.shared.currentStep == .logPeriod else { return }
-              
+
         let indexPath = IndexPath(item: 0, section: 0)
         collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
             guard let self = self else { return }
             guard let cell = self.collectionView.cellForItem(at: indexPath)
@@ -977,7 +910,7 @@ extension HomeViewController: WalkthroughManagerDelegate {
                     self.homeHeaderCellDidTapLogPeriod(cell)
                 }
             )
-            
+
             if #available(iOS 17.0, *) {
                 let tip = LogPeriodTip()
                 if case .invalidated = tip.status {
@@ -999,20 +932,18 @@ extension HomeViewController: WalkthroughManagerDelegate {
         }
     }
 
-    // MARK: Step 2 – Log Symptom overlay
-
     private func showSymptomWalkthroughOverlay() {
         guard WalkthroughManager.shared.isActive,
               WalkthroughManager.shared.currentStep == .logSymptom else { return }
-              
+
         let indexPath = IndexPath(item: 0, section: 1)
         collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
             guard let self = self else { return }
             guard let cell = self.collectionView.cellForItem(at: indexPath),
                   let window = self.view.window else {
-                // Retry in case the layout is still updating from the period save reload
+
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                     self?.showSymptomWalkthroughOverlay()
                 }
@@ -1033,7 +964,7 @@ extension HomeViewController: WalkthroughManagerDelegate {
                     self.performSegue(withIdentifier: "showSymptomLogger", sender: self)
                 }
             )
-            
+
             if #available(iOS 17.0, *) {
                 let tip = LogSymptomTip()
                 if case .invalidated = tip.status {
@@ -1055,11 +986,8 @@ extension HomeViewController: WalkthroughManagerDelegate {
         }
     }
 
-    // MARK: Step 2 → Step 3 congrats
-
     func showSymptomWalkthroughCongrats() {
-        // Prefer the key window so the card still shows even if the sheet is
-        // mid-dismiss and view.window is temporarily nil.
+
         let window: UIWindow?
         if let w = view.window {
             window = w
@@ -1070,7 +998,7 @@ extension HomeViewController: WalkthroughManagerDelegate {
                 .first(where: { $0.isKeyWindow })
         }
         guard let window else { return }
-        // isShowingWalkthroughCongrats is already true (set in onSymptomsSelected)
+
         WalkthroughCongratsView.present(
             in: window,
             title: "Amazing!",
@@ -1078,17 +1006,15 @@ extension HomeViewController: WalkthroughManagerDelegate {
             continueTitle: "Go to Diet"
         ) { [weak self] in
             self?.isShowingWalkthroughCongrats = false
-            WalkthroughManager.shared.advanceToStep(.logMeal)  // triggers tab switch to Diet
+            WalkthroughManager.shared.advanceToStep(.logMeal)  
         }
     }
 
-    // MARK: Step 7 – Chatbot Prompt
     private func showChatbotWalkthroughOverlay() {
         guard WalkthroughManager.shared.isActive,
               WalkthroughManager.shared.currentStep == .chatbotPrompt,
               let window = view.window else { return }
 
-        // Start glowing pulse on the chatbot button to draw attention
         startChatbotPulse()
 
         let btnFrame = chatbotButton.convert(chatbotButton.bounds, to: window)
@@ -1103,11 +1029,11 @@ extension HomeViewController: WalkthroughManagerDelegate {
                 self.stopChatbotPulse()
                 self.walkthroughOverlay?.dismiss()
                 self.walkthroughOverlay = nil
-                // Navigate to ChatbotVC — congrats will be shown from there
+
                 self.ChatbotButtonTapped(self.chatbotButton)
             }
         )
-        
+
         if #available(iOS 17.0, *) {
             let tip = ChatbotTip()
             if case .invalidated = tip.status {
@@ -1128,10 +1054,8 @@ extension HomeViewController: WalkthroughManagerDelegate {
         }
     }
 
-    // MARK: Chatbot button pulse animation
-
     private func startChatbotPulse() {
-        stopChatbotPulse() // Clear any existing pulse
+        stopChatbotPulse() 
 
         let pulse = CALayer()
         pulse.frame = chatbotButton.bounds.insetBy(dx: -8, dy: -8)
@@ -1144,7 +1068,6 @@ extension HomeViewController: WalkthroughManagerDelegate {
         chatbotButton.layer.insertSublayer(pulse, below: chatbotButton.imageView?.layer)
         pulseLayer = pulse
 
-        // Scale + fade pulse loop
         let scaleAnim = CABasicAnimation(keyPath: "transform.scale")
         scaleAnim.fromValue = 1.0
         scaleAnim.toValue   = 1.55
@@ -1166,9 +1089,6 @@ extension HomeViewController: WalkthroughManagerDelegate {
         pulseLayer = nil
     }
 
-    // MARK: Step 8 – Final completion congrats (called from ChatbotViewController)
-
-    /// Called by ChatbotViewController when it appears during the walkthrough.
     func showFinalCompletionCongrats() {
         guard let keyWindow = UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })

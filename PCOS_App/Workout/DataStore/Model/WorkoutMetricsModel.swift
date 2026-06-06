@@ -1,18 +1,10 @@
-//
-//  WorkoutMetricsModel.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 21/01/26.
-//
-
 import SwiftUI
 
-// MARK: - Goal Type
 enum GoalType {
     case calories
     case steps
     case duration
-    
+
     var title: String {
         switch self {
         case .calories: return "Calories Burnt"
@@ -20,7 +12,7 @@ enum GoalType {
         case .duration: return "Workout Duration"
         }
     }
-    
+
     var color: UIColor {
         switch self {
         case .calories: return UIColor(hex: "#FF5C5C")
@@ -50,16 +42,15 @@ enum GoalType {
                 )
             }
     }
-    
-    
+
     var recommendedValue: Double {
         switch self {
         case .calories: return 300.0
         case .steps: return 800.0
-        case .duration: return 120.0  // 2 hours = 120 minutes
+        case .duration: return 120.0  
         }
     }
-    
+
     var unit: String {
         switch self {
         case .calories: return "cal"
@@ -69,15 +60,13 @@ enum GoalType {
     }
 }
 
-// MARK: - Time Range
 enum WorkoutChartTimeRange: Int {
-    //case day = 0
+
     case week = 0
     case month = 1
     case year = 2
 }
 
-// MARK: - Chart Data Point
 struct WorkoutChartDataPoint: Identifiable {
     let id = UUID()
     let date: Date

@@ -60,8 +60,6 @@ struct EditNameTip: Tip {
     var image: Image? { Image(systemName: "pencil") }
 }
 
-// MARK: - Add Meal Options Tips
-
 @available(iOS 17.0, *)
 struct AddMealScanBarcodeTip: Tip {
     var title: Text { Text("Scan Barcode") }

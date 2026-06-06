@@ -1,15 +1,9 @@
-//
-//  SymptomCategory.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 13/12/25.
-//
 import Foundation
 
 struct SymptomCategory {
     let title: String
     let items: [SymptomItem]
-    
+
     static let allCategories: [SymptomCategory] = [
         SymptomCategory(title: "Flow", items: [
             SymptomItem(name: "Light", icon: "LightFlow",category: "Flow"),
@@ -30,7 +24,7 @@ struct SymptomCategory {
         ]),
         SymptomCategory(title: "Lifestyle", items: [
             SymptomItem(name: "Fatigue", icon: "FatigueIcon",category: "Lifestyle"),
-            //SymptomItem(name: "Insomnia", icon: "InsomniaIcon",category: "Lifestyle"),
+
             SymptomItem(name: "Mood Swings", icon: "MoodSwingIcon",category: "Lifestyle"),
             SymptomItem(name: "Depressed", icon: "DepressedIcon",category: "Lifestyle"),
             SymptomItem(name: "Anxiety", icon: "AnxietyIcon",category: "Lifestyle")
@@ -49,8 +43,7 @@ struct SymptomCategory {
             SymptomItem(name: "Watery", icon: "WateryIcon",category: "Discharge"),
             SymptomItem(name: "Egg White", icon: "EggWhiteIcon",category: "Discharge"),
             SymptomItem(name: "Unusual", icon: "UnusualIcon",category: "Discharge")
-//            SymptomItem(name: "Position Cervix", icon: "PositionCervixIcon",category: "Discharge"),
-//            SymptomItem(name: "Texture", icon: "TextureIcon",category: "Discharge")
+
         ]),
         SymptomCategory(title: "Gut Health", items: [
             SymptomItem(name: "Bloating", icon: "BloatingIcon",category: "Gut Health"),
@@ -58,7 +51,7 @@ struct SymptomCategory {
             SymptomItem(name: "Diarrhea", icon: "DiarrheaIcon",category: "Gut Health"),
             SymptomItem(name: "Gas", icon: "GasIcon",category: "Gut Health")
         ]),
-        
+
     ]
 }
 

@@ -1,10 +1,3 @@
-//
-//  DayCircleCollectionViewCell.swift
-//  PCOS_App
-//
-//  Created by Dnyaneshwari Gogawale on 06/02/26.
-//
-
 import UIKit
 
 class DayCircleCollectionViewCell: UICollectionViewCell {
@@ -14,7 +7,7 @@ class DayCircleCollectionViewCell: UICollectionViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+
     }
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -30,9 +23,6 @@ class DayCircleCollectionViewCell: UICollectionViewCell {
             circleView.layer.cornerRadius = circleView.bounds.width / 2
             circleView.clipsToBounds = true
         }
-    
-
-
 
     func configure(
         day: CycleDay,
@@ -43,12 +33,11 @@ class DayCircleCollectionViewCell: UICollectionViewCell {
         circleView.backgroundColor = day.phase.backgroundColor.withAlphaComponent(0.5)
 
         if symptom != nil, let focused = focusedSymptom {
-            // Resolve canonical icon from SymptomCategory to avoid legacy CoreData mismatch
+
             let canonicalIcon = SymptomCategory.allCategories
                 .flatMap { $0.items }
                 .first(where: { $0.name == focused.name })?.icon ?? focused.icon
-                
-            // Use the original image (full-color) to display the symptom exactly as designed
+
             let image = UIImage(named: canonicalIcon)?.withRenderingMode(.alwaysOriginal)
             iconImageView.image = image
             iconImageView.isHidden = false
@@ -67,10 +56,5 @@ class DayCircleCollectionViewCell: UICollectionViewCell {
         circleView.isHidden = true
         iconImageView.isHidden = true
     }
-
-
-
-
-    
 
 }

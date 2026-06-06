@@ -1,10 +1,3 @@
-//
-//  AboutPCOSCollectionViewCell.swift
-//  PCOS_App
-//
-//  Created by Dnyaneshwari Gogawale on 11/02/26.
-//
-
 import UIKit
 
 class AboutPCOSCollectionViewCell: UICollectionViewCell {
@@ -27,7 +20,6 @@ class AboutPCOSCollectionViewCell: UICollectionViewCell {
         titleLabel.font = UIFont.preferredFont(forTextStyle: .body)
         titleLabel.numberOfLines = 2
 
-        //descriptionLabel.font = UIFont.systemFont(ofSize: 15)
         descriptionLabel.font = UIFont.preferredFont(forTextStyle: .caption1)
         descriptionLabel.numberOfLines = 3
         descriptionLabel.textColor = .darkGray

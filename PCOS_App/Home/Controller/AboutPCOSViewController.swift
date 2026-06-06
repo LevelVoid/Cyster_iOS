@@ -1,24 +1,14 @@
-//
-//  AboutPCOSViewController.swift
-//  PCOS_App
-//
-
 import UIKit
 
 final class AboutPCOSViewController: UIViewController {
 
-    // MARK: - Storyboard Outlets
     @IBOutlet weak var headerImageView: UIImageView!
     @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var ContentView: UIView!
 
-    // MARK: - Data
     var section: AboutPCOSSection?
 
-    // Track whether we've already done the one-time constraint surgery
     private var constraintsFixed = false
-
-    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,11 +23,9 @@ final class AboutPCOSViewController: UIViewController {
         constraintsFixed = true
     }
 
-
     private func fixScrollConstraints() {
         guard let scrollView = ContentView.superview as? UIScrollView else { return }
 
-        // ── Step 1: nuke every bottom constraint on scrollView that involves ContentView ──
         let bad = scrollView.constraints.filter { c in
             (c.firstItem  as? UIView === ContentView && c.firstAttribute  == .bottom) ||
             (c.secondItem as? UIView === ContentView && c.secondAttribute == .bottom)
@@ -49,7 +37,7 @@ final class AboutPCOSViewController: UIViewController {
             ContentView.topAnchor     .constraint(equalTo: cl.topAnchor),
             ContentView.leadingAnchor .constraint(equalTo: cl.leadingAnchor),
             ContentView.trailingAnchor.constraint(equalTo: cl.trailingAnchor),
-            ContentView.bottomAnchor  .constraint(equalTo: cl.bottomAnchor),  // ← key
+            ContentView.bottomAnchor  .constraint(equalTo: cl.bottomAnchor),  
         ])
 
         ContentView.widthAnchor
@@ -63,8 +51,6 @@ final class AboutPCOSViewController: UIViewController {
         scrollView.setNeedsLayout()
         scrollView.layoutIfNeeded()
     }
-
-    // MARK: - Content
 
     private func configureUI() {
         guard let section = section else { return }
@@ -115,8 +101,6 @@ final class AboutPCOSViewController: UIViewController {
             }
         }
     }
-
-    // MARK: - Helpers
 
     private func makeLabel(text: String, font: UIFont, color: UIColor) -> UILabel {
         let label = UILabel()

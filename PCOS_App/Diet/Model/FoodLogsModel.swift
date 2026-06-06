@@ -1,10 +1,3 @@
-//
-//  FoodDataSource.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 09/12/25.
-//
-
 import Foundation
 
 struct Food: Codable, Identifiable {
@@ -13,45 +6,39 @@ struct Food: Codable, Identifiable {
     var image: String?
     var timeStamp: Date
     var servingSize: Double
-    var weight: Double? //Add more values for testing in datasource
+    var weight: Double? 
     var desc: String = ""
-    // Base macros (if not ingredient-based)
+
     var proteinContent: Double
     var carbsContent: Double
     var fatsContent: Double
     var fiberContent: Double = 0
 
-    // Optional override
     var customCalories: Double?
-    
-    // Tags
+
     var tags: [ImpactTags]?
-    
-    // Ingredient list
+
     var ingredients: [Ingredient]? = nil
-    
+
     var calories: Double {
-            // 1: Explicit override
+
             if let customCalories = customCalories {
                 return customCalories
             }
-            
-            // 2: Ingredient-based calories
+
             if let ingredients = ingredients {
                 let total = ingredients.reduce(0) { $0 + $1.calories! }
                 return total.rounded(toPlaces: 2)
             }
-            
-            // 3: Macro-based calories
+
             let total = (proteinContent * 4) +
                         (carbsContent * 4) +
                         (fatsContent * 9)
-            
+
             return total.rounded(toPlaces: 2)
         }
-    
-}
 
+}
 
 struct OFFResponse: Codable, Sendable {
     let status: Int
@@ -66,7 +53,7 @@ struct OFFProduct: Codable, Sendable {
     let image_small_url: String?
     let nutriments: OFFNutriments?
     let ingredients: [OFFIngredient]?
-    
+
 }
 
 struct OFFNutriments: Codable, Sendable {
@@ -75,7 +62,7 @@ struct OFFNutriments: Codable, Sendable {
     let carbohydrates100g: Double?
     let fat100g: Double?
     let fiber100g: Double?
-    
+
     enum CodingKeys: String, CodingKey {
         case energyKcal100g = "energy-kcal_100g"
         case proteins100g = "proteins_100g"
@@ -91,10 +78,9 @@ struct OFFIngredient: Codable, Sendable {
 
 extension OFFProduct{
     func toFood() -> Food {
-            // Extract nutrients safely
+
             let nutr = nutriments
-            
-            // Map OFF ingredients (only have text) into our Ingredient model with safe defaults
+
             let mappedIngredients: [Ingredient]? = ingredients?.compactMap { offIng in
                 guard let name = offIng.text?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty else {
                     return nil
@@ -102,15 +88,15 @@ extension OFFProduct{
                 return Ingredient(
                     id: UUID(),
                     name: name,
-                    quantity: 100,          // default to 100g
-                    protein: 0,             // unknown per-ingredient macros
+                    quantity: 100,          
+                    protein: 0,             
                     carbs: 0,
                     fats: 0,
                     fibre: 0,
-                    tags: []                // no tags from OFF
+                    tags: []                
                 )
             }
-            
+
             let food: Food = Food(
                 id: UUID(),
                 name: product_name ?? "Unknown Food",

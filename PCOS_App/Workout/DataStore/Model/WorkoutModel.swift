@@ -1,14 +1,8 @@
-//
-//  Model.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 22/11/25.
-//
-import UIKit//for gif
+import UIKit
 import Foundation
 enum Equipment: String, Codable, CaseIterable, Sendable {
     case allEquipment,none,barbell,dumbbell,kettlebell,machine,resistanceBand,plate
-    
+
     var displayName: String {
             switch self {
             case .allEquipment: return "All Equipment"
@@ -36,7 +30,7 @@ enum Equipment: String, Codable, CaseIterable, Sendable {
 }
 enum MuscleGroup: String, Codable, CaseIterable, Sendable {
     case allMuscles,core, chest, back, legs, shoulders, arms, glutes, cardio, mobility, fullBody
-    
+
     var displayName: String {
             switch self {
             case .allMuscles: return "All Muscles"
@@ -52,7 +46,7 @@ enum MuscleGroup: String, Codable, CaseIterable, Sendable {
             case .fullBody: return "Full Body"
             }
         }
-    
+
     var displayImage: String {
             switch self {
             case .allMuscles: return "All Muscles"
@@ -68,7 +62,7 @@ enum MuscleGroup: String, Codable, CaseIterable, Sendable {
             case .fullBody: return "Full Body"
             }
         }
-    // Helper property to check if exercise type is cardio
+
         var isCardio: Bool {
             return self == .cardio
         }
@@ -76,19 +70,19 @@ enum MuscleGroup: String, Codable, CaseIterable, Sendable {
 struct Exercise: Identifiable, Codable, Sendable {
     var id: UUID
     let name: String
-    let muscleGroup: MuscleGroup          // this IS your primary muscle
+    let muscleGroup: MuscleGroup          
     let equipment: Equipment
     let image: String?
     let instructions: String?
-    
-    let gifUrl: String?                   // remote GIF (or local path if you want)
-    
-    let level: String                     // Beginner, Intermediate, Advanced
-    let tempo: String                     // e.g. "2–3s up/down"
-    let form: [String]                    // bullet points
-    let variations: [String]              // list of variations
-    let commonMistakes: [String]          // list of mistakes
-    
+
+    let gifUrl: String?                   
+
+    let level: String                     
+    let tempo: String                     
+    let form: [String]                    
+    let variations: [String]              
+    let commonMistakes: [String]          
+
     init(
         id: UUID = UUID(),
         name: String,
@@ -116,19 +110,19 @@ struct Exercise: Identifiable, Codable, Sendable {
         self.variations = variations
         self.commonMistakes = commonMistakes
     }
-    
+
     var isCardio: Bool {
         muscleGroup.isCardio
     }
-    
+
     var isYoga: Bool {
         muscleGroup == .mobility
     }
-    
+
     var isTimeBased: Bool {
         isCardio || isYoga
     }
-    
+
     var gifImage: UIImage? {
             guard let gifName = gifUrl else { return nil }
             return GIFManager.shared.gif(named: gifName)
@@ -142,8 +136,7 @@ struct RoutineExercise: Codable, Identifiable {
     var reps: Int
     var weightKg :  Int
     var restTimerSeconds: Int?
-    
-    // For cardio exercises
+
     var durationSeconds: Int?
     var notes: String?
     init (id: UUID = UUID(),
@@ -154,13 +147,12 @@ struct RoutineExercise: Codable, Identifiable {
              restTimerSeconds: Int? = nil,
              durationSeconds: Int? = nil,
              notes: String? = nil) {
-            
+
             self.id = id
             self.exercise = exercise
             self.weightKg = weightKg
             self.notes = notes
-            
-            // Setting defaults based on exercise type
+
             if exercise.isTimeBased {
                 self.numberOfSets = 1
                 self.reps = 0
@@ -170,23 +162,23 @@ struct RoutineExercise: Codable, Identifiable {
             } else {
                 self.numberOfSets = numberOfSets ?? 3
                 self.reps = reps ?? 10
-                self.restTimerSeconds = restTimerSeconds ?? 60  // 60 seconds rest
+                self.restTimerSeconds = restTimerSeconds ?? 60  
                 self.durationSeconds = nil
             }
         }
-        
+
     func generateWorkoutExercise() -> WorkoutExercise {
         if exercise.isTimeBased {
-                   // For cardio, create a single set with duration
+
                    let cardioSet = ExerciseSet(
                        setNumber: 1,
                        reps: 0,
-                      // weightKg: 0,
+
                        restTimerSeconds: nil,
                        durationSeconds: durationSeconds,
-                       //isCompleted: false
+
                    )
-                   
+
                    return WorkoutExercise(
                        id: id,
                        exercise: exercise,
@@ -194,18 +186,18 @@ struct RoutineExercise: Codable, Identifiable {
                        notes: notes
                    )
                } else {
-                   // For strength exercises
+
                    let sets = (1...numberOfSets).map {
                        ExerciseSet(
                            setNumber: $0,
                            reps: reps,
-                       //    weightKg: weightKg,
+
                            restTimerSeconds: restTimerSeconds,
                            durationSeconds: nil,
-                           //isCompleted: false
+
                        )
                    }
-                   
+
                    return WorkoutExercise(
                        id: id,
                        exercise: exercise,
@@ -214,9 +206,9 @@ struct RoutineExercise: Codable, Identifiable {
                    )
                }
            }
-    
+
 }
-//UI MODEL
+
 struct Card {
     let name: String
     let image: String
@@ -237,15 +229,14 @@ struct Card {
         }
 }
 
-
 struct ExerciseSet: Codable, Identifiable {
     var id = UUID()
     var setNumber: Int
     var reps: Int
-//    var weightKg: Int
+
     var restTimerSeconds: Int?
-    var durationSeconds: Int? // For cardio exercises
-    var elapsedSeconds: Int? = 0 // Partial completion tracking
+    var durationSeconds: Int? 
+    var elapsedSeconds: Int? = 0 
     var completionState: SetCompletionState = .notStarted
 }
 enum SetCompletionState: String, Codable{
@@ -274,31 +265,31 @@ struct Routine: Identifiable, Codable {
     var thumbnailImageName: String?
     var routineTagline: String?
     var routineDescription: String?
-    var phase: Phase?              // nil for user-created routines
+    var phase: Phase?              
     var routineType: RoutineType?
     var totalExercises: Int { exercises.count }
-    
+
     var totalSets: Int {
         exercises.reduce(0) { total, ex in
-            // Time-based exercises count as 1 set
+
             return total + (ex.exercise.isTimeBased ? 1 : ex.numberOfSets)
         }
     }
-    
+
     var estimatedDurationSeconds: Int {
         exercises.reduce(0) { total, ex in
             if ex.exercise.isTimeBased {
-                // For time-based, use the user-specified duration (defaults applied in init)
+
                 return total + (ex.durationSeconds ?? 0)
             } else {
-                // For strength exercises, estimate based on reps and rest
-                let activePerSet = ex.reps * 4 // simple estimate
+
+                let activePerSet = ex.reps * 4 
                 let rest = ex.restTimerSeconds ?? 0
                 return total + (activePerSet + rest) * ex.numberOfSets
             }
         }
     }
-    
+
     var formattedDuration: String {
         let minutes = estimatedDurationSeconds / 60
         if minutes > 60 {
@@ -308,33 +299,31 @@ struct Routine: Identifiable, Codable {
     }
 }
 
-
-
 struct ActiveWorkout {
     var id = UUID()
-    var routine: Routine                    // template used
-    var exercises: [WorkoutExercise]        // live trackable exercises
+    var routine: Routine                    
+    var exercises: [WorkoutExercise]        
 
     var startTime: Date = Date()
     var endTime: Date?
-    var durationSeconds: Int = 0            // will be filled on finish
+    var durationSeconds: Int = 0            
 
     mutating func finish() {
         endTime = Date()
         durationSeconds = Int(endTime!.timeIntervalSince(startTime))
-        
+
     }
 }
 struct CompletedWorkout: Codable {
     var id = UUID()
     var routineName: String
     var date: Date
-    var startTime: Date        // used for Apple Watch HR query window
+    var startTime: Date        
     var durationSeconds: Int
     var exercises: [WorkoutExercise]
-    var caloriesBurned: Double = 0  // best estimate for this session only
+    var caloriesBurned: Double = 0  
 }
-//read why using class and not struct here
+
 class WorkoutSessionManager {
     static let shared = WorkoutSessionManager()
     private init() {}
@@ -343,18 +332,16 @@ class WorkoutSessionManager {
 
 struct RoutineImageProvider {
     static let images = [
-//        "routine_91", "routine_101", "routine_111",
-//        "routine_121", "routine_131", "routine_141",
-//        "routine_151"
+
         "routine_911", "routine_1011", "routine_1111",
         "routine_1211", "routine_1311", "routine_1411",
         "routine_1511"
     ]
-    
+
     static func random() -> String {
         images.randomElement()!
     }
-    
+
     static func uniqueImage(usedImages: [String]) -> String {
         let available = images.filter { !usedImages.contains($0) }
         return available.randomElement() ?? images.randomElement()!
@@ -369,7 +356,6 @@ extension CompletedWorkout {
     func resumePoint() -> ResumePoint? {
         for (exIndex, exercise) in exercises.enumerated() {
 
-            // TIME-BASED
             if exercise.exercise.isTimeBased {
                 if exercise.sets.first?.completionState != .completed {
                     return ResumePoint(exerciseIndex: exIndex, setIndex: 0)
@@ -377,16 +363,15 @@ extension CompletedWorkout {
                 continue
             }
 
-            // STRENGTH
             for (setIndex, set) in exercise.sets.enumerated() {
                 if set.completionState != .completed {
                     return ResumePoint(exerciseIndex: exIndex, setIndex: setIndex)
                 }
             }
         }
-        return nil // everything completed
+        return nil 
     }
-    
+
 }
 extension ActiveWorkout {
     static func resume(
@@ -403,7 +388,6 @@ extension ActiveWorkout {
 }
 extension CompletedWorkout {
 
-    // will return true for exercise  only if all planned sets are completed
     var isFullyCompleted: Bool {
         for exercise in exercises {
             for set in exercise.sets {
@@ -415,13 +399,4 @@ extension CompletedWorkout {
         return true
     }
 }
-
-
-
-
-
-
-
-
-
 

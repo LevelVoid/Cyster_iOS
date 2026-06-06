@@ -1,25 +1,10 @@
-//
-//  DataStore.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 24/11/25.
-//
-
-//
-//  DataStore.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 24/11/25.
-//
-
 import Foundation
 
 class ExerciseDataStore {
     static let shared = ExerciseDataStore()
-    
+
     private init() {}
-    
-    // MARK: - Hardcoded Exercises
+
     let allExercises: [Exercise] = [
 
     Exercise(
@@ -765,26 +750,23 @@ class ExerciseDataStore {
     "Holding rails"
     ]
     )
-    
-
 
     ]
-    
-    // MARK: - Helper Methods
+
     func getExercises(for muscleGroup: MuscleGroup) -> [Exercise] {
         if muscleGroup == .allMuscles {
             return allExercises
         }
         return allExercises.filter { $0.muscleGroup == muscleGroup }
     }
-    
+
     func getExercises(for equipment: Equipment) -> [Exercise] {
         if equipment == .allEquipment {
             return allExercises
         }
         return allExercises.filter { $0.equipment == equipment }
     }
-    
+
     func getExercises(for muscleGroup: MuscleGroup, equipment: Equipment) -> [Exercise] {
         return allExercises.filter { exercise in
             let muscleMatch = muscleGroup == .allMuscles || exercise.muscleGroup == muscleGroup
@@ -792,7 +774,7 @@ class ExerciseDataStore {
             return muscleMatch && equipmentMatch
         }
     }
-    
+
     func searchExercises(query: String) -> [Exercise] {
         let lowercasedQuery = query.lowercased()
         return allExercises.filter { exercise in

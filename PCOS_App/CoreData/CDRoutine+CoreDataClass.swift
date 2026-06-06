@@ -3,13 +3,13 @@ import CoreData
 
 @objc(CDRoutine)
 public class CDRoutine: NSManagedObject {
-    
+
     func toRoutine() -> Routine {
         let cdExercises = (exercises as? Set<CDRoutineExercise>)?
             .sorted { $0.sortOrder < $1.sortOrder } ?? []
-        
+
         let routineExercises: [RoutineExercise] = cdExercises.compactMap { $0.toRoutineExercise() }
-        
+
         let decodedPhase: Phase? = {
             guard let phaseStr = phase else { return nil }
             switch phaseStr {
@@ -20,12 +20,12 @@ public class CDRoutine: NSManagedObject {
             default:           return nil
             }
         }()
-        
+
         let decodedType: RoutineType? = {
             guard let typeStr = routineType else { return nil }
             return RoutineType(rawValue: typeStr)
         }()
-        
+
         return Routine(
             id: id ?? UUID(),
             name: name ?? "Untitled",
@@ -38,7 +38,7 @@ public class CDRoutine: NSManagedObject {
             routineType: decodedType
         )
     }
-    
+
     @discardableResult
     static func from(_ routine: Routine, context: NSManagedObjectContext) -> CDRoutine {
         let cd = CDRoutine(context: context)
@@ -58,13 +58,13 @@ public class CDRoutine: NSManagedObject {
                    }
                }
         cd.routineType = routine.routineType?.rawValue
-        
+
         for (index, re) in routine.exercises.enumerated() {
             let cdExercise = CDRoutineExercise.from(re, context: context)
             cdExercise.sortOrder = Int16(index)
             cdExercise.routine = cd
         }
-        
+
         return cd
     }
 }

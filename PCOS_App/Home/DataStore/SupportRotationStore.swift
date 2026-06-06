@@ -1,10 +1,3 @@
-//
-//  SupportRotationStore.swift
-//  PCOS_App
-//
-//  Created by Abhinaya Rajarajan on 17/02/26.
-//
-
 import Foundation
 
 final class SupportRotationStore {
@@ -29,7 +22,7 @@ final class SupportRotationStore {
 
         return actions[nextIndex]
     }
-    
+
 }
 final class PhaseSupportRotationStore {
 

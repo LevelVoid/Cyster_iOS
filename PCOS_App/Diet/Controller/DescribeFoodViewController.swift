@@ -1,41 +1,32 @@
-//
-//  DescribeFoodViewController.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 02/12/25.
-//
-
 import UIKit
 
 class DescribeFoodViewController: UIViewController {
-    
-    
+
     @IBOutlet weak var dietInfoLabel: UILabel!
     @IBOutlet weak var describeYourMealText: UITextField!
-    
+
     @IBOutlet weak var closeButton: UIBarButtonItem!
     @IBOutlet weak var doneButton: UIBarButtonItem!
-    
+
     weak var dietDelegate: AddDescribedMealDelegate?
-        
+
     private var loadingView: UIView?
     private var activityIndicator: UIActivityIndicatorView?
-    
-    // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Add with AI"
         view.backgroundColor = .systemBackground
         setupUI()
-        
+
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tap)
     }
-    
+
     @IBAction func close(_ sender: Any) {
         dismiss(animated: true)
     }
-    
+
     @IBAction func done(_ sender: Any) {
         guard let text = describeYourMealText.text,
               !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
@@ -49,7 +40,6 @@ class DescribeFoodViewController: UIViewController {
         }
     }
 
-    // MARK: - Foundation Model Analysis
     private func analyzeMealWithFoundationModel(description: String) async {
         let instructions = """
             You are a professional nutritionist specializing in Indian and international foods.
@@ -123,7 +113,7 @@ class DescribeFoodViewController: UIViewController {
         }
 
         do {
-            // ← This line was missing
+
             let decoded = try JSONDecoder().decode(AIFoodResponse.self, from: data)
 
             let ingredients: [Ingredient] = decoded.ingredients.map { (raw: AIIngredient) -> Ingredient in
@@ -145,19 +135,17 @@ class DescribeFoodViewController: UIViewController {
                 showAlert(message: "No ingredients found in AI response. Please try again.")
                 return
             }
-            
-            // Normalize serving size to standard defaults
+
             let normalizedUnit = decoded.unit.lowercased()
             let normalizedServingSize: Double
             switch normalizedUnit {
             case "ml", "milliliter", "millilitre":
-                normalizedServingSize = 100   // 100 ml
+                normalizedServingSize = 100   
             case "piece", "pieces", "unit", "units", "pcs", "pc", "slice", "slices":
-                normalizedServingSize = 1     // 1 piece
+                normalizedServingSize = 1     
             default:
-                normalizedServingSize = 100   // 100 g (default)
+                normalizedServingSize = 100   
             }
-
 
             let foodItem = FoodItem(
                 id: Int.random(in: 100000...999999),
@@ -183,9 +171,7 @@ class DescribeFoodViewController: UIViewController {
             showAlert(message: "Could not parse AI response. Please try again with a clearer description.")
         }
     }
-    
 
-    // MARK: - Navigation
     private func navigateToAdd(_ foodItem: FoodItem) {
         let storyboard = self.storyboard ?? UIStoryboard(name: "Diet", bundle: nil)
 
@@ -209,7 +195,6 @@ class DescribeFoodViewController: UIViewController {
         }
     }
 
-    // MARK: - UI
     private func setupUI() {
         describeYourMealText.placeholder = "e.g., 2 roti with dal and curd"
         describeYourMealText.autocapitalizationType = .none
@@ -234,7 +219,6 @@ class DescribeFoodViewController: UIViewController {
         present(alert, animated: true)
     }
 
-    // MARK: - Loading Indicator
     private func showLoadingIndicator() {
         let loadingView = UIView(frame: view.bounds)
         loadingView.backgroundColor = UIColor.black.withAlphaComponent(0.3)

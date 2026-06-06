@@ -1,14 +1,6 @@
-//
-//  AIOutputTypes.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 23/03/26.
-//
-
 import Foundation
 import FoundationModels
 
-//MARK: meal reccomendation system
 @Generable
 struct MealRecommendationOutput {
     @Guide(description: """
@@ -51,7 +43,6 @@ struct FoodCard {
     var colorHint: String
 }
 
-//MARK: daily goals output
 @Generable
 struct DailyGoalsOutput {
     @Guide(description: """
@@ -89,7 +80,7 @@ struct GoalCard {
     E.g. 'No strength training in 7 days — add a 20-min session.'
     """)
     var sentence: String
-    
+
     @Guide(description: "One word only: nutrition | exercise | symptoms")
     var category: String
 }

@@ -1,11 +1,3 @@
-//
-//  SectionHeaderView.swift
-//  PCOS_App
-//
-//  Created by SDC-USER on 23/03/26.
-//
-
-
 import UIKit
 
 class SectionHeaderView: UICollectionReusableView {

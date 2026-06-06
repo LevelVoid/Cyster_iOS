@@ -1,14 +1,10 @@
 import UIKit
 
-// Minimal placeholder to unblock compilation. Hook up to storyboard with
-// Storyboard ID: "FoodDetailViewController" in the "Diet" storyboard.
-// Extend this later with your real UI.
 class FoodDetailViewController: UIViewController {
-    // Inputs set by the presenter
+
     var foodItem: FoodItem?
     var currentQuantity: Int = 0
 
-    // Callback to return selected quantity
     var onQuantitySelected: ((Int) -> Void)?
 
     private let nameLabel = UILabel()
@@ -76,7 +72,7 @@ class FoodDetailViewController: UIViewController {
 
     @objc private func doneTapped() {
         onQuantitySelected?(currentQuantity)
-        // Typically you'd pop or dismiss; let the presenter handle dismissal
+
         if navigationController != nil {
             navigationController?.popViewController(animated: true)
         } else {
