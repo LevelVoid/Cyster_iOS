@@ -12,6 +12,13 @@
 
 ---
 
+## Try on TestFlight
+
+**[Join the beta →](https://testflight.apple.com/join/5gXW68Jn)**
+_Open on your iPhone. Requires iOS 17 or later._
+
+---
+
 ## Features
 
 ### Today
@@ -37,13 +44,6 @@ View cycle history, symptom trends across cycles, nutrition charts, and workout 
 
 ### Onboarding
 A one-time setup that captures your PCOS phenotype, diet preference, and activity level to personalise every AI interaction from day one.
-
----
-
-## Try on TestFlight
-
-**[Join the beta →](https://testflight.apple.com/join/5gXW68Jn)**
-_Open on your iPhone. Requires iOS 17 or later._
 
 ---
 
