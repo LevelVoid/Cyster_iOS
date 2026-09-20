@@ -53,6 +53,7 @@
             </constraints>
             <size key="customSize" width="334" height="158"/>
             <connections>
+                <outlet property="addButton" destination="IQB-j0-DbZ" id="abcd-ef-ghi"/>
                 <outlet property="containerView" destination="DVG-CR-xk5" id="cK0-Ag-qTj"/>
                 <outlet property="messageLabel" destination="DNH-lX-Jym" id="hA4-po-GtC"/>
             </connections>
