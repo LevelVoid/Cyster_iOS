@@ -620,25 +620,12 @@ extension DietViewController: WalkthroughManagerDelegate {
         WalkthroughCongratsView.present(
             in: window,
             title: "Step 2 Complete!",
-            body: "Great job logging your meal. Now, let's quickly set your diet preference.",
-            continueTitle: "Set Diet Type"
+            body: "Great job logging your meal. Next, let's explore your workout options!",
+            continueTitle: "Go to Workout"
         ) { [weak self] in
             self?.isShowingWalkthroughCongrats = false
-            self?.presentDietTypeViewController()
+            WalkthroughManager.shared.advanceToStep(.workoutIntro)
         }
-    }
-
-    private func presentDietTypeViewController() {
-        let onboardingStoryboard = UIStoryboard(name: "Onboarding", bundle: nil)
-        guard let dietTypeVC = onboardingStoryboard.instantiateViewController(withIdentifier: "DietTypeViewController") as? DietTypeViewController else { return }
-
-        dietTypeVC.modalPresentationStyle = .pageSheet
-        if let sheet = dietTypeVC.sheetPresentationController {
-            sheet.detents = [.large()]
-            sheet.prefersGrabberVisible = true
-        }
-
-        present(dietTypeVC, animated: true)
     }
 }
 
