@@ -24,6 +24,8 @@ class PCOSPhenotypeViewController: UIViewController {
 
     private func setupUI() {
         continueButton.tintColor = UIColor(hex: "FE7A96")
+        continueButton.isUserInteractionEnabled = false
+        continueButton.alpha = 0.5
 
         let allCards = [typeACard, typeBCard, typeCCard, typeDCard, dontKnowCard]
         for card in allCards {
@@ -91,6 +93,9 @@ class PCOSPhenotypeViewController: UIViewController {
         tappedView.layer.borderWidth = 3
         tappedView.layer.borderColor = UIColor(hex: "#fe7a96").cgColor
         tappedView.backgroundColor = UIColor(hex: "fe7a96").withAlphaComponent(0.1)
+
+        continueButton.isUserInteractionEnabled = true
+        continueButton.alpha = 1.0
     }
 
     @IBAction func continueButtonTapped(_ sender: UIButton) {
@@ -130,7 +135,7 @@ class PCOSPhenotypeViewController: UIViewController {
 
         UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
 
-        UserDefaults.standard.set(false, forKey: "hasCompletedWalkthrough")
+        UserDefaults.standard.set(true, forKey: "hasCompletedWalkthrough")
 
         print("Complete profile saved! Height: \(heightInCm)cm, Weight: \(weightInKg)kg, Phenotype: \(pcosPhenotype)")
 

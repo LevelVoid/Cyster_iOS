@@ -17,6 +17,18 @@ class MainTabBarController: UITabBarController {
         forceBottomTabBar()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        HealthKitManager.shared.requestAuthorization { granted, error in
+            if let error = error {
+                print("HealthKit auth error: \(error.localizedDescription)")
+            } else {
+                print("HealthKit authorization granted: \(granted)")
+            }
+        }
+    }
+    
     private func forceBottomTabBar() {
         if #available(iOS 18.0, *) {
             self.mode = .tabBar

@@ -60,14 +60,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("🧪 UI Test Mode active - Using in-memory database")
             UIView.setAnimationsEnabled(false)
         }
-
-        HealthKitManager.shared.requestAuthorization { granted, error in
-            if let error = error {
-                print("HealthKit auth error: \(error.localizedDescription)")
-            } else {
-                print("HealthKit authorization granted: \(granted)")
-            }
-        }
         print("📂 Core Data path: \(NSPersistentContainer.defaultDirectoryURL())")
         _ = SymptomDataStore.shared
 
