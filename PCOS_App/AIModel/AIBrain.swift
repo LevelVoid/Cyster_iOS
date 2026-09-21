@@ -7,9 +7,27 @@ final class AIBrain {
     static let shared = AIBrain()
     private init() {}
 
+    /// Returns the current on-device model availability.
+    var appleIntelligenceStatus: SystemLanguageModel.Availability {
+        SystemLanguageModel.default.availability
+    }
+
     private var foundationModelsAvailable: Bool {
-        if case .available = SystemLanguageModel.default.availability { return true }
+        if case .available = appleIntelligenceStatus { return true }
         return false
+    }
+
+    /// Maps the current unavailability reason to an `AIBrainError`.
+    private var unavailabilityError: AIBrainError {
+        switch appleIntelligenceStatus {
+        case .unavailable(.appleIntelligenceNotEnabled):
+            return .appleIntelligenceNotEnabled
+        case .unavailable(.modelNotReady):
+            return .modelNotReady
+        default:
+            // Covers .deviceNotEligible and any future unknown cases.
+            return .deviceNotEligible
+        }
     }
 
     private let cloudEngine = CloudModelEngine()
@@ -181,7 +199,6 @@ final class AIBrain {
             } catch {
                 print("⚠️ FoundationModels chat failed (\(error)), falling back to Cloud")
                 chatSession = nil
-
             }
         }
 
@@ -199,7 +216,9 @@ final class AIBrain {
             return reply
         } catch {
             cloudChatHistory.removeLast()
-            throw error
+            // Only map to a device-level error when on-device AI is actually unavailable.
+            // If FoundationModels was available but cloud also failed, it's a network issue.
+            throw foundationModelsAvailable ? error : unavailabilityError
         }
     }
 
@@ -243,7 +262,6 @@ final class AIBrain {
     func generateMealRecommendations(context: String) async throws -> MealRecommendationOutput {
         if foundationModelsAvailable {
             do {
-
                 let session = LanguageModelSession(instructions: mealInstructions)
                 let response = try await session.respond(
                     to: context,
@@ -252,15 +270,18 @@ final class AIBrain {
                 return response.content
             } catch {
                 print("⚠️ FoundationModels meal generation failed (\(error)), falling back to Cloud")
-
             }
         }
 
-        let jsonString = try await cloudEngine.generateMealRecommendationsJSON(
-            context: context,
-            instructions: mealInstructions
-        )
-        return try parseMealJSON(jsonString)
+        do {
+            let jsonString = try await cloudEngine.generateMealRecommendationsJSON(
+                context: context,
+                instructions: mealInstructions
+            )
+            return try parseMealJSON(jsonString)
+        } catch {
+            throw foundationModelsAvailable ? error : unavailabilityError
+        }
     }
 
     private func parseMealJSON(_ raw: String) throws -> MealRecommendationOutput {
@@ -336,15 +357,18 @@ final class AIBrain {
                 return response.content
             } catch {
                 print("⚠️ FoundationModels goals generation failed (\(error)), falling back to Cloud")
-
             }
         }
 
-        let jsonString = try await cloudEngine.generateDailyGoalsJSON(
-            context: context,
-            instructions: goalsInstructions
-        )
-        return try parseGoalsJSON(jsonString)
+        do {
+            let jsonString = try await cloudEngine.generateDailyGoalsJSON(
+                context: context,
+                instructions: goalsInstructions
+            )
+            return try parseGoalsJSON(jsonString)
+        } catch {
+            throw foundationModelsAvailable ? error : unavailabilityError
+        }
     }
 
     private func parseGoalsJSON(_ raw: String) throws -> DailyGoalsOutput {
@@ -379,7 +403,11 @@ final class AIBrain {
                 print("⚠️ FoundationModels generation failed (\(error)), falling back to Cloud")
             }
         }
-        return try await cloudEngine.generate(prompt: prompt, systemPrompt: instructions)
+        do {
+            return try await cloudEngine.generate(prompt: prompt, systemPrompt: instructions)
+        } catch {
+            throw foundationModelsAvailable ? error : unavailabilityError
+        }
     }
 
     func analyzeMealDescription(description: String, instructions: String) async throws -> String {
@@ -390,11 +418,14 @@ final class AIBrain {
                 return response.content
             } catch {
                 print("⚠️ FoundationModels meal parsing failed (\(error)), falling back to Cloud")
-
             }
         }
 
-        return try await cloudEngine.generate(prompt: description, systemPrompt: instructions)
+        do {
+            return try await cloudEngine.generate(prompt: description, systemPrompt: instructions)
+        } catch {
+            throw foundationModelsAvailable ? error : unavailabilityError
+        }
     }
 
     func resetChat() {
@@ -408,15 +439,21 @@ final class AIBrain {
 }
 
 enum AIBrainError: LocalizedError {
-    case modelUnavailable
     case parsingFailed
+    case deviceNotEligible
+    case appleIntelligenceNotEnabled
+    case modelNotReady
 
     var errorDescription: String? {
         switch self {
-        case .modelUnavailable:
-            return "No AI engine is available. Please check your internet connection or enable Apple Intelligence."
         case .parsingFailed:
             return "Failed to parse the AI response. Please try again."
+        case .deviceNotEligible:
+            return "Your device doesn't support Apple Intelligence. Please check your internet connection to use the cloud fallback."
+        case .appleIntelligenceNotEnabled:
+            return "Enable Apple Intelligence in Settings to unlock offline AI features, or check your internet connection."
+        case .modelNotReady:
+            return "AI features are warming up and downloading. This only takes a moment. Please try again shortly."
         }
     }
 }

@@ -224,6 +224,11 @@ final class ChatbotViewController: UIViewController {
                 await MainActor.run {
                     self.addAIMessage(response)
                 }
+            } catch let brainError as AIBrainError {
+                await MainActor.run {
+                    self.addAIMessage(brainError.errorDescription
+                        ?? "Something went wrong. Please try again.")
+                }
             } catch {
                 await MainActor.run {
                     self.addAIMessage("I'm having trouble connecting right now. Please check your internet connection and try again.")
