@@ -2,6 +2,8 @@ import UIKit
 import HealthKit
 import CoreData
 import TipKit
+import FirebaseCore
+import RevenueCat
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -55,6 +57,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
+        // 1. Firebase — must be first
+        FirebaseApp.configure()
+
+        // 2. RevenueCat — initialize with public API key (no paywall in M1)
+        Purchases.configure(withAPIKey: "test_bMVjYJPvMspKlhPrdypngpXFoUB")
+        Purchases.logLevel = .warn
 
         if ProcessInfo.processInfo.arguments.contains("-UITestMode") {
             print("🧪 UI Test Mode active - Using in-memory database")

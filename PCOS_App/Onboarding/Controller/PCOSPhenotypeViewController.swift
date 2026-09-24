@@ -138,21 +138,7 @@ class PCOSPhenotypeViewController: UIViewController {
         UserDefaults.standard.set(true, forKey: "hasCompletedWalkthrough")
 
         print("Complete profile saved! Height: \(heightInCm)cm, Weight: \(weightInKg)kg, Phenotype: \(pcosPhenotype)")
-
-        let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
-        let tabBarVC = mainStoryboard.instantiateViewController(withIdentifier: "MainTabBarController") as! UITabBarController
-
-        if #available(iOS 18.0, *) {
-            tabBarVC.mode = .tabBar
-        }
-
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first {
-            window.rootViewController = tabBarVC
-            window.makeKeyAndVisible()
-
-            UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
-        }
+        LaunchCoordinator.shared.navigateToHome(animated: true)
     }
 }
 
