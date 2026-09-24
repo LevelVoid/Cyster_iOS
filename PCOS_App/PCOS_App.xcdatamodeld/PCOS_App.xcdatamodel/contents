@@ -67,6 +67,7 @@
         <relationship name="completedWorkouts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDCompletedWorkout" inverseName="dailyContext" inverseEntity="CDCompletedWorkout"/>
         <relationship name="foodLogs" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDFoodLog" inverseName="dailyContext" inverseEntity="CDFoodLog"/>
         <relationship name="symptomLogs" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDSymptomLog" inverseName="dailyContext" inverseEntity="CDSymptomLog"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDUser" inverseName="dailyContexts" inverseEntity="CDUser"/>
     </entity>
     <entity name="CDFoodLog" representedClassName="CDFoodLog" syncable="YES" codeGenerationType="category">
         <attribute name="carbsContent" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
@@ -131,15 +132,22 @@
     </entity>
     <entity name="CDUser" representedClassName="CDUser" syncable="YES" codeGenerationType="category">
         <attribute name="activityLevel" attributeType="String"/>
+        <attribute name="authProvider" optional="YES" attributeType="String"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="dateOfBirth" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="dietPattern" attributeType="String"/>
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="firebaseUID" optional="YES" attributeType="String"/>
         <attribute name="heightCm" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="lastBackupAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="name" attributeType="String"/>
+        <attribute name="onboardingCompleted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="onboardingStep" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="pcosPhenotype" optional="YES" attributeType="String"/>
         <attribute name="weightKg" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="cycles" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDCycleData" inverseName="user" inverseEntity="CDCycleData"/>
+        <relationship name="dailyContexts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDDailyContext" inverseName="user" inverseEntity="CDDailyContext"/>
     </entity>
     <entity name="CDWorkoutExercise" representedClassName="CDWorkoutExercise" syncable="YES" codeGenerationType="category">
         <attribute name="exerciseData" optional="YES" attributeType="Binary"/>
