@@ -12,56 +12,87 @@
         <scene sceneID="hNV-QI-bxH">
             <objects>
                 <viewController id="wNo-Va-jPN" customClass="TempFirstScreenViewController" customModule="PCOS_App" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="tbb-Xc-Cda">
+                    <view key="view" contentMode="scaleToFill" ambiguous="YES" id="tbb-Xc-Cda">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="routine_91" translatesAutoresizingMaskIntoConstraints="NO" id="8Ht-p8-FsM">
+                                <rect key="frame" x="16" y="196" width="361" height="340"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="340" id="ERt-IU-bf2"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="25p-W7-0mb">
+                                <rect key="frame" x="24" y="436" width="345" height="38"/>
+                                <string key="text">A Safe Space for PCOS
+Learn, track and heal at your own pace</string>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nmc-tt-SE4">
-                                <rect key="frame" x="16" y="694" width="361" height="60"/>
+                                <rect key="frame" x="24" y="556" width="345" height="60"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="60" id="gxA-YF-pNf"/>
                                 </constraints>
-                                <color key="tintColor" red="0.99607843139999996" green="0.47843137250000001" blue="0.58823529409999997" alpha="1" colorSpace="calibratedRGB"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Let's get started ">
-                                    <fontDescription key="titleFontDescription" type="system" weight="semibold" pointSize="18"/>
-                                </buttonConfiguration>
+                                <color key="tintColor" red="0.10000000000000001" green="0.10000000000000001" blue="0.10000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="Continue with Apple"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Continue with Apple"/>
                                 <connections>
                                     <segue destination="fAN-LS-9i7" kind="show" id="gKI-RS-JqY"/>
                                 </connections>
                             </button>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="routine_91" translatesAutoresizingMaskIntoConstraints="NO" id="8Ht-p8-FsM">
-                                <rect key="frame" x="0.0" y="192" width="393" height="414"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="414" id="ERt-IU-bf2"/>
-                                </constraints>
-                            </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="25p-W7-0mb">
-                                <rect key="frame" x="20" y="606" width="353" height="42.333333333333371"/>
-                                <string key="text">A Safe Space for PCOS
-Learn, track and heal at your own pace</string>
-                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
-                                <nil key="textColor"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="We'll sign you in or create your account automatically." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dSc-nR-mK2">
+                                <rect key="frame" x="24" y="696" width="345" height="14.333333333333371"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <color key="textColor" red="0.55000000000000004" green="0.55000000000000004" blue="0.55000000000000004" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="By continuing, you agree to Cyster's Terms &amp; Conditions and Privacy Policy." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tFt-aR-9QL">
+                                <rect key="frame" x="24" y="746.33333333333337" width="345" height="28.666666666666629"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <color key="textColor" red="0.29999999999999999" green="0.29999999999999999" blue="0.29999999999999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gBt-Gx-9PL">
+                                <rect key="frame" x="24" y="628" width="345" height="60"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="hQt-kL-2WM"/>
+                                </constraints>
+                                <color key="tintColor" red="0.10000000000000001" green="0.10000000000000001" blue="0.10000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                                <state key="normal" title="Continue with Google"/>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="pHs-Ak-IoE"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="25p-W7-0mb" firstAttribute="top" secondItem="8Ht-p8-FsM" secondAttribute="bottom" id="0iu-Yh-9Eq"/>
-                            <constraint firstItem="25p-W7-0mb" firstAttribute="leading" secondItem="pHs-Ak-IoE" secondAttribute="leading" constant="20" id="8P8-5N-avL"/>
-                            <constraint firstItem="pHs-Ak-IoE" firstAttribute="trailing" secondItem="8Ht-p8-FsM" secondAttribute="trailing" id="HlW-fT-2go"/>
-                            <constraint firstItem="pHs-Ak-IoE" firstAttribute="trailing" secondItem="Nmc-tt-SE4" secondAttribute="trailing" constant="16" id="OW8-TY-Xe1"/>
-                            <constraint firstItem="pHs-Ak-IoE" firstAttribute="bottom" secondItem="Nmc-tt-SE4" secondAttribute="bottom" constant="30" id="Qtg-4M-O5d"/>
-                            <constraint firstItem="8Ht-p8-FsM" firstAttribute="leading" secondItem="pHs-Ak-IoE" secondAttribute="leading" id="WhD-Bg-tdU"/>
-                            <constraint firstItem="Nmc-tt-SE4" firstAttribute="leading" secondItem="pHs-Ak-IoE" secondAttribute="leading" constant="16" id="cRo-DN-deC"/>
-                            <constraint firstItem="pHs-Ak-IoE" firstAttribute="trailing" secondItem="25p-W7-0mb" secondAttribute="trailing" constant="20" id="dcw-Pz-CJE"/>
-                            <constraint firstItem="8Ht-p8-FsM" firstAttribute="top" secondItem="pHs-Ak-IoE" secondAttribute="top" constant="20" id="vsR-RI-vhu"/>
+                            <constraint firstItem="25p-W7-0mb" firstAttribute="top" secondItem="8Ht-p8-FsM" secondAttribute="bottom" constant="-100" id="0iu-Yh-9Eq"/>
+                            <constraint firstItem="25p-W7-0mb" firstAttribute="leading" secondItem="pHs-Ak-IoE" secondAttribute="leading" constant="24" id="8P8-5N-avL"/>
+                            <constraint firstAttribute="trailing" secondItem="8Ht-p8-FsM" secondAttribute="trailing" constant="16" id="HlW-fT-2go"/>
+                            <constraint firstItem="8Ht-p8-FsM" firstAttribute="centerY" secondItem="tbb-Xc-Cda" secondAttribute="centerY" constant="-100" id="N2Z-lP-kGa"/>
+                            <constraint firstItem="pHs-Ak-IoE" firstAttribute="trailing" secondItem="Nmc-tt-SE4" secondAttribute="trailing" constant="24" id="OW8-TY-Xe1"/>
+                            <constraint firstItem="8Ht-p8-FsM" firstAttribute="leading" secondItem="tbb-Xc-Cda" secondAttribute="leading" constant="16" id="WhD-Bg-tdU"/>
+                            <constraint firstItem="gBt-Gx-9PL" firstAttribute="top" secondItem="Nmc-tt-SE4" secondAttribute="bottom" constant="12" id="bGt-Lx-3WK"/>
+                            <constraint firstItem="gBt-Gx-9PL" firstAttribute="leading" secondItem="pHs-Ak-IoE" secondAttribute="leading" constant="24" id="cFr-Dn-1EC"/>
+                            <constraint firstItem="Nmc-tt-SE4" firstAttribute="leading" secondItem="pHs-Ak-IoE" secondAttribute="leading" constant="24" id="cRo-DN-deC"/>
+                            <constraint firstItem="pHs-Ak-IoE" firstAttribute="trailing" secondItem="gBt-Gx-9PL" secondAttribute="trailing" constant="24" id="dWt-Pz-8LE"/>
+                            <constraint firstItem="pHs-Ak-IoE" firstAttribute="trailing" secondItem="25p-W7-0mb" secondAttribute="trailing" constant="24" id="dcw-Pz-CJE"/>
+                            <constraint firstItem="dSc-nR-mK2" firstAttribute="leading" secondItem="pHs-Ak-IoE" secondAttribute="leading" constant="24" id="fSc-nR-7KM"/>
+                            <constraint firstItem="pHs-Ak-IoE" firstAttribute="trailing" secondItem="dSc-nR-mK2" secondAttribute="trailing" constant="24" id="gSc-nR-6KN"/>
+                            <constraint firstItem="tFt-aR-9QL" firstAttribute="top" secondItem="dSc-nR-mK2" secondAttribute="bottom" constant="36" id="hLU-TO-fPS"/>
+                            <constraint firstItem="tFt-aR-9QL" firstAttribute="leading" secondItem="pHs-Ak-IoE" secondAttribute="leading" constant="24" id="hTf-aR-8QL"/>
+                            <constraint firstItem="Nmc-tt-SE4" firstAttribute="top" secondItem="8Ht-p8-FsM" secondAttribute="bottom" constant="20" id="htj-bb-GdU"/>
+                            <constraint firstItem="pHs-Ak-IoE" firstAttribute="trailing" secondItem="tFt-aR-9QL" secondAttribute="trailing" constant="24" id="iTf-aR-7QL"/>
+                            <constraint firstItem="dSc-nR-mK2" firstAttribute="top" secondItem="gBt-Gx-9PL" secondAttribute="bottom" constant="8" id="qkt-e9-n0v"/>
+                            <constraint firstItem="8Ht-p8-FsM" firstAttribute="top" secondItem="pHs-Ak-IoE" secondAttribute="top" constant="24" id="vsR-RI-vhu"/>
+                            <constraint firstItem="gBt-Gx-9PL" firstAttribute="centerX" secondItem="tbb-Xc-Cda" secondAttribute="centerX" id="x0X-2g-tqF"/>
+                            <constraint firstItem="Nmc-tt-SE4" firstAttribute="centerX" secondItem="tbb-Xc-Cda" secondAttribute="centerX" id="zOB-R3-b2k"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="SGG-xt-L4q"/>
                     <connections>
-                        <outlet property="nextButton" destination="Nmc-tt-SE4" id="pA9-Kv-FGE"/>
+                        <outlet property="appleButton" destination="Nmc-tt-SE4" id="pA9-Kv-FGE"/>
+                        <outlet property="googleButton" destination="gBt-Gx-9PL" id="qB1-Lw-GFH"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NMX-lU-o98" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
