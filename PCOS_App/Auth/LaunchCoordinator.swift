@@ -1,5 +1,6 @@
 import UIKit
 import FirebaseAuth
+import CoreData
 
 // MARK: - LaunchCoordinator
 
@@ -53,7 +54,29 @@ final class LaunchCoordinator {
     // MARK: - Onboarding State
 
     func hasCompletedOnboarding() -> Bool {
-        return UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
+        guard let uid = Auth.auth().currentUser?.uid else { return false }
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return false }
+        let context = appDelegate.viewContext
+        let request: NSFetchRequest<CDUser> = CDUser.fetchRequest()
+        request.predicate = NSPredicate(format: "firebaseUID == %@", uid)
+        request.fetchLimit = 1
+        
+        if let cdUser = try? context.fetch(request).first {
+            return cdUser.onboardingCompleted
+        } else {
+            // User exists in Firebase but not in Core Data (e.g. app reinstall). Bootstrap them!
+            let newUser = CDUser(context: context)
+            newUser.id = UUID()
+            newUser.firebaseUID = uid
+            newUser.createdAt = Date()
+            newUser.name = ""
+            newUser.activityLevel = ""
+            newUser.dietPattern = ""
+            newUser.email = Auth.auth().currentUser?.email
+            newUser.onboardingStep = 0
+            appDelegate.saveContext()
+            return false
+        }
     }
 
     // MARK: - Private Factories
@@ -72,13 +95,39 @@ final class LaunchCoordinator {
     private func makeOnboardingViewController(resuming: Bool) -> UIViewController {
         let storyboard = UIStoryboard(name: "Onboarding", bundle: nil)
 
+        var step: Int16 = 0
         if resuming {
-            // Attempt to resume at the right step via storyboard identifiers.
-            // For now, if onboarding is incomplete but auth exists, start from Name.
-            if let vc = storyboard.instantiateViewController(withIdentifier: "NameViewController") as? UIViewController {
-                let nav = UINavigationController(rootViewController: vc)
-                nav.setNavigationBarHidden(false, animated: false)
-                return nav
+            if let uid = Auth.auth().currentUser?.uid,
+               let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                let context = appDelegate.viewContext
+                let request: NSFetchRequest<CDUser> = CDUser.fetchRequest()
+                request.predicate = NSPredicate(format: "firebaseUID == %@", uid)
+                request.fetchLimit = 1
+                if let cdUser = try? context.fetch(request).first {
+                    step = cdUser.onboardingStep
+                }
+            }
+            
+            let identifier: String
+            switch step {
+            case 0: identifier = "NameViewController"
+            case 1: identifier = "DOBViewController"
+            case 2: identifier = "HeightPickerViewController"
+            case 3: identifier = "WeightPickerViewController"
+            case 4: identifier = "DietTypeViewController"
+            case 5: identifier = "MovementTypeViewController"
+            case 6: identifier = "PCOSPhenotypeViewController"
+            default: identifier = ""
+            }
+
+            if !identifier.isEmpty {
+                if let vc = storyboard.instantiateViewController(withIdentifier: identifier) as? UIViewController {
+                    // Hide back button — there is no prior screen in the restored navigation stack
+                    vc.navigationItem.hidesBackButton = true
+                    let nav = UINavigationController(rootViewController: vc)
+                    nav.setNavigationBarHidden(false, animated: false)
+                    return nav
+                }
             }
         }
 

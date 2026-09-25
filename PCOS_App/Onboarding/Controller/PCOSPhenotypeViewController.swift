@@ -1,4 +1,6 @@
 import UIKit
+import FirebaseAuth
+import CoreData
 
 class PCOSPhenotypeViewController: UIViewController {
 
@@ -133,9 +135,20 @@ class PCOSPhenotypeViewController: UIViewController {
 
         ProfileService.shared.setProfile(to: profile)
 
-        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
-
         UserDefaults.standard.set(true, forKey: "hasCompletedWalkthrough")
+
+        if let uid = Auth.auth().currentUser?.uid,
+           let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            let context = appDelegate.viewContext
+            let request: NSFetchRequest<CDUser> = CDUser.fetchRequest()
+            request.predicate = NSPredicate(format: "firebaseUID == %@", uid)
+            request.fetchLimit = 1
+            if let user = try? context.fetch(request).first {
+                user.onboardingCompleted = true
+                user.onboardingStep = 8
+                appDelegate.saveContext()
+            }
+        }
 
         print("Complete profile saved! Height: \(heightInCm)cm, Weight: \(weightInKg)kg, Phenotype: \(pcosPhenotype)")
         LaunchCoordinator.shared.navigateToHome(animated: true)

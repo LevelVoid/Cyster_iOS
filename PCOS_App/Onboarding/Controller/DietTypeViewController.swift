@@ -1,4 +1,6 @@
 import UIKit
+import FirebaseAuth
+import CoreData
 
 class DietTypeViewController: UIViewController {
 
@@ -84,11 +86,10 @@ class DietTypeViewController: UIViewController {
         }
 
     @IBAction func nextButtonTapped(_ sender: UIButton) {
-        guard let dietType = selectedDietType else { return }
-        UserDefaults.standard.set(dietType, forKey: "userDietType")
-        ProfileService.shared.updateDietPattern(dietType)
-
         if WalkthroughManager.shared.isActive {
+            guard let dietType = selectedDietType else { return }
+            saveDietType(dietType)
+
             if WalkthroughManager.shared.isAbortedMode {
                 dismiss(animated: true) {
                     WalkthroughManager.shared.continueAbortedFlow()
@@ -117,14 +118,29 @@ class DietTypeViewController: UIViewController {
     }
 
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
-
         if WalkthroughManager.shared.isActive { return false }
         guard let dietType = selectedDietType else { return false }
 
-        UserDefaults.standard.set(dietType, forKey: "userDietType")
-        ProfileService.shared.updateDietPattern(dietType)
+        saveDietType(dietType)
         print("Saved diet type: \(dietType)")
         return true
     }
 
+    private func saveDietType(_ dietType: String) {
+        UserDefaults.standard.set(dietType, forKey: "userDietType")
+
+        if let uid = Auth.auth().currentUser?.uid,
+           let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            let context = appDelegate.viewContext
+            let request: NSFetchRequest<CDUser> = CDUser.fetchRequest()
+            request.predicate = NSPredicate(format: "firebaseUID == %@", uid)
+            request.fetchLimit = 1
+            if let user = try? context.fetch(request).first {
+                user.dietPattern = dietType
+                user.onboardingStep = 5
+                appDelegate.saveContext()
+            }
+        }
+        ProfileService.shared.updateDietPattern(dietType)
+    }
 }

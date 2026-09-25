@@ -1,5 +1,6 @@
 import UIKit
 import TipKit
+import CoreData
 
 class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollectionViewCellDelegate, LogPeriodCalendarDelegate, SleepCardCollectionViewCellDelegate, UIPopoverPresentationControllerDelegate {
 
@@ -112,6 +113,22 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
 
         override func viewDidAppear(_ animated: Bool) {
             super.viewDidAppear(animated)
+            
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                let context = appDelegate.viewContext
+                let request: NSFetchRequest<CDUser> = CDUser.fetchRequest()
+                if let users = try? context.fetch(request) {
+                    print("--- CORE DATA USERS ---")
+                    for user in users {
+                        print("User: name=\(user.name ?? "nil"), uid=\(user.firebaseUID ?? "nil"), step=\(user.onboardingStep), completed=\(user.onboardingCompleted)")
+                        print("  DOB: \(user.dateOfBirth?.description ?? "nil")")
+                        print("  Height: \(user.heightCm) cm, Weight: \(user.weightKg) kg")
+                        print("  Diet: \(user.dietPattern ?? "nil"), Activity: \(user.activityLevel ?? "nil")")
+                    }
+                    print("-----------------------")
+                }
+            }
+            
             handleWalkthroughOnAppear()
         }
 

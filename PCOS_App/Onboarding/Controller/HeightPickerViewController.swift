@@ -1,4 +1,6 @@
 import UIKit
+import FirebaseAuth
+import CoreData
 
 class HeightPickerViewController: UIViewController {
 
@@ -73,6 +75,20 @@ class HeightPickerViewController: UIViewController {
 
             UserDefaults.standard.set(currentValue, forKey: "userHeight")
             UserDefaults.standard.set(isMetric, forKey: "heightIsMetric")
+
+            if let uid = Auth.auth().currentUser?.uid,
+               let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                let context = appDelegate.viewContext
+                let request: NSFetchRequest<CDUser> = CDUser.fetchRequest()
+                request.predicate = NSPredicate(format: "firebaseUID == %@", uid)
+                request.fetchLimit = 1
+                if let user = try? context.fetch(request).first {
+                    // Assuming height is stored in cm
+                    user.heightCm = isMetric ? Double(currentValue) : Double(currentValue) * 2.54
+                    user.onboardingStep = 3
+                    appDelegate.saveContext()
+                }
+            }
 
             performSegue(withIdentifier: "showWeight", sender: nil)
             print("Height saved: \(currentValue) \(isMetric ? "cm" : "inches")")
