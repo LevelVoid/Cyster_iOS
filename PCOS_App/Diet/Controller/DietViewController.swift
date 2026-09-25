@@ -173,7 +173,7 @@ class DietViewController: UIViewController {
         lastFoodLogCount = currentCount
 
         do {
-            let context = await SharedContextEngine.shared.buildContext()
+            let context = await SharedContextEngine.shared.buildMealRecommendationContext()
             print("DietVC — context built, calling AI for suggestions...")
             let output = try await AIBrain.shared.generateMealRecommendations(context: context)
             await MainActor.run {

@@ -1,3 +1,14 @@
+//
+// AIOutputTypes.swift
+//
+// Purpose:
+// Defines structured output models for AI generations.
+//
+// Why this exists:
+// Standardizes AI output contracts across all features and provides
+// a provider-neutral wrapper for generation metadata.
+//
+
 import Foundation
 import FoundationModels
 
@@ -84,3 +95,34 @@ struct GoalCard {
     @Guide(description: "One word only: nutrition | exercise | symptoms")
     var category: String
 }
+
+// MARK: - Standardized Provider Metadata (Milestone 5A)
+
+///
+/// Standardized provider metadata.
+///
+/// Why this exists:
+/// Enables analytics and UI transparency regarding which AI model generated the response.
+///
+struct ProviderMetadata: Codable {
+    let name: String
+    let modelId: String
+}
+
+///
+/// Provider-neutral response wrapper.
+///
+/// Why this exists:
+/// Ensures every AI engine (Foundation or Cloud) returns identical, standardized metadata
+/// alongside the actual text or structured JSON output. `T` is not constrained to `Codable`
+/// so this wrapper works for `@Generable` Foundation model types as well as plain `String`.
+/// `AIBrain.routeRequest` wraps every result here to capture latency and provider name,
+/// then returns `.content` so callers (ViewControllers) are completely unaffected.
+///
+struct AIResponse<T> {
+    let content: T
+    let providerMetadata: ProviderMetadata
+    let timestamp: Date
+    let latencyMS: Int?
+}
+

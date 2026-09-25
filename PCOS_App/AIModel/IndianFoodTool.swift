@@ -1,3 +1,14 @@
+//
+// IndianFoodTool.swift
+//
+// Purpose:
+// Provides Indian food recommendations based on health goals.
+//
+// Why this exists:
+// Ensures the AI grounds its dietary advice in authentic Indian cuisine
+// rather than defaulting to Western foods. Wrapper compatible.
+//
+
 import Foundation
 import NaturalLanguage
 import FoundationModels
@@ -24,6 +35,15 @@ struct IndianFoodTool: Tool {
         var focus: String?
     }
 
+    ///
+    /// Executes the tool with the given arguments.
+    ///
+    /// Why this exists:
+    /// Invoked by the AI to retrieve food suggestions.
+    ///
+    /// - Parameter arguments: The search query and focus.
+    /// - Returns: A formatted string of food suggestions.
+    /// - Throws: An error if generation fails.
     func call(arguments: Arguments) async throws -> String {
         let focusStr = arguments.focus.map { " with focus on \($0)" } ?? ""
         return """

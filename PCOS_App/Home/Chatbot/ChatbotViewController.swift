@@ -214,7 +214,7 @@ final class ChatbotViewController: UIViewController {
 
         Task {
             do {
-                let context = await SharedContextEngine.shared.buildContext()
+                let context = await SharedContextEngine.shared.buildChatContext()
 
                 let chatSummary = ChatPersistenceManager.shared.buildChatSummary()
                 let fullContext = chatSummary.isEmpty ? context : "\(context)\n\n\(chatSummary)"

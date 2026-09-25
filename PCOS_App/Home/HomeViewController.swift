@@ -137,7 +137,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             isGoalsLoading = true
 
             Task {
-                let context = await SharedContextEngine.shared.buildContext()
+                let context = await SharedContextEngine.shared.buildDailyGoalContext()
                 do {
                     let output = try await AIBrain.shared.generateDailyGoals(context: context)
                     await MainActor.run {

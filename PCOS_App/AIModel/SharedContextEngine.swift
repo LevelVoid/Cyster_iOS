@@ -1,3 +1,14 @@
+//
+// SharedContextEngine.swift
+//
+// Purpose:
+// Retrieves and formats user health data for AI inference.
+//
+// Why this exists:
+// Centralizes all Core Data fetches required for AI context. Now uses
+// Context Profiles to prevent sending irrelevant data, reducing token costs.
+//
+
 import Foundation
 import CoreData
 
@@ -11,6 +22,8 @@ final class SharedContextEngine {
         PersistenceController.shared.container.viewContext
     }
 
+    // MARK: - Legacy Context Builder
+    
     func buildContext() async -> String {
         let user      = fetchUser()
         let goals     = computeGoals(for: user)
@@ -20,6 +33,211 @@ final class SharedContextEngine {
         return format(user: user, goals: goals, todayCtx: todayCtx,
                       patterns: patterns, cycleInfo: cycleInfo)
     }
+
+    // MARK: - Context Profiles (Milestone 5A)
+
+    ///
+    /// Builds the full context for the Chatbot.
+    ///
+    /// Why this exists:
+    /// Chatbot can be asked about anything, requiring full user context.
+    ///
+    /// - Returns: A formatted string of all user health data.
+    func buildChatContext() async -> String {
+        return await buildContext()
+    }
+
+    ///
+    /// Builds context for Daily Goals generation.
+    ///
+    /// Why this exists:
+    /// Limits context to only today's data and overarching goals, reducing token usage.
+    ///
+    /// - Returns: A formatted string of goals and today's logs.
+    func buildDailyGoalContext() async -> String {
+        let user      = fetchUser()
+        let goals     = computeGoals(for: user)
+        let todayCtx  = fetchTodayContext()
+        let profileBlock = formatProfile(user: user)
+        let goalsBlock   = formatGoals(goals: goals)
+        let todayBlock   = formatToday(todayCtx: todayCtx, goals: goals)
+        return [profileBlock, goalsBlock, todayBlock].joined(separator: "\n")
+    }
+
+    ///
+    /// Builds context for Meal Recommendations.
+    ///
+    /// Why this exists:
+    /// The diet engine only needs to know macro gaps to recommend the right foods.
+    ///
+    /// - Returns: A formatted string of macro gaps and diet constraints.
+    func buildMealRecommendationContext() async -> String {
+        let user      = fetchUser()
+        let goals     = computeGoals(for: user)
+        let todayCtx  = fetchTodayContext()
+        let profileBlock = formatProfile(user: user)
+        let goalsBlock   = formatGoals(goals: goals)
+        let todayBlock   = formatToday(todayCtx: todayCtx, goals: goals)
+        return [profileBlock, goalsBlock, todayBlock].joined(separator: "\n")
+    }
+
+    ///
+    /// Builds context for Meal Insights (Coaching).
+    ///
+    /// Why this exists:
+    /// Coaching focuses purely on evaluating a specific meal.
+    ///
+    /// - Returns: A formatted string for meal insights.
+    func buildMealInsightContext() async -> String {
+        let user = fetchUser()
+        return formatProfile(user: user)
+    }
+
+    ///
+    /// Builds context for Meal Parsing.
+    ///
+    /// Why this exists:
+    /// The parser only needs raw text, without historical bias.
+    ///
+    /// - Returns: A minimal formatted string.
+    func buildMealParsingContext() async -> String {
+        return "Meal Parsing Context: Extract macronutrients from user's raw text."
+    }
+
+    ///
+    /// Builds context for Vision / Food Scanning.
+    ///
+    /// Why this exists:
+    /// Image recognition only needs the image and basic identity.
+    ///
+    /// - Returns: A minimal formatted string.
+    func buildVisionContext() async -> String {
+        return "Vision Context: Identify food items from the provided image."
+    }
+
+    ///
+    /// Builds context for Cycle Insights.
+    ///
+    /// Why this exists:
+    /// Keeps context strictly focused on cycle history and patterns.
+    ///
+    /// - Returns: A formatted string of cycle history.
+    func buildCycleContext() async -> String {
+        let user      = fetchUser()
+        let cycleInfo = fetchCycleInfo(user: user)
+        return [formatProfile(user: user), formatCycle(cycleInfo: cycleInfo)].joined(separator: "\n")
+    }
+
+    ///
+    /// Builds context for Sleep Insights.
+    ///
+    /// Why this exists:
+    /// Focuses only on sleep history and patterns.
+    ///
+    /// - Returns: A formatted string of sleep history.
+    func buildSleepContext() async -> String {
+        let user     = fetchUser()
+        let patterns = fetchSevenDayPatterns()
+        let goals    = computeGoals(for: user)
+        return [
+            formatProfile(user: user),
+            "7-day avg sleep: \(patterns.avgSleepHours)h (target \(goals?.sleep.sleepHours ?? 8.0)h)"
+        ].joined(separator: "\n")
+    }
+
+    ///
+    /// Builds context for Symptom Insights.
+    ///
+    /// Why this exists:
+    /// Focuses only on recorded symptoms and relevant patterns.
+    ///
+    /// - Returns: A formatted string of symptom history.
+    func buildSymptomContext() async -> String {
+        let user     = fetchUser()
+        let patterns = fetchSevenDayPatterns()
+        let symptoms = patterns.recurringSymptoms.isEmpty ? "none" : patterns.recurringSymptoms.joined(separator: ", ")
+        return [
+            formatProfile(user: user),
+            "Recurring symptoms (7-day): \(symptoms)"
+        ].joined(separator: "\n")
+    }
+
+    // MARK: - Format Helpers
+    
+    private func formatProfile(user: UserProfile?) -> String {
+        guard let u = user else { return "User: No profile" }
+        return "User: \(u.name), Age \(u.age), BMI \(String(format: "%.1f", u.bmi)) (\(u.bmiCategory.displayName)), PCOS \(u.phenotype.rawValue), \(u.activityLevel.displayName), \(u.dietPattern.displayName) diet"
+    }
+    
+    private func formatGoals(goals: UserGoals?) -> String {
+        guard let g = goals else { return "Targets: unavailable" }
+        return "Targets: \(g.diet.dailyCalories)kcal | P\(g.diet.proteinGrams)g C\(g.diet.carbsGrams)g F\(g.diet.fatsGrams)g | \(g.workout.workoutMinutesPerDay)min workout | \(Int(g.sleep.sleepHours))h sleep"
+    }
+    
+    private func formatCycle(cycleInfo: CycleInfo) -> String {
+        let df = DateFormatter()
+        df.dateFormat = "MMMM d, yyyy"
+        let cal = Calendar.current
+        
+        let nextStr: String
+        if cycleInfo.isLate {
+            nextStr = "cycle is irregular — no reliable prediction"
+        } else if let daysAway = cycleInfo.nextPeriodDaysAway {
+            let predictedDate = cal.date(byAdding: .day, value: daysAway, to: cal.startOfDay(for: Date())) ?? Date()
+            let dateStr = df.string(from: predictedDate)
+            if daysAway == 0 {
+                nextStr = "predicted to start TODAY (\(dateStr))"
+            } else if daysAway < 0 {
+                nextStr = "is \(abs(daysAway)) days late (was expected \(dateStr))"
+            } else {
+                nextStr = "predicted on \(dateStr) — that is \(daysAway) days from today"
+            }
+        } else {
+            nextStr = "cannot be predicted yet — not enough cycle history logged"
+        }
+        
+        return """
+        Current cycle day: \(cycleInfo.cycleDay) (she is on day \(cycleInfo.cycleDay) of her current cycle — NOT the next period date).
+        Current phase: \(cycleInfo.currentPhase).
+        Next period: \(nextStr).\(cycleInfo.avgCycleLength != nil ? " Average cycle length: \(cycleInfo.avgCycleLength!) days." : "")
+        """
+    }
+    
+    private func formatToday(todayCtx: TodayContext?, goals: UserGoals?) -> String {
+        guard let t = todayCtx else { return "Today: no data logged" }
+        
+        let totalP   = Int(t.foodLogs.reduce(0.0) { $0 + $1.protein })
+        let totalCal = Int(t.foodLogs.reduce(0.0) { $0 + $1.calories })
+        let allMealNames = t.foodLogs.map { $0.name }.joined(separator: ", ")
+        let sleepStr = t.sleepDurationHours > 0
+            ? String(format: "%.1fh", t.sleepDurationHours) : "not logged"
+        let workoutStr  = t.completedWorkouts.isEmpty ? "none"
+            : t.completedWorkouts.map { $0.routineName }.joined(separator: ", ")
+        let symptomsStr = t.symptoms.isEmpty ? "none" : t.symptoms.joined(separator: ", ")
+
+        let goalP = Int(round(Double(goals?.diet.startingProteinGrams ?? 0) / 5.0)) * 5
+        let goalC = Int(round(Double(goals?.diet.startingCarbsGrams ?? 0) / 5.0)) * 5
+        let goalF = Int(round(Double(goals?.diet.startingFatsGrams ?? 0) / 5.0)) * 5
+        let goalCal = Int(round(Double(goals?.diet.dailyCalories ?? 0) / 10.0)) * 10
+
+        let proteinGap = max(0, goalP - totalP)
+        let carbsGap   = max(0, goalC - Int(t.foodLogs.reduce(0.0) { $0 + $1.carbs }))
+        let fatsGap    = max(0, goalF - Int(t.foodLogs.reduce(0.0) { $0 + $1.fats }))
+        let calorieGap = max(0, goalCal - totalCal)
+
+        return """
+        Today Logs:
+        - Protein: \(totalP)g (Goal: \(goalP)g, Gap: \(proteinGap)g)
+        - Carbs: \(Int(t.foodLogs.reduce(0.0) { $0 + $1.carbs }))g (Goal: \(goalC)g, Gap: \(carbsGap)g)
+        - Fats: \(Int(t.foodLogs.reduce(0.0) { $0 + $1.fats }))g (Goal: \(goalF)g, Gap: \(fatsGap)g)
+        - Calories: \(totalCal)kcal (Goal: \(goalCal)kcal, Gap: \(calorieGap)kcal)
+        Meals logged today: \(allMealNames.isEmpty ? "none" : allMealNames).
+        Sleep: \(sleepStr). Steps: \(t.steps). Workout: \(workoutStr).
+        Symptoms today: \(symptomsStr)
+        """
+    }
+
+    // MARK: - Legacy Internal Functions
 
     private func fetchUser() -> UserProfile? {
         let request = NSFetchRequest<NSManagedObject>(entityName: "CDUser")

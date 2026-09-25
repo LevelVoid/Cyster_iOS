@@ -1,3 +1,14 @@
+//
+// PCOSResearchTool.swift
+//
+// Purpose:
+// Retrieves evidence-based PCOS research findings.
+//
+// Why this exists:
+// Grounds AI responses in clinical research and guidelines, preventing
+// hallucinations for medical or symptom-related queries. Wrapper compatible.
+//
+
 import Foundation
 import NaturalLanguage
 import FoundationModels
@@ -56,6 +67,15 @@ struct PCOSResearchTool: Tool {
         print("✅ Loaded \(chunks.count) research chunks")
     }
 
+    ///
+    /// Executes the research search.
+    ///
+    /// Why this exists:
+    /// Invoked by the AI to retrieve clinical research context.
+    ///
+    /// - Parameter arguments: The search query, active symptoms, and phenotype.
+    /// - Returns: A formatted string of research findings.
+    /// - Throws: An error if search fails.
     func call(arguments: Arguments) async throws -> String {
         PCOSResearchTool.preload()
 
