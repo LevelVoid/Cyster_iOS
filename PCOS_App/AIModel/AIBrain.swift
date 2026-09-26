@@ -413,22 +413,41 @@ final class AIBrain {
     private var goalsInstructions: String { """
         Generate exactly 2 personalized daily health goals for a woman with PCOS.
 
-        PRIORITY ORDER — pick the top 2 that apply, in this order:
-        1. Diet-symptom connection: active symptom today + a food/nutrition change that addresses it
-        2. Diet-workout connection: a workout was logged + a protein/recovery nutrition gap exists
-        3. Nutrition gap: a macro target (protein, fibre) is significantly unmet today
-        4. Workout gap: no strength training or movement logged in the past 7 days
+        STEP 1 — Extract ONLY these values from context:
+        - Today's protein (grams logged)
+        - Protein target (grams)
+        - Workout minutes logged today
+        - Strength sessions this past week
+        - Active symptoms today
+        - Cycle phase
+        - Recent week: total workouts, avg protein
+
+        STEP 2 — Identify ONE health opportunity. Prefer:
+        1. Symptom relief (active symptom today + food/nutrition change that addresses it)
+        2. Workout recovery (workout logged + protein/recovery gap)
+        3. Nutrition gap (protein or fibre significantly unmet today)
+        4. Workout gap (no strength training or movement in past 7 days)
+
+        STEP 3 — Choose the smallest meaningful improvement.
+        - Never increase today's challenge by more than 30% vs recent behavior.
+        - 0 workouts last week → suggest 10 min walk (not a full session).
+        - 1 workout last week → suggest 20 min strength.
+        - 4+ workouts last week → suggest full session.
+        - Protein always low → add one protein-rich meal, not a massive jump.
+
+        STEP 4 — Generate exactly 2 missions using ONLY the extracted numbers.
 
         HARD RULES:
-        - CRITICAL: Use ONLY the exact numbers from the context. Read protein target from the "Targets: ...PXg..." line. Never invent or assume typical values.
-        - Never generate a sleep goal — sleep is excluded entirely
-        - ONLY generate goals based on data explicitly present in the context.
-        - If "Symptoms today: none" — do not generate any symptom-based goal.
-        - Never invent or assume symptoms, food logs, or patterns not in the context.
-        - Never suggest weight loss or calorie restriction if BMI is Underweight or Normal.
-        - Both goals must be different categories (nutrition / exercise / symptoms).
-        - Sentences must be under 12 words. No vague goals — name a specific food or action.
-        - icon: Use a valid SF Symbol name (e.g. "fork.knife", "figure.walk", "heart.fill").
+        - Use ONLY the exact numbers from the context. Never invent values.
+        - Never generate a sleep goal.
+        - Never suggest weight loss if BMI is Underweight or Normal.
+        - Both goals must be in different categories (nutrition / exercise / symptoms).
+        - Sentences must be under 12 words. Name a specific food or action.
+        - For protein goals: targetType="protein", completionRule="current>=target".
+        - For workout goals: targetType="workoutMinutes", completionRule="current>=target".
+        - For step goals: targetType="steps", completionRule="current>=target".
+        - For symptom goals: targetType="symptom", completionRule="any".
+        - For manual goals: targetType="manual", completionRule="manual".
         """ }
 
     ///
@@ -477,7 +496,24 @@ final class AIBrain {
                 let sentence = g["sentence"]  as? String,
                 let category = g["category"] as? String
             else { return nil }
-            return GoalCard(title: title, sentence: sentence, category: category)
+            // New fields with safe defaults for cloud backward-compat
+            let id                 = g["id"] as? String ?? category + "_today"
+            let targetType         = g["targetType"] as? String ?? "manual"
+            let targetValue        = g["targetValue"] as? Double ?? 0
+            let currentValue       = g["currentValue"] as? Double ?? 0
+            let completionRule     = g["completionRule"] as? String ?? "manual"
+            let celebrationMessage = g["celebrationMessage"] as? String ?? "Goal completed!"
+            return GoalCard(
+                id: id,
+                title: title,
+                sentence: sentence,
+                category: category,
+                targetType: targetType,
+                targetValue: targetValue,
+                currentValue: currentValue,
+                completionRule: completionRule,
+                celebrationMessage: celebrationMessage
+            )
         }
         return DailyGoalsOutput(goals: goals)
     }

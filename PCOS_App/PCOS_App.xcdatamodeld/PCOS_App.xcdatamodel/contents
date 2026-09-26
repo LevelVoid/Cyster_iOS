@@ -64,6 +64,26 @@
         <attribute name="stressLevel" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="wakeTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="waterL" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <!-- Milestone 6A: Persistent AI Daily Goals -->
+        <attribute name="goalsGeneratedDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="goal1ID" optional="YES" attributeType="String"/>
+        <attribute name="goal1Title" optional="YES" attributeType="String"/>
+        <attribute name="goal1Sentence" optional="YES" attributeType="String"/>
+        <attribute name="goal1Category" optional="YES" attributeType="String"/>
+        <attribute name="goal1TargetType" optional="YES" attributeType="String"/>
+        <attribute name="goal1TargetValue" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="goal1CurrentValue" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="goal1Completed" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="goal1Celebration" optional="YES" attributeType="String"/>
+        <attribute name="goal2ID" optional="YES" attributeType="String"/>
+        <attribute name="goal2Title" optional="YES" attributeType="String"/>
+        <attribute name="goal2Sentence" optional="YES" attributeType="String"/>
+        <attribute name="goal2Category" optional="YES" attributeType="String"/>
+        <attribute name="goal2TargetType" optional="YES" attributeType="String"/>
+        <attribute name="goal2TargetValue" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="goal2CurrentValue" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="goal2Completed" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="goal2Celebration" optional="YES" attributeType="String"/>
         <relationship name="completedWorkouts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDCompletedWorkout" inverseName="dailyContext" inverseEntity="CDCompletedWorkout"/>
         <relationship name="foodLogs" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDFoodLog" inverseName="dailyContext" inverseEntity="CDFoodLog"/>
         <relationship name="symptomLogs" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDSymptomLog" inverseName="dailyContext" inverseEntity="CDSymptomLog"/>

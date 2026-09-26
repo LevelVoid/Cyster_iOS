@@ -248,9 +248,15 @@ final class CloudModelEngine: AIModelEngineProtocol {
     func generateDailyGoalsJSON(context: String, instructions: String) async throws -> String {
         let schema = """
         {"goals": [
-          {"title": "string (1-3 words, sharp and direct)",
+          {"id": "string (stable snake_case ID e.g. protein_today)",
+           "title": "string (1-3 words, sharp and direct)",
            "sentence": "string (max 12 words, include one real number from logs)",
-           "category": "string (one of: nutrition, exercise, symptoms)"}
+           "category": "string (one of: nutrition, exercise, symptoms)",
+           "targetType": "string (one of: protein, workoutMinutes, steps, symptom, manual)",
+           "targetValue": "number (threshold to reach, 0 for symptom/manual)",
+           "currentValue": "number (user's current progress at generation time)",
+           "completionRule": "string (one of: current>=target, any, manual)",
+           "celebrationMessage": "string (max 6 words, e.g. Protein goal achieved!)"}
         ]}
         """
         return try await generateRecommendation(type: "daily_goals", context: context, schema: schema)

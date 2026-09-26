@@ -64,21 +64,27 @@ struct DailyGoalsOutput {
     4. Workout gap (e.g. no strength training this week)
     Never include sleep. Never include more than 2 goals.
 
-    Generate exactly 2 personalized daily health goals for a woman with PCOS.
-
-    FIRST: Read the context carefully and extract:
+    STEP 1 — Extract from context:
     - Symptoms today: [list from context — if none, note that]
     - Protein logged vs target: [exact numbers from context]
-    - Workout logged today: [yes/no from context]
+    - Workout minutes logged today: [number from context]
     - Strength sessions this week: [number from context]
+    - Recent behavior: [workouts per week, avg protein]
 
-    THEN generate goals only from what you extracted above. Do not use any other data.
+    STEP 2 — Choose the smallest meaningful improvement.
+    Never increase today's challenge by more than 30% compared to recent behavior.
+
+    STEP 3 — Generate exactly 2 missions using only the extracted numbers above.
     """)
     var goals: [GoalCard]
 }
 
 @Generable
 struct GoalCard {
+    /// Stable identifier used for persistence (e.g. "protein_today", "workout_today").
+    @Guide(description: "Stable snake_case ID. E.g. 'protein_today', 'workout_today', 'cramps_relief'. Must be unique within the two goals.")
+    var id: String
+
     @Guide(description: "1-3 word title. Sharp and direct. If larger words then only 2 or 1 word title will be shown. E.g. 'Boost protein now', 'Ease cramps', 'Strength training'.")
     var title: String
 
@@ -94,6 +100,26 @@ struct GoalCard {
 
     @Guide(description: "One word only: nutrition | exercise | symptoms")
     var category: String
+
+    /// The measurable type that auto-completion tracks. One of: protein | workoutMinutes | steps | symptom | manual.
+    @Guide(description: "One of: protein | workoutMinutes | steps | symptom | manual. Match the goal type.")
+    var targetType: String
+
+    /// The numeric value that must be reached to mark this goal complete.
+    @Guide(description: "The total target value in appropriate units (grams for protein, minutes for workout, count for steps). Use 0 for symptom/manual goals.")
+    var targetValue: Double
+
+    /// The user's current progress at generation time.
+    @Guide(description: "The user's current value from context (e.g. protein already logged today). Use 0 if not applicable.")
+    var currentValue: Double
+
+    /// The completion logic. One of: current>=target | any | manual.
+    @Guide(description: "One of: current>=target | any | manual. Use 'current>=target' for measurable goals, 'any' for symptom goals, 'manual' for self-reported goals.")
+    var completionRule: String
+
+    /// Short celebratory message shown when the goal is completed.
+    @Guide(description: "Short celebration message shown on completion. E.g. 'Protein goal achieved!', 'Great workout!', 'Symptom relief logged!' — max 6 words.")
+    var celebrationMessage: String
 }
 
 // MARK: - Standardized Provider Metadata (Milestone 5A)

@@ -51,17 +51,21 @@ final class SharedContextEngine {
     /// Builds context for Daily Goals generation.
     ///
     /// Why this exists:
-    /// Limits context to only today's data and overarching goals, reducing token usage.
+    /// Limits context to today's data, overarching goals, and 7-day habit signals.
+    /// The habit signals enable smarter difficulty scaling (Milestone 6A, Deliverable 7)
+    /// so goals reflect what the user has actually been doing, not ideal targets.
     ///
-    /// - Returns: A formatted string of goals and today's logs.
+    /// - Returns: A formatted string of goals, today's logs, and recent behavior.
     func buildDailyGoalContext() async -> String {
         let user      = fetchUser()
         let goals     = computeGoals(for: user)
         let todayCtx  = fetchTodayContext()
+        let patterns  = fetchSevenDayPatterns()
         let profileBlock = formatProfile(user: user)
         let goalsBlock   = formatGoals(goals: goals)
         let todayBlock   = formatToday(todayCtx: todayCtx, goals: goals)
-        return [profileBlock, goalsBlock, todayBlock].joined(separator: "\n")
+        let habitBlock   = formatHabitSignals(patterns: patterns, goals: goals)
+        return [profileBlock, goalsBlock, todayBlock, habitBlock].joined(separator: "\n")
     }
 
     ///
@@ -234,6 +238,37 @@ final class SharedContextEngine {
         Meals logged today: \(allMealNames.isEmpty ? "none" : allMealNames).
         Sleep: \(sleepStr). Steps: \(t.steps). Workout: \(workoutStr).
         Symptoms today: \(symptomsStr)
+        """
+    }
+
+    // MARK: - Milestone 6A: Habit Signals Format Helper
+
+    ///
+    /// Formats 7-day habit signals for the daily goals prompt.
+    ///
+    /// Why this exists:
+    /// Provides the AI with concrete recent behavior data so it can scale goal
+    /// difficulty appropriately (e.g. suggest a 10-min walk for sedentary users
+    /// rather than a full workout session).
+    ///
+    /// - Parameters:
+    ///   - patterns: The fetched 7-day patterns.
+    ///   - goals: The user's macro and workout goals for percentage calculations.
+    /// - Returns: A formatted string describing recent behavior.
+    private func formatHabitSignals(patterns: SevenDayPatterns, goals: UserGoals?) -> String {
+        let proteinTarget = goals?.diet.proteinGrams ?? 60
+        let avgProteinPct = proteinTarget > 0
+            ? Int((patterns.avgProteinPerMeal / Double(proteinTarget)) * 100)
+            : 0
+
+        return """
+        Recent Behavior (last 7 days — use this to scale goal difficulty):
+        - Workouts completed: \(patterns.totalWorkoutSessions) (strength: \(patterns.strengthSessions))
+        - Avg protein per meal: \(Int(patterns.avgProteinPerMeal))g (\(avgProteinPct)% of target)
+        - High-GI meals: \(patterns.highGIMealCount)
+        - Avg daily steps: \(patterns.avgSteps)
+        - Avg sleep: \(patterns.avgSleepHours)h
+        - Recurring symptoms: \(patterns.recurringSymptoms.isEmpty ? "none" : patterns.recurringSymptoms.joined(separator: ", "))
         """
     }
 
