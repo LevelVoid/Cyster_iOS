@@ -23,6 +23,8 @@ extension Notification.Name {
 
 /// Represents the current render state of today's goals.
 enum DailyGoalsState: Equatable {
+    /// Manager has been created but no load has been attempted yet.
+    case idle
     /// Goals have not been generated yet and generation is in progress.
     case loading
     /// Goals are fully loaded and ready to display.
@@ -32,6 +34,7 @@ enum DailyGoalsState: Equatable {
 
     static func == (lhs: DailyGoalsState, rhs: DailyGoalsState) -> Bool {
         switch (lhs, rhs) {
+        case (.idle, .idle): return true
         case (.loading, .loading): return true
         case (.failed(let a), .failed(let b)): return a == b
         case (.loaded, .loaded): return true   // shallow equality — UI always re-reads
@@ -60,7 +63,7 @@ final class DailyGoalManager {
     // MARK: - Published State
 
     /// The current render state. HomeViewController reads this and observes the notification.
-    private(set) var state: DailyGoalsState = .loading
+    private(set) var state: DailyGoalsState = .idle
 
     // MARK: - Private
 
@@ -78,6 +81,9 @@ final class DailyGoalManager {
     /// in CDDailyContext for today, they are returned immediately (no AI call).
     /// If not, generation is triggered exactly once.
     ///
+    /// Parameters: None
+    /// Returns: Void
+    /// Throws: None
     func loadTodayGoals() async {
         // 1. Attempt to load from CoreData
         if let todayCD = fetchTodayContext(), todayCD.hasGoalsForToday,
@@ -97,11 +103,16 @@ final class DailyGoalManager {
     /// Enforces the once-per-day contract. Guards against duplicate generation
     /// (e.g. if the user navigates away and back quickly).
     ///
+    /// Parameters: None
+    /// Returns: Void
+    /// Throws: None
     func generateIfNeeded() async {
-        guard state != .loading else {
-            // Already in loading state from a previous call — avoid double generate
-            if case .loaded = state { return }
-        }
+        // Block re-entrant calls only while actively generating.
+        guard state != .loading else { return }
+        // Skip if goals are already successfully loaded.
+        if case .loaded = state { return }
+
+        // Transition from .idle or .failed into .loading, then run generation.
         state = .loading
 
         let context = await SharedContextEngine.shared.buildDailyGoalContext()
@@ -114,7 +125,7 @@ final class DailyGoalManager {
             let g1 = output.goals[0]
             let g2 = output.goals[1]
 
-            // 3. Persist to CoreData
+            // Persist to CoreData
             if let todayCD = fetchOrCreateTodayContext() {
                 todayCD.persistGoals(goal1: g1, goal2: g2)
                 try? self.context.save()
@@ -133,7 +144,10 @@ final class DailyGoalManager {
     /// Called automatically after any relevant event (meal logged, workout saved, steps updated).
     /// This eliminates AI calls for completion — it's pure arithmetic.
     ///
-    /// - Parameter event: The type of event that just occurred.
+    /// Parameters:
+    ///   - event: The type of event that just occurred.
+    /// Returns: Void
+    /// Throws: None
     func evaluateCompletion(for event: GoalEvent) {
         guard let todayCD = fetchTodayContext(), todayCD.hasGoalsForToday,
               let (g1, g2) = todayCD.loadPersistedGoals() else { return }
@@ -175,6 +189,9 @@ final class DailyGoalManager {
     /// Called when a new CDDailyContext is created at midnight / app launch on a new day.
     /// The manager returns to `.loading` so the next `loadTodayGoals()` triggers generation.
     ///
+    /// Parameters: None
+    /// Returns: Void
+    /// Throws: None
     func refreshTomorrow() {
         state = .loading
     }
@@ -184,13 +201,14 @@ final class DailyGoalManager {
     ///
     /// Calculates the new progress value and completion flag for a single goal.
     ///
-    /// - Parameters:
+    /// Parameters:
     ///   - goal: The GoalCard to evaluate.
     ///   - protein: Today's total logged protein (g).
     ///   - workoutMinutes: Today's total workout minutes.
     ///   - steps: Today's step count.
     ///   - event: The event that triggered this evaluation.
-    /// - Returns: `(updatedCurrent, isCompleted)` tuple.
+    /// Returns: `(updatedCurrent, isCompleted)` tuple.
+    /// Throws: None
     private func evaluateGoal(
         _ goal: GoalCard,
         protein: Double,
@@ -233,6 +251,9 @@ final class DailyGoalManager {
     ///
     /// Fetches today's CDDailyContext, or nil if not yet created.
     ///
+    /// Parameters: None
+    /// Returns: CDDailyContext or nil
+    /// Throws: None
     private func fetchTodayContext() -> CDDailyContext? {
         let cal = Calendar.current
         let start = cal.startOfDay(for: Date())
@@ -251,6 +272,9 @@ final class DailyGoalManager {
     /// Goals must be persisted even if CDDailyContext was not yet created by the app's
     /// normal flow (e.g. user hasn't logged anything yet today).
     ///
+    /// Parameters: None
+    /// Returns: CDDailyContext or nil
+    /// Throws: None
     private func fetchOrCreateTodayContext() -> CDDailyContext? {
         if let existing = fetchTodayContext() { return existing }
         let cd = CDDailyContext(context: context)
@@ -262,6 +286,9 @@ final class DailyGoalManager {
     ///
     /// Returns today's total logged protein in grams.
     ///
+    /// Parameters: None
+    /// Returns: Double representing protein in grams
+    /// Throws: None
     private func fetchTodayProtein() -> Double {
         let cal = Calendar.current
         let start = cal.startOfDay(for: Date())
@@ -276,6 +303,9 @@ final class DailyGoalManager {
     ///
     /// Returns today's total workout duration in minutes.
     ///
+    /// Parameters: None
+    /// Returns: Double representing workout duration in minutes
+    /// Throws: None
     private func fetchTodayWorkoutMinutes() -> Double {
         guard let todayCD = fetchTodayContext() else { return 0 }
         let workouts = todayCD.value(forKey: "completedWorkouts") as? Set<NSManagedObject> ?? []
@@ -288,6 +318,9 @@ final class DailyGoalManager {
     ///
     /// Returns today's step count from CDDailyContext.
     ///
+    /// Parameters: None
+    /// Returns: Double representing step count
+    /// Throws: None
     private func fetchTodaySteps() -> Double {
         guard let todayCD = fetchTodayContext() else { return 0 }
         return Double((todayCD.value(forKey: "steps") as? Int32) ?? 0)

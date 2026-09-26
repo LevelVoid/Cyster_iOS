@@ -8,6 +8,7 @@ class FoodLogIngredientViewController: UIViewController {
     @IBOutlet weak var FoodWeightLabel: UILabel!
     @IBOutlet weak var horizontalStackView: UIStackView!
 
+    @IBOutlet weak var tickButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
 
         private var headerView: FoodLogIngredientHeader!
@@ -19,7 +20,7 @@ class FoodLogIngredientViewController: UIViewController {
 
         override func viewDidLoad() {
             super.viewDidLoad()
-
+            tickButton.isHidden = false
             print("DEBUG: viewDidLoad started")
             tableView.dataSource = self
             tableView.delegate = self
@@ -153,6 +154,7 @@ class FoodLogIngredientViewController: UIViewController {
         }
 
         @IBAction func servingStepperChanged(_ sender: UIStepper) {
+            tickButton.isHidden = true
             servingMultiplier = sender.value
             updateServingDisplay()
             updateMacros()

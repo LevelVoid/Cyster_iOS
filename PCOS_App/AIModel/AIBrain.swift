@@ -219,7 +219,9 @@ final class AIBrain {
             )
             return response.content
         } catch {
-            throw foundationModelsAvailable ? error : unavailabilityError
+            // Always propagate the real cloud error so callers see the actual failure reason.
+            // Only surface unavailabilityError if neither provider was attempted at all.
+            throw error
         }
     }
 
@@ -542,26 +544,39 @@ final class AIBrain {
         )
     }
 
-    ///
     /// Analyzes a meal description via AI.
     ///
-    /// Why this exists:
-    /// Parses unstructured meal text into macro insights.
-    ///
-    /// - Parameters:
+    /// Parameters:
     ///   - description: The text description of the meal.
-    ///   - instructions: The parsing instructions.
-    /// - Returns: The parsed response string.
-    func analyzeMealDescription(description: String, instructions: String) async throws -> String {
+    /// Returns: The parsed Food object.
+    /// Throws: AIBrainError if parsing or network fails.
+    func analyzeMealDescription(description: String) async throws -> Food {
         return try await routeRequest(
-            .unstructured(prompt: description, systemPrompt: instructions),
+            .unstructured(prompt: description, systemPrompt: "Analyze food text"),
             foundationBlock: {
-                let session = LanguageModelSession(instructions: instructions)
-                let response = try await session.respond(to: description)
-                return response.content
+                throw AIBrainError.cloudGenerationFailed
             },
             cloudBlock: {
-                return try await self.cloudEngine.generate(prompt: description, systemPrompt: instructions)
+                return try await self.cloudEngine.analyzeText(text: description)
+            }
+        )
+    }
+    
+    /// Analyzes a food image via AI.
+    ///
+    /// Parameters:
+    ///   - imageData: The JPEG representation of the captured image.
+    ///   - prompt: The prompt to pass to the vision model.
+    /// Returns: The parsed Food object.
+    /// Throws: AIBrainError if parsing or network fails.
+    func analyzeFoodImage(imageData: Data, prompt: String) async throws -> Food {
+        return try await routeRequest(
+            .unstructured(prompt: prompt, systemPrompt: "Analyze food image"),
+            foundationBlock: {
+                throw AIBrainError.cloudGenerationFailed
+            },
+            cloudBlock: {
+                return try await self.cloudEngine.generateVision(imageData: imageData, prompt: prompt)
             }
         )
     }

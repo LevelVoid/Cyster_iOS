@@ -25,7 +25,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         private var walkthroughSymptomLogged: Bool = false
         private var pulseLayer: CALayer?
 
-        private var goalsState: DailyGoalsState = .loading
+        private var goalsState: DailyGoalsState = .idle
 
         override func viewDidLoad() {
             super.viewDidLoad()
@@ -744,7 +744,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
                 switch goalsState {
                 case .loaded(let output):
                     cell.configure(with: output)
-                case .loading:
+                case .loading, .idle:
                     cell.showLoadingState()
                 case .failed:
                     cell.showLoadingState()

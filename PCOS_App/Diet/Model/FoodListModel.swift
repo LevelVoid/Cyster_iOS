@@ -17,6 +17,7 @@ struct FoodItem: Codable, Identifiable {
     var isSelected: Bool
     var desc: String
     var ingredients: [Ingredient]
+    var confidence: Double?
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -36,13 +37,14 @@ struct FoodItem: Codable, Identifiable {
         isSelected   = try c.decodeIfPresent(Bool.self, forKey: .isSelected) ?? false
         desc         = try c.decodeIfPresent(String.self, forKey: .desc) ?? ""
         ingredients  = try c.decodeIfPresent([Ingredient].self, forKey: .ingredients) ?? []
+        confidence   = try c.decodeIfPresent(Double.self, forKey: .confidence)
     }
 
     init(id: Int, name: String, calories: Int, image: String = "dietPlaceholder",
          servingSize: Double, unit: String = "g", protein: Double, carbs: Double,
          fat: Double, fiber: Double = 0, category: String = "", mealType: String = "",
          impactTags: [ImpactTags] = [], isSelected: Bool = false, desc: String = "",
-         ingredients: [Ingredient] = []) {
+         ingredients: [Ingredient] = [], confidence: Double? = nil) {
         self.id = id
         self.name = name
         self.calories = calories
@@ -59,5 +61,6 @@ struct FoodItem: Codable, Identifiable {
         self.isSelected = isSelected
         self.desc = desc
         self.ingredients = ingredients
+        self.confidence = confidence
     }
 }

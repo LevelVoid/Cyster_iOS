@@ -191,7 +191,7 @@ final class CloudModelEngine: AIModelEngineProtocol {
         let body: [String: Any] = [
             "text": text
         ]
-        
+
         let data = try await performRequest(endpoint: "analyze/text", body: body)
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
@@ -216,7 +216,7 @@ final class CloudModelEngine: AIModelEngineProtocol {
         let body: [String: Any] = [
             "image_base64": base64
         ]
-        
+
         let data = try await performRequest(endpoint: "analyze/image", body: body)
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601

@@ -1,3 +1,12 @@
+//
+// CDDailyContext+CoreDataClass.swift
+//
+// Purpose:
+// Represents a single day's context for a user, containing metrics, logs, and goals.
+//
+// Why this exists:
+// CoreData model for aggregating all daily health and activity data in one place.
+//
 import Foundation
 import CoreData
 
@@ -52,25 +61,12 @@ public class CDDailyContext: NSManagedObject {
     func persistGoals(goal1: GoalCard, goal2: GoalCard) {
         setValue(Date(), forKey: "goalsGeneratedDate")
 
-        setValue(goal1.id,                 forKey: "goal1ID")
-        setValue(goal1.title,              forKey: "goal1Title")
-        setValue(goal1.sentence,           forKey: "goal1Sentence")
-        setValue(goal1.category,           forKey: "goal1Category")
-        setValue(goal1.targetType,         forKey: "goal1TargetType")
-        setValue(goal1.targetValue,        forKey: "goal1TargetValue")
-        setValue(goal1.currentValue,       forKey: "goal1CurrentValue")
-        setValue(false,                    forKey: "goal1Completed")
-        setValue(goal1.celebrationMessage, forKey: "goal1Celebration")
-
-        setValue(goal2.id,                 forKey: "goal2ID")
-        setValue(goal2.title,              forKey: "goal2Title")
-        setValue(goal2.sentence,           forKey: "goal2Sentence")
-        setValue(goal2.category,           forKey: "goal2Category")
-        setValue(goal2.targetType,         forKey: "goal2TargetType")
-        setValue(goal2.targetValue,        forKey: "goal2TargetValue")
-        setValue(goal2.currentValue,       forKey: "goal2CurrentValue")
-        setValue(false,                    forKey: "goal2Completed")
-        setValue(goal2.celebrationMessage, forKey: "goal2Celebration")
+        let d1 = DailyGoal(id: goal1.id, title: goal1.title, sentence: goal1.sentence, category: goal1.category, targetType: goal1.targetType, targetValue: goal1.targetValue, currentValue: goal1.currentValue, isCompleted: false, completionRule: goal1.completionRule, celebrationMessage: goal1.celebrationMessage, generatedReason: "")
+        let d2 = DailyGoal(id: goal2.id, title: goal2.title, sentence: goal2.sentence, category: goal2.category, targetType: goal2.targetType, targetValue: goal2.targetValue, currentValue: goal2.currentValue, isCompleted: false, completionRule: goal2.completionRule, celebrationMessage: goal2.celebrationMessage, generatedReason: "")
+        
+        if let encoded = try? JSONEncoder().encode([d1, d2]) {
+            setValue(encoded, forKey: "dailyGoalsData")
+        }
     }
 
     ///
@@ -82,57 +78,46 @@ public class CDDailyContext: NSManagedObject {
     ///
     /// - Returns: A tuple of (GoalCard, GoalCard) or nil if no goals persisted.
     func loadPersistedGoals() -> (GoalCard, GoalCard)? {
-        guard
-            let id1    = value(forKey: "goal1ID")        as? String,
-            let title1 = value(forKey: "goal1Title")     as? String,
-            let sent1  = value(forKey: "goal1Sentence")  as? String,
-            let cat1   = value(forKey: "goal1Category")  as? String,
-            let id2    = value(forKey: "goal2ID")        as? String,
-            let title2 = value(forKey: "goal2Title")     as? String,
-            let sent2  = value(forKey: "goal2Sentence")  as? String,
-            let cat2   = value(forKey: "goal2Category")  as? String
-        else { return nil }
+        guard let data = value(forKey: "dailyGoalsData") as? Data,
+              let goals = try? JSONDecoder().decode([DailyGoal].self, from: data),
+              goals.count >= 2 else {
+            return nil
+        }
 
-        let goal1 = GoalCard(
-            id:                 id1,
-            title:              title1,
-            sentence:           sent1,
-            category:           cat1,
-            targetType:         value(forKey: "goal1TargetType")   as? String ?? "manual",
-            targetValue:        value(forKey: "goal1TargetValue")   as? Double ?? 0,
-            currentValue:       value(forKey: "goal1CurrentValue")  as? Double ?? 0,
-            completionRule:     "current>=target",
-            celebrationMessage: value(forKey: "goal1Celebration")  as? String ?? "Goal completed!"
+        let d1 = goals[0]
+        let d2 = goals[1]
+
+        var goal1 = GoalCard(
+            id: d1.id,
+            title: d1.title,
+            sentence: d1.sentence,
+            category: d1.category,
+            targetType: d1.targetType,
+            targetValue: d1.targetValue,
+            currentValue: d1.currentValue,
+            completionRule: d1.completionRule,
+            celebrationMessage: d1.celebrationMessage
         )
-        let isCompleted1 = value(forKey: "goal1Completed") as? Bool ?? false
+        if d1.isCompleted {
+            goal1.currentValue = goal1.targetValue
+        }
 
-        let goal2 = GoalCard(
-            id:                 id2,
-            title:              title2,
-            sentence:           sent2,
-            category:           cat2,
-            targetType:         value(forKey: "goal2TargetType")   as? String ?? "manual",
-            targetValue:        value(forKey: "goal2TargetValue")   as? Double ?? 0,
-            currentValue:       value(forKey: "goal2CurrentValue")  as? Double ?? 0,
-            completionRule:     "current>=target",
-            celebrationMessage: value(forKey: "goal2Celebration")  as? String ?? "Goal completed!"
+        var goal2 = GoalCard(
+            id: d2.id,
+            title: d2.title,
+            sentence: d2.sentence,
+            category: d2.category,
+            targetType: d2.targetType,
+            targetValue: d2.targetValue,
+            currentValue: d2.currentValue,
+            completionRule: d2.completionRule,
+            celebrationMessage: d2.celebrationMessage
         )
-        let isCompleted2 = value(forKey: "goal2Completed") as? Bool ?? false
+        if d2.isCompleted {
+            goal2.currentValue = goal2.targetValue
+        }
 
-        // Return goals with completion state embedded via currentValue == targetValue
-        var mGoal1 = goal1
-        if isCompleted1 { mGoal1 = GoalCard(id: goal1.id, title: goal1.title, sentence: goal1.sentence,
-                                             category: goal1.category, targetType: goal1.targetType,
-                                             targetValue: goal1.targetValue, currentValue: goal1.targetValue,
-                                             completionRule: goal1.completionRule,
-                                             celebrationMessage: goal1.celebrationMessage) }
-        var mGoal2 = goal2
-        if isCompleted2 { mGoal2 = GoalCard(id: goal2.id, title: goal2.title, sentence: goal2.sentence,
-                                             category: goal2.category, targetType: goal2.targetType,
-                                             targetValue: goal2.targetValue, currentValue: goal2.targetValue,
-                                             completionRule: goal2.completionRule,
-                                             celebrationMessage: goal2.celebrationMessage) }
-        return (mGoal1, mGoal2)
+        return (goal1, goal2)
     }
 
     ///
@@ -145,8 +130,16 @@ public class CDDailyContext: NSManagedObject {
     ///   - current: The updated progress value.
     ///   - completed: Whether the goal is now complete.
     func updateGoal1Progress(current: Double, completed: Bool) {
-        setValue(current,   forKey: "goal1CurrentValue")
-        setValue(completed, forKey: "goal1Completed")
+        guard let data = value(forKey: "dailyGoalsData") as? Data,
+              var goals = try? JSONDecoder().decode([DailyGoal].self, from: data),
+              goals.count >= 2 else { return }
+              
+        goals[0].currentValue = current
+        goals[0].isCompleted = completed
+        
+        if let encoded = try? JSONEncoder().encode(goals) {
+            setValue(encoded, forKey: "dailyGoalsData")
+        }
     }
 
     ///
@@ -159,7 +152,15 @@ public class CDDailyContext: NSManagedObject {
     ///   - current: The updated progress value.
     ///   - completed: Whether the goal is now complete.
     func updateGoal2Progress(current: Double, completed: Bool) {
-        setValue(current,   forKey: "goal2CurrentValue")
-        setValue(completed, forKey: "goal2Completed")
+        guard let data = value(forKey: "dailyGoalsData") as? Data,
+              var goals = try? JSONDecoder().decode([DailyGoal].self, from: data),
+              goals.count >= 2 else { return }
+              
+        goals[1].currentValue = current
+        goals[1].isCompleted = completed
+        
+        if let encoded = try? JSONEncoder().encode(goals) {
+            setValue(encoded, forKey: "dailyGoalsData")
+        }
     }
 }
