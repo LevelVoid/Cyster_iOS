@@ -2,113 +2,225 @@
 // CloudModelEngine.swift
 //
 // Purpose:
-// Future cloud inference provider.
+// Cloud inference provider.
 //
 // Why this exists:
 // Keeps Vertex-specific networking isolated.
 //
 
 import Foundation
+import FirebaseAuth
 
 @MainActor
 final class CloudModelEngine: AIModelEngineProtocol {
 
     var isAvailable: Bool { true }
 
-    ///
-    /// The identifier of the model currently active in this engine.
-    ///
-    /// Why this exists:
-    /// `AIBrain.routeRequest` uses this to populate `ProviderMetadata.modelId`
-    /// when wrapping cloud responses. Will be updated to the Vertex model in 5B.
-    ///
-    var currentModelId: String { model }
+    var currentModelId: String { "gemini-2.5-flash" }
 
-    // MARK: - Legacy Groq Configuration (To be removed in 5B)
-    private var apiKey: String {
-        Bundle.main.object(forInfoDictionaryKey: "GroqAPIKey") as? String ?? ""
-    }
-    private let groqEndpoint = URL(string: "https://api.groq.com/openai/v1/chat/completions")!
-    private let model = "meta-llama/llama-4-scout-17b-16e-instruct"
-    
-    // MARK: - Future Vertex Configuration
-    private let vertexEndpoint = "https://placeholder-vertex-endpoint.run.app"
-    private var firebaseToken: String? { "placeholder_token" }
+    // MARK: - Vertex Configuration
+    private let gatewayEndpoint = "https://ai-gateway-1024644064258.us-central1.run.app"
     private let defaultTimeout: TimeInterval = 30.0
     private let maxRetries: Int = 3
-
-    ///
-    /// Future Vertex chat endpoint.
-    ///
-    /// Why this exists:
-    /// This placeholder will later call the AI Gateway running
-    /// on Cloud Run while preserving the existing response format.
-    ///
-    /// - Parameters:
-    ///   - prompt: The user's input.
-    ///   - systemPrompt: The instructions for the model.
-    /// - Returns: A generated string response.
-    /// - Throws: `AIBrainError` if generation fails.
-    func generateChat(prompt: String, systemPrompt: String) async throws -> String {
-        let requestId = UUID().uuidString
-        let _ = vertexEndpoint
-        let _ = firebaseToken
-        let _ = defaultTimeout
-        let _ = maxRetries
-        
-        let messages: [[String: String]] = [
-            ["role": "system",  "content": systemPrompt],
-            ["role": "user",    "content": prompt]
-        ]
-        return try await request(messages: messages, maxTokens: 1024, temperature: 0.75)
+    
+    // Auth helper
+    private func fetchFirebaseToken() async throws -> String {
+        guard let user = Auth.auth().currentUser else {
+            throw AIBrainError.unauthorized
+        }
+        do {
+            return try await user.getIDToken()
+        } catch {
+            throw AIBrainError.unauthorized
+        }
     }
-
+    
     ///
-    /// Future Vertex JSON endpoint.
+    /// Purpose:
+    /// Generic request helper for the AI Gateway.
     ///
-    /// Why this exists:
-    /// Generates structured JSON outputs (e.g., for meal recommendations, daily goals).
-    ///
-    /// - Parameters:
-    ///   - context: The serialized context string.
-    ///   - schema: The expected JSON schema.
-    ///   - instructions: The system instructions.
-    /// - Returns: A raw JSON string.
-    /// - Throws: `AIBrainError` if generation fails.
-    func generateJSON(context: String, schema: String, instructions: String) async throws -> String {
-        let requestId = UUID().uuidString
-        let _ = vertexEndpoint
-        let _ = firebaseToken
-        let _ = defaultTimeout
-        let _ = maxRetries
-        
-        let messages: [[String: String]] = [
-            ["role": "system", "content": instructions + "\n\nIMPORTANT: Respond with ONLY a single valid JSON object matching this schema (no markdown, no extra text):\n" + schema],
-            ["role": "user",   "content": context]
-        ]
-        return try await request(messages: messages, maxTokens: 1024, temperature: 0.5)
-    }
-
-    ///
-    /// Future Vertex Vision endpoint.
-    ///
-    /// Why this exists:
-    /// Processes images (e.g., food scanning) via Vertex AI.
+    /// Why:
+    /// Centralizes URLSession logic, JWT injection, X-Request-ID propagation,
+    /// and exponential backoff retry logic.
     ///
     /// - Parameters:
-    ///   - imageData: The image to process.
-    ///   - prompt: The vision instructions.
-    /// - Returns: A generated string describing the image.
-    /// - Throws: `AIBrainError` if vision processing fails.
-    func generateVision(imageData: Data, prompt: String) async throws -> String {
-        let requestId = UUID().uuidString
-        let _ = vertexEndpoint
-        let _ = firebaseToken
-        let _ = defaultTimeout
-        let _ = maxRetries
+    ///   - endpoint: The relative path to the AI Gateway.
+    ///   - body: The JSON request body payload.
+    /// - Returns: The raw Data returned by the server.
+    /// - Throws: `AIBrainError` mapped from HTTP status codes or networking errors.
+    ///
+    private func performRequest(endpoint: String, body: [String: Any]) async throws -> Data {
+        let token = try await fetchFirebaseToken()
+        guard let url = URL(string: "\(gatewayEndpoint)/\(endpoint)") else {
+            throw AIBrainError.cloudGenerationFailed
+        }
         
-        // Placeholder implementation for now
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        req.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.addValue(UUID().uuidString, forHTTPHeaderField: "X-Request-ID")
+        req.timeoutInterval = defaultTimeout
+        
+        req.httpBody = try JSONSerialization.data(withJSONObject: body)
+        
+        var attempts = 0
+        let maxAttempts = maxRetries + 1
+        let backoffs: [UInt64] = [500_000_000, 1_000_000_000, 2_000_000_000] // 0.5s, 1s, 2s
+        
+        while attempts < maxAttempts {
+            do {
+                let (data, response) = try await URLSession.shared.data(for: req)
+                guard let http = response as? HTTPURLResponse else {
+                    throw AIBrainError.invalidCloudResponse
+                }
+                
+                switch http.statusCode {
+                case 200...299:
+                    return data
+                case 400:
+                    throw AIBrainError.cloudGenerationFailed
+                case 401, 403:
+                    throw AIBrainError.unauthorized
+                case 502, 503, 504:
+                    throw AIBrainError.requestTimedOut
+                default:
+                    throw AIBrainError.cloudGenerationFailed
+                }
+            } catch let error as AIBrainError {
+                switch error {
+                case .unauthorized, .cloudGenerationFailed, .invalidCloudResponse:
+                    throw error
+                default:
+                    attempts += 1
+                    if attempts < maxAttempts {
+                        try await Task.sleep(nanoseconds: backoffs[attempts - 1])
+                    } else {
+                        throw error
+                    }
+                }
+            } catch {
+                attempts += 1
+                if attempts < maxAttempts {
+                    try await Task.sleep(nanoseconds: backoffs[attempts - 1])
+                } else {
+                    let nsError = error as NSError
+                    if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorTimedOut {
+                        throw AIBrainError.requestTimedOut
+                    }
+                    throw AIBrainError.cloudGenerationFailed
+                }
+            }
+        }
         throw AIBrainError.cloudGenerationFailed
+    }
+
+    ///
+    /// Purpose:
+    /// Sends a chat message with history to the AI Gateway and returns the generated text.
+    ///
+    /// Why:
+    /// Supports the conversational coaching interface using Vertex AI.
+    ///
+    /// - Parameters:
+    ///   - prompt: The user's input text.
+    ///   - systemPrompt: The persona instructions.
+    /// - Returns: The AI's generated response string.
+    /// - Throws: `AIBrainError` if networking or decoding fails.
+    ///
+    func generateChat(prompt: String, systemPrompt: String, history: [[String: String]] = []) async throws -> String {
+        let body: [String: Any] = [
+            "prompt": prompt,
+            "system_prompt": systemPrompt,
+            "history": history
+        ]
+        
+        let data = try await performRequest(endpoint: "chat", body: body)
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let text = json["text"] as? String else {
+            throw AIBrainError.parsingFailed
+        }
+        return text
+    }
+
+    ///
+    /// Purpose:
+    /// Requests a structured JSON recommendation from the backend.
+    ///
+    /// Why:
+    /// Used for specific AI features (e.g., Daily Goals, Meal Recommendations)
+    /// that require rigid JSON structures rather than free-text.
+    ///
+    /// - Parameters:
+    ///   - type: The recommendation type (e.g., "meal_recommendations").
+    ///   - context: The serialized string context of user data.
+    ///   - schema: The JSON schema to enforce on the output.
+    /// - Returns: A JSON string containing the structured response.
+    /// - Throws: `AIBrainError` if generation or validation fails.
+    ///
+    func generateRecommendation(type: String, context: String, schema: String) async throws -> String {
+        let body: [String: Any] = [
+            "type": type,
+            "context": context,
+            "schema": schema
+        ]
+        
+        let data = try await performRequest(endpoint: "recommendation", body: body)
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let output = json["output"] as? [String: Any] else {
+            throw AIBrainError.parsingFailed
+        }
+        
+        // Serialize back to string for legacy methods
+        let outputData = try JSONSerialization.data(withJSONObject: output)
+        return String(data: outputData, encoding: .utf8) ?? ""
+    }
+    
+    ///
+    /// Purpose:
+    /// Parses natural language food descriptions into a structured `Food` domain model.
+    ///
+    /// Why:
+    /// Allows users to log meals by typing rather than searching databases.
+    ///
+    /// - Parameter text: The free-form meal description.
+    /// - Returns: A structured `Food` object.
+    /// - Throws: `AIBrainError` if the parsing fails.
+    ///
+    func analyzeText(text: String) async throws -> Food {
+        let body: [String: Any] = [
+            "text": text
+        ]
+        
+        let data = try await performRequest(endpoint: "analyze/text", body: body)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try decoder.decode(Food.self, from: data)
+    }
+
+    ///
+    /// Purpose:
+    /// Analyzes an image of a meal and returns a structured `Food` domain model.
+    ///
+    /// Why:
+    /// Replaces the inaccurate linear classifier pipeline with Vertex Vision.
+    ///
+    /// - Parameters:
+    ///   - imageData: The JPEG/PNG data of the food image.
+    ///   - prompt: The analytical instructions for the vision model.
+    /// - Returns: A structured `Food` object containing ingredients and macros.
+    /// - Throws: `AIBrainError` if image processing fails.
+    ///
+    func generateVision(imageData: Data, prompt: String) async throws -> Food {
+        let base64 = imageData.base64EncodedString()
+        let body: [String: Any] = [
+            "image_base64": base64
+        ]
+        
+        let data = try await performRequest(endpoint: "analyze/image", body: body)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try decoder.decode(Food.self, from: data)
     }
     
     // MARK: - Legacy Methods (Used for current compatibility)
@@ -130,7 +242,7 @@ final class CloudModelEngine: AIModelEngineProtocol {
             "colorHint": "string (one word: red or green or yellow)"}
          ]}
         """
-        return try await generateJSON(context: context, schema: schema, instructions: instructions)
+        return try await generateRecommendation(type: "meal_recommendations", context: context, schema: schema)
     }
 
     func generateDailyGoalsJSON(context: String, instructions: String) async throws -> String {
@@ -141,48 +253,6 @@ final class CloudModelEngine: AIModelEngineProtocol {
            "category": "string (one of: nutrition, exercise, symptoms)"}
         ]}
         """
-        return try await generateJSON(context: context, schema: schema, instructions: instructions)
-    }
-
-    func request(messages: [[String: String]], maxTokens: Int, temperature: Double) async throws -> String {
-        guard !apiKey.isEmpty, apiKey != "YOUR_GROQ_API_KEY" else {
-            throw AIBrainError.unauthorized
-        }
-
-        var req = URLRequest(url: groqEndpoint)
-        req.httpMethod = "POST"
-        req.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-        req.addValue("application/json",  forHTTPHeaderField: "Content-Type")
-
-        let body: [String: Any] = [
-            "model":       model,
-            "messages":    messages,
-            "max_tokens":  maxTokens,
-            "temperature": temperature
-        ]
-        req.httpBody = try JSONSerialization.data(withJSONObject: body)
-
-        let (data, response) = try await URLSession.shared.data(for: req)
-
-        guard let http = response as? HTTPURLResponse else {
-            throw AIBrainError.invalidCloudResponse
-        }
-        guard (200...299).contains(http.statusCode) else {
-            let msg = String(data: data, encoding: .utf8) ?? "Unknown"
-            print("❌ Groq API \(http.statusCode): \(msg)")
-            throw AIBrainError.cloudGenerationFailed
-        }
-
-        guard
-            let json    = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-            let choices = json["choices"] as? [[String: Any]],
-            let first   = choices.first,
-            let message = first["message"] as? [String: Any],
-            let content = message["content"] as? String
-        else {
-            throw AIBrainError.parsingFailed
-        }
-
-        return content
+        return try await generateRecommendation(type: "daily_goals", context: context, schema: schema)
     }
 }

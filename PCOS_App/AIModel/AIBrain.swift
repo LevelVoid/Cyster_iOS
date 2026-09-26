@@ -286,14 +286,16 @@ final class AIBrain {
                 return response.content
             },
             cloudBlock: {
-                if self.cloudChatHistory.isEmpty {
-                    self.cloudChatHistory = [["role": "system", "content": self.systemPrompt]]
-                }
+                // Remove the system prompt from the history we pass, as it goes in its own param
+                let historyToPass = self.cloudChatHistory.filter { $0["role"] != "system" }
+                
                 self.cloudChatHistory.append(["role": "user", "content": contextualMessage])
-                let reply = try await self.cloudEngine.request(
-                    messages: self.cloudChatHistory,
-                    maxTokens: 1024,
-                    temperature: 0.75
+                let currentHistory = self.cloudChatHistory.filter { $0["role"] != "system" }
+                
+                let reply = try await self.cloudEngine.generateChat(
+                    prompt: contextualMessage,
+                    systemPrompt: self.systemPrompt,
+                    history: historyToPass
                 )
                 self.cloudChatHistory.append(["role": "assistant", "content": reply])
                 return reply
