@@ -294,7 +294,7 @@ final class SharedContextEngine {
         return GoalEngine.generateGoals(for: user)
     }
 
-    private struct TodayContext {
+    struct TodayContext {
         var sleepTime: Date?
         var wakeTime: Date?
         var sleepQuality: Double
@@ -309,23 +309,24 @@ final class SharedContextEngine {
         var completedWorkouts: [WorkoutSnapshot]
     }
 
-    private struct FoodLogSnapshot {
+    struct FoodLogSnapshot {
         let name: String
         let protein: Double
         let carbs: Double
         let fats: Double
+        let fiber: Double
         let calories: Double
         let timeStamp: Date
         let tags: [String]
     }
 
-    private struct WorkoutSnapshot {
+    struct WorkoutSnapshot {
         let routineName: String
         let durationSeconds: Int
         let caloriesBurned: Double
     }
 
-    private func fetchTodayContext() -> TodayContext {
+    func fetchTodayContext() -> TodayContext {
         let cal = Calendar.current
         let todayStart = cal.startOfDay(for: Date())
         let todayEnd   = cal.date(byAdding: .day, value: 1, to: todayStart) ?? Date()
@@ -359,10 +360,11 @@ final class SharedContextEngine {
             let protein   = fl.value(forKey: "proteinContent") as? Double ?? 0
             let carbs     = fl.value(forKey: "carbsContent") as? Double ?? 0
             let fats      = fl.value(forKey: "fatsContent") as? Double ?? 0
+            let fiber     = fl.value(forKey: "fiberContent") as? Double ?? 0
             let customCal = fl.value(forKey: "customCalories") as? Double
             return FoodLogSnapshot(
                 name:      fl.value(forKey: "name") as? String ?? "Unknown",
-                protein:   protein, carbs: carbs, fats: fats,
+                protein:   protein, carbs: carbs, fats: fats, fiber: fiber,
                 calories:  customCal ?? (protein * 4 + carbs * 4 + fats * 9),
                 timeStamp: fl.value(forKey: "timeStamp") as? Date ?? Date(),
                 tags:      decodeTags(from: fl.value(forKey: "tagsData") as? Data)

@@ -11,9 +11,7 @@ class DietViewController: UIViewController {
     private var nutritionCell: NutritionHeaderCollectionViewCell?  
 
     private var mealOutput: MealRecommendationOutput?
-    private var isMealLoading = false
     private var mealError: String?
-    private var lastFoodLogCount: Int = -1
     private var walkthroughOverlay: WalkthroughOverlayView?
     private weak var tipPopover: UIViewController?
     private var isShowingWalkthroughCongrats: Bool = false
@@ -41,7 +39,7 @@ class DietViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.prefersLargeTitles = true
         filterTodaysFoods()
-        Task { await refreshMealRecommendationsIfNeeded() }
+        Task { await loadMealRecommendations() }
         handleWalkthroughOnAppear()
     }
 
@@ -158,43 +156,33 @@ class DietViewController: UIViewController {
         print("DietVC — found \(todaysFoods.count) foods for today")
     }
 
-    private func refreshMealRecommendationsIfNeeded() async {
-        let currentCount = fetchTodayFoodLogCount()
+    /// Loads meal recommendations using the cached manager.
+    ///
+    /// Parameters: None
+    /// Returns: None
+    /// Throws: None (errors captured in manager state)
+    ///
+    /// Why this exists:
+    /// Centralizes recommendation loading through MealRecommendationManager,
+    /// which handles caching and context fingerprinting automatically.
+    ///
+    private func loadMealRecommendations() async {
+        let state = await MealRecommendationManager.shared.loadRecommendations()
 
-        if let _ = mealOutput, currentCount == lastFoodLogCount {
-            await MainActor.run {
-                self.collectionView.reloadSections(IndexSet(integer: 1))
-            }
-            return
-        }
-
-        guard !isMealLoading else { return }
-        isMealLoading = true
-        lastFoodLogCount = currentCount
-
-        do {
-            let context = await SharedContextEngine.shared.buildMealRecommendationContext()
-            print("DietVC — context built, calling AI for suggestions...")
-            let output = try await AIBrain.shared.generateMealRecommendations(context: context)
-            await MainActor.run {
+        await MainActor.run {
+            switch state {
+            case .loaded(let output):
                 self.mealOutput = output
                 self.mealError = nil
-                self.isMealLoading = false
-                self.collectionView.reloadSections(IndexSet(integer: 1))
-                print("DietVC — AI suggestions received and section reloaded")
+            case .failed(let error):
+                self.mealOutput = nil
+                self.mealError = error
+            case .loading, .idle:
+                // Keep current state during loading
+                break
             }
-        } catch {
-            await MainActor.run {
-                self.isMealLoading = false
-                self.mealError = error.localizedDescription
-                self.collectionView.reloadSections(IndexSet(integer: 1))
-                print("Meal suggestions error: \(error)")
-            }
+            self.collectionView.reloadSections(IndexSet(integer: 1))
         }
-    }
-
-    private func fetchTodayFoodLogCount() -> Int {
-        return FoodLogDataStore.todaysMeal.count
     }
 
     private func computeObservationLines() -> (observation: String, subObservation: String) {
@@ -262,9 +250,10 @@ class DietViewController: UIViewController {
             FoodLogDataStore.removeFood(mealToDelete)
             self.todaysFoods.remove(at: foodIndex)
             self.collectionView.reloadData()
-            self.lastFoodLogCount = -1
 
-            Task { await self.refreshMealRecommendationsIfNeeded() }
+            // Invalidate recommendation cache since meal context changed
+            MealRecommendationManager.shared.invalidateCache()
+            Task { await self.loadMealRecommendations() }
         })
         present(alert, animated: true)
     }
@@ -481,6 +470,10 @@ extension DietViewController: AddMealDelegate {
         filterTodaysFoods()
         print("Added food: \(food.name)")
 
+        // Invalidate recommendation cache since meal context changed
+        MealRecommendationManager.shared.invalidateCache()
+        Task { await loadMealRecommendations() }
+
         if WalkthroughManager.shared.isActive && WalkthroughManager.shared.currentStep == .logMeal {
             self.walkthroughMealLogged = true
             self.isShowingWalkthroughCongrats = true
@@ -513,6 +506,10 @@ extension DietViewController: AddDescribedMealDelegate {
             nutritionCell?.updateValues(food)
         }
         print("Meal added successfully")
+
+        // Invalidate recommendation cache since meal context changed
+        MealRecommendationManager.shared.invalidateCache()
+        Task { await loadMealRecommendations() }
 
         if WalkthroughManager.shared.isActive && WalkthroughManager.shared.currentStep == .logMeal {
             self.walkthroughMealLogged = true

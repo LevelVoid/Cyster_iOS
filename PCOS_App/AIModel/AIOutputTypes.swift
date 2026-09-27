@@ -13,7 +13,7 @@ import Foundation
 import FoundationModels
 
 @Generable
-struct MealRecommendationOutput {
+struct MealRecommendationOutput: Codable {
     @Guide(description: """
     One sentence, max 12 words, referencing actual logged numbers from context.
     E.g. 'You have logged only 20g protein against your 60g target.'
@@ -26,7 +26,7 @@ struct MealRecommendationOutput {
     var subObservationLine: String
 
     @Guide(description: """
-    Exactly 3 Indian food suggestions. 
+    Exactly 3 Indian food suggestions.
     None of these should repeat any food already logged today in the context.
     Each must directly address the focus tag gap.
     """)
@@ -34,7 +34,7 @@ struct MealRecommendationOutput {
 }
 
 @Generable
-struct FoodCard {
+struct FoodCard: Codable {
     @Guide(description: "Short Indian dish name, max 25 characters. E.g. 'Moong Dal Chilla', 'Palak Paneer', 'Ragi Roti'. Never suggest a food already logged today.")
     var name: String
 

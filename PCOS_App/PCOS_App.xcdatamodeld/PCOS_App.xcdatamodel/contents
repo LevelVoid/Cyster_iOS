@@ -67,6 +67,10 @@
         <!-- Milestone 6A: Persistent AI Daily Goals -->
         <attribute name="dailyGoalsData" optional="YES" attributeType="Transformable" customClassName="NSData" valueTransformerName="NSSecureUnarchiveFromData"/>
         <attribute name="goalsGeneratedDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <!-- Milestone 7 B1: Meal Recommendation Cache -->
+        <attribute name="mealRecommendationData" optional="YES" attributeType="Transformable" customClassName="NSData" valueTransformerName="NSSecureUnarchiveFromData"/>
+        <attribute name="mealRecommendationContextHash" optional="YES" attributeType="String"/>
+        <attribute name="mealRecommendationGeneratedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="completedWorkouts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDCompletedWorkout" inverseName="dailyContext" inverseEntity="CDCompletedWorkout"/>
         <relationship name="foodLogs" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDFoodLog" inverseName="dailyContext" inverseEntity="CDFoodLog"/>
         <relationship name="symptomLogs" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDSymptomLog" inverseName="dailyContext" inverseEntity="CDSymptomLog"/>
