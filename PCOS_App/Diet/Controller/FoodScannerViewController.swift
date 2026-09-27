@@ -16,6 +16,14 @@ class FoodScannerViewController: UIViewController {
     private var previewLayer: AVCaptureVideoPreviewLayer!
     private var photoOutput: AVCapturePhotoOutput!
     private var capturedImage: UIImage?
+    private var videoDataOutput: AVCaptureVideoDataOutput?
+    private var isSimulator: Bool {
+        #if targetEnvironment(simulator)
+        return true
+        #else
+        return false
+        #endif
+    }
 
     private var foodClassifier: VNCoreMLModel?
 
@@ -105,9 +113,17 @@ class FoodScannerViewController: UIViewController {
 
     private func setupCamera() {
         captureSession = AVCaptureSession()
-        captureSession.sessionPreset = .photo
+        captureSession.sessionPreset = .high
 
-        guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else {
+        // Get camera device
+        let camera: AVCaptureDevice?
+        if let backCamera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
+            camera = backCamera
+        } else {
+            camera = AVCaptureDevice.default(for: .video)
+        }
+
+        guard let camera = camera else {
             showError("Camera not available")
             return
         }
@@ -119,10 +135,23 @@ class FoodScannerViewController: UIViewController {
                 captureSession.addInput(input)
             }
 
-            photoOutput = AVCapturePhotoOutput()
+            // For simulator, use video data output instead of photo output
+            // AVCapturePhotoOutput queries device capabilities that RocketSim doesn't support
+            if isSimulator {
+                let videoOutput = AVCaptureVideoDataOutput()
+                videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "videoQueue"))
+                videoOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
 
-            if captureSession.canAddOutput(photoOutput) {
-                captureSession.addOutput(photoOutput)
+                if captureSession.canAddOutput(videoOutput) {
+                    captureSession.addOutput(videoOutput)
+                    self.videoDataOutput = videoOutput
+                }
+            } else {
+                photoOutput = AVCapturePhotoOutput()
+
+                if captureSession.canAddOutput(photoOutput) {
+                    captureSession.addOutput(photoOutput)
+                }
             }
 
             previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
@@ -171,14 +200,22 @@ class FoodScannerViewController: UIViewController {
         ])
     }
 
+    private var shouldCaptureNextFrame = false
+
     @objc private func captureButtonTapped() {
         captureButton.isEnabled = false
 
-        let settings = AVCapturePhotoSettings()
-        photoOutput.capturePhoto(with: settings, delegate: self)
-
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.impactOccurred()
+
+        if isSimulator {
+            // Signal to capture the next video frame
+            shouldCaptureNextFrame = true
+        } else {
+            // Capture photo on real device
+            let settings = AVCapturePhotoSettings()
+            photoOutput.capturePhoto(with: settings, delegate: self)
+        }
     }
 
     @objc private func cancelButtonTapped() {
@@ -371,6 +408,42 @@ class FoodScannerViewController: UIViewController {
         })
 
         present(alert, animated: true)
+    }
+}
+
+// MARK: - Video Data Output Delegate (for Simulator)
+extension FoodScannerViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        guard shouldCaptureNextFrame else { return }
+        shouldCaptureNextFrame = false
+
+        // Convert CMSampleBuffer to UIImage
+        guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            DispatchQueue.main.async { [weak self] in
+                self?.showError("Could not process captured frame")
+                self?.captureButton.isEnabled = true
+            }
+            return
+        }
+
+        let ciImage = CIImage(cvPixelBuffer: imageBuffer)
+        let context = CIContext()
+        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else {
+            DispatchQueue.main.async { [weak self] in
+                self?.showError("Could not process captured frame")
+                self?.captureButton.isEnabled = true
+            }
+            return
+        }
+
+        let image = UIImage(cgImage: cgImage)
+        self.capturedImage = image
+
+        DispatchQueue.main.async { [weak self] in
+            print("DEBUG: Frame captured successfully in simulator mode")
+            self?.showLoadingIndicator(message: "Identifying food...")
+            self?.classifyFood(image: image)
+        }
     }
 }
 
