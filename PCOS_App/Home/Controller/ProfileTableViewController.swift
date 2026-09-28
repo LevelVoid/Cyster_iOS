@@ -6,7 +6,7 @@ class ProfileTableViewController: UITableViewController {
     private let section0 = ["Health details"]
     private let features = ["Reminders"]
     private let dataBackup = ["Back Up Now", "Restore Backup"]
-    private let privacy = ["Apps", "Devices"]
+    private let legal = ["Privacy Policy", "Terms of Service"]
     
     private var lastBackupDate: Date?
     private var isBackingUp = false
@@ -75,6 +75,7 @@ class ProfileTableViewController: UITableViewController {
 
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "ProfileActionCell")
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "SettingCell")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "SubtitleCell")
     }
 
     private func setupHeaderView() {
@@ -114,7 +115,7 @@ class ProfileTableViewController: UITableViewController {
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return 5
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -126,7 +127,9 @@ class ProfileTableViewController: UITableViewController {
         case 2:
             return dataBackup.count
         case 3:
-            return privacy.count
+            return legal.count
+        case 4:
+            return 1  // Delete Account
         default:
             return 0
         }
@@ -149,11 +152,12 @@ class ProfileTableViewController: UITableViewController {
 
         if indexPath.section == 1 {
             cell.textLabel?.text = features[indexPath.row]
+            cell.textLabel?.textColor = .label
             cell.accessoryType = .disclosureIndicator
         } else if indexPath.section == 2 {
             // Data & Backup section
             cell.textLabel?.text = dataBackup[indexPath.row]
-            
+
             if indexPath.row == 0 {
                 // Back Up Now row
                 if isBackingUp {
@@ -180,9 +184,24 @@ class ProfileTableViewController: UITableViewController {
                 }
             }
         } else if indexPath.section == 3 {
-            cell.textLabel?.text = privacy[indexPath.row]
+            // Legal section
+            cell.textLabel?.text = legal[indexPath.row]
             cell.textLabel?.textColor = .label
             cell.accessoryType = .disclosureIndicator
+        } else if indexPath.section == 4 {
+            // Delete Account section - need subtitle style
+            let deleteCell = UITableViewCell(style: .subtitle, reuseIdentifier: "SubtitleCell")
+            deleteCell.textLabel?.text = "Delete Account"
+            deleteCell.textLabel?.textColor = .systemRed
+            deleteCell.textLabel?.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+
+            // Add trash icon
+            let trashImage = UIImage(systemName: "trash")?
+                .withTintColor(.systemRed, renderingMode: .alwaysOriginal)
+            deleteCell.accessoryView = UIImageView(image: trashImage)
+            deleteCell.selectionStyle = .default
+
+            return deleteCell
         }
 
         cell.textLabel?.font = UIFont.systemFont(ofSize: 17, weight: .regular)
@@ -201,9 +220,7 @@ class ProfileTableViewController: UITableViewController {
                 return
             }
             navigationController?.pushViewController(vc, animated: true)
-        }
-
-        if indexPath.section == 1 {
+        } else if indexPath.section == 1 {
             let vc = RemindersViewController(style: .insetGrouped)
             navigationController?.pushViewController(vc, animated: true)
         } else if indexPath.section == 2 {
@@ -216,7 +233,11 @@ class ProfileTableViewController: UITableViewController {
                 handleRestoreBackup()
             }
         } else if indexPath.section == 3 {
-            print("Selected privacy option: \(privacy[indexPath.row])")
+            // Legal section
+            handleLegalSelection(indexPath.row)
+        } else if indexPath.section == 4 {
+            // Delete Account
+            handleDeleteAccount()
         }
     }
 
@@ -227,7 +248,9 @@ class ProfileTableViewController: UITableViewController {
         case 2:
             return "Data & Backup"
         case 3:
-            return "Privacy"
+            return "Legal"
+        case 4:
+            return "Account"
         default:
             return nil
         }
@@ -248,7 +271,7 @@ class ProfileTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        guard section == 1 || section == 2 || section == 3,
+        guard section >= 1 && section <= 4,
               let header = view as? UITableViewHeaderFooterView else { return }
 
         header.textLabel?.font = UIFont.systemFont(ofSize: 13, weight: .regular)
@@ -268,7 +291,7 @@ class ProfileTableViewController: UITableViewController {
         switch section {
         case 0:
             return 8
-        case 1, 2, 3:
+        case 1, 2, 3, 4:
             return 38
         default:
             return 8
@@ -477,5 +500,148 @@ class ProfileTableViewController: UITableViewController {
     ///
     @objc private func backupStatusChanged() {
         loadBackupStatus()
+    }
+
+    // MARK: - Legal Methods
+
+    ///
+    /// Handles selection of a legal row (Privacy Policy or Terms of Service).
+    ///
+    /// Parameters:
+    ///   - row: The row index in the legal section
+    /// Returns: None
+    /// Throws: None
+    ///
+    /// Why this exists:
+    /// Presents placeholder screens for legal documents per Milestone 8A spec.
+    ///
+    private func handleLegalSelection(_ row: Int) {
+        let title = legal[row]
+        let vc = PlaceholderWebViewController()
+        vc.pageTitle = title
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    // MARK: - Account Deletion Methods
+
+    ///
+    /// Handles the Delete Account action with two-step confirmation.
+    ///
+    /// Parameters: None
+    /// Returns: None
+    /// Throws: None
+    ///
+    /// Why this exists:
+    /// Entry point for account deletion flow per Milestone 8A spec.
+    /// Shows two confirmations before triggering AccountDeletionManager.
+    ///
+    private func handleDeleteAccount() {
+        // First confirmation sheet
+        let firstAlert = UIAlertController(
+            title: "Delete Account",
+            message: """
+            This permanently deletes:
+            • your Cyster account
+            • all cloud backups
+            • all local health data
+            • your synced profile
+
+            This cannot be undone.
+            """,
+            preferredStyle: .actionSheet
+        )
+
+        firstAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        firstAlert.addAction(UIAlertAction(title: "Continue", style: .destructive) { [weak self] _ in
+            self?.showFinalDeleteConfirmation()
+        })
+
+        // For iPad support
+        if let popover = firstAlert.popoverPresentationController {
+            popover.sourceView = self.view
+            popover.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+
+        present(firstAlert, animated: true)
+    }
+
+    ///
+    /// Shows the final destructive confirmation before deletion.
+    ///
+    /// Parameters: None
+    /// Returns: None
+    /// Throws: None
+    ///
+    private func showFinalDeleteConfirmation() {
+        let finalAlert = UIAlertController(
+            title: "Delete Permanently?",
+            message: nil,
+            preferredStyle: .alert
+        )
+
+        finalAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        finalAlert.addAction(UIAlertAction(title: "Delete Account", style: .destructive) { [weak self] _ in
+            self?.performAccountDeletion()
+        })
+
+        present(finalAlert, animated: true)
+    }
+
+    ///
+    /// Performs the actual account deletion using AccountDeletionManager.
+    ///
+    /// Parameters: None
+    /// Returns: None
+    /// Throws: None
+    ///
+    @MainActor
+    private func performAccountDeletion() {
+        // Show loading indicator
+        let loadingAlert = UIAlertController(
+            title: "Deleting Account",
+            message: "Please wait while we delete your account and all data...",
+            preferredStyle: .alert
+        )
+
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.startAnimating()
+        loadingAlert.view.addSubview(indicator)
+
+        NSLayoutConstraint.activate([
+            indicator.centerXAnchor.constraint(equalTo: loadingAlert.view.centerXAnchor),
+            indicator.bottomAnchor.constraint(equalTo: loadingAlert.view.bottomAnchor, constant: -20)
+        ])
+
+        present(loadingAlert, animated: true)
+
+        Task {
+            do {
+                print("🗑 Starting account deletion...")
+                try await AccountDeletionManager.shared.deleteAccount(from: self)
+
+                // Dismiss loading (if still visible)
+                await MainActor.run {
+                    loadingAlert.dismiss(animated: true)
+                    print("✅ Account deletion completed successfully")
+                }
+            } catch {
+                // Dismiss loading and show error
+                await MainActor.run {
+                    loadingAlert.dismiss(animated: true) { [weak self] in
+                        print("❌ Account deletion failed: \(error.localizedDescription)")
+
+                        let errorAlert = UIAlertController(
+                            title: "Deletion Failed",
+                            message: error.localizedDescription,
+                            preferredStyle: .alert
+                        )
+                        errorAlert.addAction(UIAlertAction(title: "OK", style: .default))
+                        self?.present(errorAlert, animated: true)
+                    }
+                }
+            }
+        }
     }
 }
