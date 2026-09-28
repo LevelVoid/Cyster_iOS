@@ -6,7 +6,7 @@ struct Food: Codable, Identifiable {
     var image: String?
     var timeStamp: Date
     var servingSize: Double
-    var weight: Double? 
+    var weight: Double?
     var desc: String = ""
 
     var proteinContent: Double
@@ -20,24 +20,70 @@ struct Food: Codable, Identifiable {
 
     var ingredients: [Ingredient]? = nil
 
+    var confidence: Double? = nil
+
     var calories: Double {
-
-            if let customCalories = customCalories {
-                return customCalories
-            }
-
-            if let ingredients = ingredients {
-                let total = ingredients.reduce(0) { $0 + $1.calories! }
-                return total.rounded(toPlaces: 2)
-            }
-
-            let total = (proteinContent * 4) +
-                        (carbsContent * 4) +
-                        (fatsContent * 9)
-
+        if let customCalories = customCalories {
+            return customCalories
+        }
+        if let ingredients = ingredients {
+            let total = ingredients.reduce(0) { $0 + ($1.calories ?? 0) }
             return total.rounded(toPlaces: 2)
         }
+        let total = (proteinContent * 4) +
+                    (carbsContent * 4) +
+                    (fatsContent * 9)
+        return total.rounded(toPlaces: 2)
+    }
 
+    init(id: UUID = UUID(), name: String, image: String? = nil, timeStamp: Date = Date(),
+         servingSize: Double = 1.0, weight: Double? = nil, desc: String = "",
+         proteinContent: Double = 0, carbsContent: Double = 0, fatsContent: Double = 0,
+         fiberContent: Double = 0, customCalories: Double? = nil,
+         tags: [ImpactTags]? = nil, ingredients: [Ingredient]? = nil,
+         confidence: Double? = nil) {
+        self.id = id
+        self.name = name
+        self.image = image
+        self.timeStamp = timeStamp
+        self.servingSize = servingSize
+        self.weight = weight
+        self.desc = desc
+        self.proteinContent = proteinContent
+        self.carbsContent = carbsContent
+        self.fatsContent = fatsContent
+        self.fiberContent = fiberContent
+        self.customCalories = customCalories
+        self.tags = tags
+        self.ingredients = ingredients
+        self.confidence = confidence
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+
+        if let uuidString = try? c.decode(String.self, forKey: .id),
+           let parsed = UUID(uuidString: uuidString) {
+            id = parsed
+        } else {
+            id = (try? c.decode(UUID.self, forKey: .id)) ?? UUID()
+        }
+
+        name            = try c.decode(String.self, forKey: .name)
+        image           = try c.decodeIfPresent(String.self, forKey: .image)
+        timeStamp       = try c.decodeIfPresent(Date.self, forKey: .timeStamp) ?? Date()
+        servingSize     = try c.decodeIfPresent(Double.self, forKey: .servingSize) ?? 1.0
+        weight          = try c.decodeIfPresent(Double.self, forKey: .weight)
+        desc            = try c.decodeIfPresent(String.self, forKey: .desc) ?? ""
+        proteinContent  = try c.decodeIfPresent(Double.self, forKey: .proteinContent) ?? 0
+        carbsContent    = try c.decodeIfPresent(Double.self, forKey: .carbsContent) ?? 0
+        fatsContent     = try c.decodeIfPresent(Double.self, forKey: .fatsContent) ?? 0
+        fiberContent    = try c.decodeIfPresent(Double.self, forKey: .fiberContent) ?? 0
+        customCalories  = try c.decodeIfPresent(Double.self, forKey: .customCalories)
+        tags            = try c.decodeIfPresent([ImpactTags].self, forKey: .tags)
+        ingredients     = try c.decodeIfPresent([Ingredient].self, forKey: .ingredients)
+        confidence      = try c.decodeIfPresent(Double.self, forKey: .confidence)
+    }
 }
 
 struct OFFResponse: Codable, Sendable {

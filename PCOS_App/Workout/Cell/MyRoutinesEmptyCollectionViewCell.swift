@@ -4,6 +4,7 @@ class MyRoutinesEmptyCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak var containerView: UIView!
     @IBOutlet weak var messageLabel: UILabel!
+    @IBOutlet weak var addButton: UIButton!
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -13,6 +14,7 @@ class MyRoutinesEmptyCollectionViewCell: UICollectionViewCell {
         messageLabel.text = "Get started by creating a routine"
         messageLabel.textColor = .secondaryLabel
         messageLabel.textAlignment = .center
-
+        
+        addButton.isUserInteractionEnabled = false
     }
 }

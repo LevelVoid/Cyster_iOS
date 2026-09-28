@@ -1,8 +1,8 @@
 import Foundation
-import CoreData
+internal import CoreData
 
 @objc(CDSymptomLog)
-public class CDSymptomLog: NSManagedObject {
+class CDSymptomLog: NSManagedObject {
 
     func toSymptomItem() -> SymptomItem {
         SymptomItem(

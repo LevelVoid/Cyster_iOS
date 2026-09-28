@@ -1,4 +1,6 @@
 import UIKit
+import FirebaseAuth
+internal import CoreData
 
 class DOBViewController: UIViewController {
 
@@ -38,6 +40,18 @@ class DOBViewController: UIViewController {
         print("Date of Birth: \(dateString)")
 
         UserDefaults.standard.set(selectedDate, forKey: "userDOB")
+        if let uid = Auth.auth().currentUser?.uid,
+           let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            let context = appDelegate.viewContext
+            let request: NSFetchRequest<CDUser> = CDUser.fetchRequest()
+            request.predicate = NSPredicate(format: "firebaseUID == %@", uid)
+            request.fetchLimit = 1
+            if let user = try? context.fetch(request).first {
+                user.dateOfBirth = selectedDate
+                user.onboardingStep = 2
+                appDelegate.saveContext()
+            }
+        }
 
         let age = Calendar.current.dateComponents([.year], from: selectedDate, to: Date()).year ?? 0
         print("Age: \(age)")

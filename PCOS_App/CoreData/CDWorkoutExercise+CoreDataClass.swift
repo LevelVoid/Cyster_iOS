@@ -1,8 +1,8 @@
 import Foundation
-import CoreData
+internal import CoreData
 
 @objc(CDWorkoutExercise)
-public class CDWorkoutExercise: NSManagedObject {
+class CDWorkoutExercise: NSManagedObject {
 
     var sets: [ExerciseSet] {
         get {

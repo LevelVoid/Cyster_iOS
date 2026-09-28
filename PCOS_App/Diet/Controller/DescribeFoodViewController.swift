@@ -1,3 +1,13 @@
+//
+// DescribeFoodViewController.swift
+//
+// Purpose:
+// Allows users to log their meals by describing them in natural language.
+//
+// Why this exists:
+// Provides an AI-powered alternative to manual search and scanning for quick meal logging.
+//
+
 import UIKit
 
 class DescribeFoodViewController: UIViewController {
@@ -40,50 +50,19 @@ class DescribeFoodViewController: UIViewController {
         }
     }
 
+    /// Analyzes the user's meal description using AI and navigates to the add screen.
+    ///
+    /// Parameters:
+    ///   - description: The natural language text entered by the user.
+    /// Returns: Void
+    /// Throws: None (handles errors internally)
     private func analyzeMealWithFoundationModel(description: String) async {
-        let instructions = """
-            You are a professional nutritionist specializing in Indian and international foods.
-            When given a meal description, return ONLY a valid JSON object with NO extra text,
-            NO markdown, NO code blocks, NO explanation — just raw JSON.
-
-            The JSON must follow this exact structure:
-            {
-              "name": "meal name based on user input",
-              "calories": 500,
-              "servingSize": 1.0,
-              "unit": "serving",
-              "protein": 20.5,
-              "carbs": 60.0,
-              "fat": 15.0,
-              "desc": "brief description",
-              "ingredients": [
-                {
-                  "name": "ingredient name",
-                  "quantity": 100.0,
-                  "unit": "g",
-                  "protein": 5.0,
-                  "carbs": 20.0,
-                  "fats": 3.0,
-                  "fibre": 1.0
-                }
-              ]
-            }
-
-            Rules:
-            - All numeric values must be doubles or integers (no strings for numbers)
-            - ingredients array must have at least one item
-            - quantity is always in grams
-            - Return ONLY the JSON, nothing else
-            """
-
         do {
-            let responseText = try await AIBrain.shared.analyzeMealDescription(description: description, instructions: instructions)
-
-            print("DEBUG: AI Model response:\n\(responseText)")
+            let food = try await AIBrain.shared.analyzeMealDescription(description: description)
 
             await MainActor.run {
                 self.hideLoadingIndicator()
-                self.parseAndNavigate(json: responseText, originalInput: description)
+                self.parseAndNavigate(food: food, originalInput: description)
             }
 
         } catch {
@@ -95,81 +74,40 @@ class DescribeFoodViewController: UIViewController {
         }
     }
 
-    private func parseAndNavigate(json: String, originalInput: String) {
-        var cleaned = json.trimmingCharacters(in: .whitespacesAndNewlines)
-        if cleaned.hasPrefix("```json") {
-            cleaned = String(cleaned.dropFirst(7))
-        } else if cleaned.hasPrefix("```") {
-            cleaned = String(cleaned.dropFirst(3))
-        }
-        if cleaned.hasSuffix("```") {
-            cleaned = String(cleaned.dropLast(3))
-        }
-        cleaned = cleaned.trimmingCharacters(in: .whitespacesAndNewlines)
+    /// Parses the resulting Food object and navigates to the add screen.
+    ///
+    /// Parameters:
+    ///   - food: The parsed Food object from the AI model.
+    ///   - originalInput: The text input provided by the user.
+    /// Returns: Void
+    /// Throws: None
+    private func parseAndNavigate(food: Food, originalInput: String) {
+        let ingredients: [Ingredient] = food.ingredients ?? []
 
-        guard let data = cleaned.data(using: .utf8) else {
-            showAlert(message: "Could not process AI response. Please try again.")
+        guard !ingredients.isEmpty else {
+            showAlert(message: "No ingredients found in AI response. Please try again.")
             return
         }
 
-        do {
+        let foodItem = FoodItem(
+            id: Int.random(in: 100000...999999),
+            name: food.name,
+            calories: Int(food.calories),
+            image: "dietPlaceholder",
+            servingSize: food.servingSize,
+            unit: "g",
+            protein: food.proteinContent,
+            carbs: food.carbsContent,
+            fat: food.fatsContent,
+            fiber: food.fiberContent,
+            isSelected: false,
+            desc: food.desc,
+            ingredients: ingredients,
+            confidence: food.confidence
+        )
 
-            let decoded = try JSONDecoder().decode(AIFoodResponse.self, from: data)
-
-            let ingredients: [Ingredient] = decoded.ingredients.map { (raw: AIIngredient) -> Ingredient in
-                Ingredient(
-                    id: UUID(),
-                    name: raw.name,
-                    quantity: raw.quantity,
-                    weight: raw.quantity,
-                    unit: raw.unit,
-                    protein: raw.protein,
-                    carbs: raw.carbs,
-                    fats: raw.fats,
-                    fibre: raw.fibre,
-                    tags: [.none]
-                )
-            }
-
-            guard !ingredients.isEmpty else {
-                showAlert(message: "No ingredients found in AI response. Please try again.")
-                return
-            }
-
-            let normalizedUnit = decoded.unit.lowercased()
-            let normalizedServingSize: Double
-            switch normalizedUnit {
-            case "ml", "milliliter", "millilitre":
-                normalizedServingSize = 100   
-            case "piece", "pieces", "unit", "units", "pcs", "pc", "slice", "slices":
-                normalizedServingSize = 1     
-            default:
-                normalizedServingSize = 100   
-            }
-
-            let foodItem = FoodItem(
-                id: Int.random(in: 100000...999999),
-                name: decoded.name,
-                calories: decoded.calories,
-                image: "dietPlaceholder",
-                servingSize: normalizedServingSize,
-                unit: decoded.unit,
-                protein: decoded.protein,
-                carbs: decoded.carbs,
-                fat: decoded.fat,
-                isSelected: false,
-                desc: decoded.desc,
-                ingredients: ingredients
-            )
-
-            print("DEBUG: Parsed FoodItem - \(foodItem.name), \(ingredients.count) ingredients")
-            navigateToAdd(foodItem)
-
-        } catch {
-            print("ERROR: JSON parsing failed: \(error)")
-            print("DEBUG: Raw cleaned JSON:\n\(cleaned)")
-            showAlert(message: "Could not parse AI response. Please try again with a clearer description.")
-        }
+        print("DEBUG: Parsed FoodItem - \(foodItem.name), \(ingredients.count) ingredients")
+        navigateToAdd(foodItem)
     }
 
     private func navigateToAdd(_ foodItem: FoodItem) {

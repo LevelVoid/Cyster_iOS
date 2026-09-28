@@ -1,8 +1,8 @@
 import Foundation
-import CoreData
+internal import CoreData
 
 @objc(CDRoutine)
-public class CDRoutine: NSManagedObject {
+class CDRoutine: NSManagedObject {
 
     func toRoutine() -> Routine {
         let cdExercises = (exercises as? Set<CDRoutineExercise>)?

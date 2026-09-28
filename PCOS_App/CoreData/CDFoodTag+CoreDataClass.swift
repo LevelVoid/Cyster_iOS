@@ -1,8 +1,8 @@
 import Foundation
-import CoreData
+internal import CoreData
 
 @objc(CDFoodTag)
-public class CDFoodTag: NSManagedObject {
+class CDFoodTag: NSManagedObject {
 
     var impactTag: ImpactTags? {
         guard let name = tagName else { return nil }

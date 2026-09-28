@@ -16,6 +16,14 @@ class FoodScannerViewController: UIViewController {
     private var previewLayer: AVCaptureVideoPreviewLayer!
     private var photoOutput: AVCapturePhotoOutput!
     private var capturedImage: UIImage?
+    private var videoDataOutput: AVCaptureVideoDataOutput?
+    private var isSimulator: Bool {
+        #if targetEnvironment(simulator)
+        return true
+        #else
+        return false
+        #endif
+    }
 
     private var foodClassifier: VNCoreMLModel?
 
@@ -105,9 +113,17 @@ class FoodScannerViewController: UIViewController {
 
     private func setupCamera() {
         captureSession = AVCaptureSession()
-        captureSession.sessionPreset = .photo
+        captureSession.sessionPreset = .high
 
-        guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else {
+        // Get camera device
+        let camera: AVCaptureDevice?
+        if let backCamera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
+            camera = backCamera
+        } else {
+            camera = AVCaptureDevice.default(for: .video)
+        }
+
+        guard let camera = camera else {
             showError("Camera not available")
             return
         }
@@ -119,10 +135,23 @@ class FoodScannerViewController: UIViewController {
                 captureSession.addInput(input)
             }
 
-            photoOutput = AVCapturePhotoOutput()
+            // For simulator, use video data output instead of photo output
+            // AVCapturePhotoOutput queries device capabilities that RocketSim doesn't support
+            if isSimulator {
+                let videoOutput = AVCaptureVideoDataOutput()
+                videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "videoQueue"))
+                videoOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
 
-            if captureSession.canAddOutput(photoOutput) {
-                captureSession.addOutput(photoOutput)
+                if captureSession.canAddOutput(videoOutput) {
+                    captureSession.addOutput(videoOutput)
+                    self.videoDataOutput = videoOutput
+                }
+            } else {
+                photoOutput = AVCapturePhotoOutput()
+
+                if captureSession.canAddOutput(photoOutput) {
+                    captureSession.addOutput(photoOutput)
+                }
             }
 
             previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
@@ -171,14 +200,22 @@ class FoodScannerViewController: UIViewController {
         ])
     }
 
+    private var shouldCaptureNextFrame = false
+
     @objc private func captureButtonTapped() {
         captureButton.isEnabled = false
 
-        let settings = AVCapturePhotoSettings()
-        photoOutput.capturePhoto(with: settings, delegate: self)
-
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.impactOccurred()
+
+        if isSimulator {
+            // Signal to capture the next video frame
+            shouldCaptureNextFrame = true
+        } else {
+            // Capture photo on real device
+            let settings = AVCapturePhotoSettings()
+            photoOutput.capturePhoto(with: settings, delegate: self)
+        }
     }
 
     @objc private func cancelButtonTapped() {
@@ -186,215 +223,73 @@ class FoodScannerViewController: UIViewController {
     }
 
     private func classifyFood(image: UIImage) {
-        guard let ciImage = CIImage(image: image),
-              let model = foodClassifier else {
+        guard let data = image.jpegData(compressionQuality: 0.7) else {
             hideLoadingIndicator()
             showError("Could not process image")
             return
         }
 
-        let request = VNCoreMLRequest(model: model) { [weak self] request, error in
-            guard let self = self else { return }
-
-            if let error = error {
-                print("ERROR: Vision request failed: \(error)")
-                DispatchQueue.main.async {
-                    self.hideLoadingIndicator()
-                    self.showError("Food recognition failed")
-                }
-                return
-            }
-
-            guard let results = request.results as? [VNClassificationObservation],
-                  let topResult = results.first else {
-                DispatchQueue.main.async {
-                    self.hideLoadingIndicator()
-                    self.showError("Could not identify food")
-                }
-                return
-            }
-
-            let foodName = topResult.identifier
-            let confidence = topResult.confidence
-
-            print("DEBUG: Identified food: \(foodName) with confidence: \(confidence)")
-
-            if confidence > 0.3 {
-                Task {
-                    await self.analyzeFoodWithFoundationModel(foodName: foodName)
-                }
-            } else {
-                DispatchQueue.main.async {
-                    self.hideLoadingIndicator()
-                    self.showError("Food not recognized clearly. Please try again.")
-                }
-            }
-        }
-
-        let handler = VNImageRequestHandler(ciImage: ciImage, options: [:])
-
-        DispatchQueue.global(qos: .userInitiated).async {
+        Task {
             do {
-                try handler.perform([request])
-            } catch {
-                print("ERROR: Failed to perform classification: \(error)")
-                DispatchQueue.main.async {
+                let prompt = "Provide complete nutritional breakdown."
+                let food = try await AIBrain.shared.analyzeFoodImage(imageData: data, prompt: prompt)
+                
+                await MainActor.run {
                     self.hideLoadingIndicator()
-                    self.showError("Classification failed")
+                    self.parseAndNavigate(food: food, foodName: food.name)
+                }
+            } catch {
+                print("ERROR: Vision request failed: \(error)")
+                await MainActor.run {
+                    self.hideLoadingIndicator()
+                    self.showError("Classification failed: \(error.localizedDescription)")
                 }
             }
         }
     }
 
-    private func analyzeFoodWithFoundationModel(foodName: String) async {
-        let instructions = """
-            You are a professional nutritionist specializing in Indian and international foods.
-            When given a food name, return ONLY a valid JSON object with NO extra text,
-            NO markdown, NO code blocks, NO explanation — just raw JSON.
+    private func parseAndNavigate(food: Food, foodName: String) {
+        let ingredients: [Ingredient] = food.ingredients ?? []
 
-            The JSON must follow this exact structure:
-            {
-              "name": "food name",
-              "calories": 500,
-              "servingSize": 1.0,
-              "unit": "serving",
-              "protein": 20.5,
-              "carbs": 60.0,
-              "fat": 15.0,
-              "desc": "brief description",
-              "ingredients": [
-                {
-                  "name": "ingredient name",
-                  "quantity": 100.0,
-                  "unit": "g",
-                  "protein": 5.0,
-                  "carbs": 20.0,
-                  "fats": 3.0,
-                  "fibre": 1.0
-                }
-              ]
-            }
-
-            Rules:
-            - All numeric values must be doubles or integers (no strings for numbers)
-            - ingredients array must have at least one item
-            - quantity is the ACTUAL weight of that ingredient used in this recipe in grams
-              (e.g. 50g for one egg, 200g of flour, 30g of onion — realistic recipe amounts, NOT 1 or 2)
-            - protein, carbs, fats, fibre in ingredients are the macros PER 100G of that ingredient
-            - calories, protein, carbs, fat at the top level are for the WHOLE recipe (1 serving)
-            - Provide nutritional information for a standard serving size
-            - Return ONLY the JSON, nothing else
-            """
-
-        let prompt = "Provide complete nutritional breakdown for: \(foodName)"
-        do {
-            let responseText = try await AIBrain.shared.analyzeMealDescription(description: prompt, instructions: instructions)
-
-            print("DEBUG: AI Model response:\n\(responseText)")
-
-            await MainActor.run {
-                self.hideLoadingIndicator()
-                self.parseAndNavigate(json: responseText, foodName: foodName)
-            }
-
-        } catch {
-            print("ERROR: AI Model failed: \(error)")
-            await MainActor.run {
-                self.hideLoadingIndicator()
-                self.showError("AI analysis failed. Please try again.\n\nError: \(error.localizedDescription)")
-            }
-        }
-    }
-
-    private func parseAndNavigate(json: String, foodName: String) {
-        var cleaned = json.trimmingCharacters(in: .whitespacesAndNewlines)
-        if cleaned.hasPrefix("```json") {
-            cleaned = String(cleaned.dropFirst(7))
-        } else if cleaned.hasPrefix("```") {
-            cleaned = String(cleaned.dropFirst(3))
-        }
-        if cleaned.hasSuffix("```") {
-            cleaned = String(cleaned.dropLast(3))
-        }
-        cleaned = cleaned.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard let data = cleaned.data(using: .utf8) else {
-            showError("Could not process AI response. Please try again.")
+        guard !ingredients.isEmpty else {
+            showError("No ingredients found in AI response. Please try again.")
             return
         }
 
-        do {
-            let decoded = try JSONDecoder().decode(AIFoodResponse.self, from: data)
-
-            let ingredients: [Ingredient] = decoded.ingredients.map { (raw: AIIngredient) -> Ingredient in
-                Ingredient(
-                    id: UUID(),
-                    name: raw.name,
-                    quantity: raw.quantity,
-                    weight: raw.quantity,
-                    unit: raw.unit,
-                    protein: raw.protein,
-                    carbs: raw.carbs,
-                    fats: raw.fats,
-                    fibre: raw.fibre,
-                    tags: [.none]
-                )
+        var savedImageName = "dietPlaceholder"
+        if let capturedImage = self.capturedImage {
+            let fileName = "food_\(UUID().uuidString).jpg"
+            if let data = capturedImage.jpegData(compressionQuality: 0.7) {
+                let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+                let foodImagesDir = documentsDir.appendingPathComponent("FoodImages", isDirectory: true)
+                try? FileManager.default.createDirectory(at: foodImagesDir, withIntermediateDirectories: true)
+                let fileURL = foodImagesDir.appendingPathComponent(fileName)
+                try? data.write(to: fileURL)
+                savedImageName = fileName
+                print("DEBUG: Saved food image relative name: \(fileName)")
             }
-
-            guard !ingredients.isEmpty else {
-                showError("No ingredients found in AI response. Please try again.")
-                return
-            }
-
-            let normalizedUnit = decoded.unit.lowercased()
-            let normalizedServingSize: Double
-            switch normalizedUnit {
-            case "ml", "milliliter", "millilitre":
-                normalizedServingSize = 100   
-            case "piece", "pieces", "unit", "units", "pcs", "pc", "slice", "slices":
-                normalizedServingSize = 1     
-            default:
-                normalizedServingSize = 100   
-            }
-
-            var savedImageName = "dietPlaceholder"
-            if let capturedImage = self.capturedImage {
-                let fileName = "food_\(UUID().uuidString).jpg"
-                if let data = capturedImage.jpegData(compressionQuality: 0.7) {
-                    let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-                    let foodImagesDir = documentsDir.appendingPathComponent("FoodImages", isDirectory: true)
-                    try? FileManager.default.createDirectory(at: foodImagesDir, withIntermediateDirectories: true)
-                    let fileURL = foodImagesDir.appendingPathComponent(fileName)
-                    try? data.write(to: fileURL)
-                    savedImageName = fileName
-                    print("DEBUG: Saved food image relative name: \(fileName)")
-                }
-            }
-
-            let foodItem = FoodItem(
-                id: Int.random(in: 100000...999999),
-                name: decoded.name,
-                calories: decoded.calories,
-                image: savedImageName,
-                servingSize: normalizedServingSize,
-                unit: decoded.unit,
-                protein: decoded.protein,
-                carbs: decoded.carbs,
-                fat: decoded.fat,
-                isSelected: false,
-                desc: decoded.desc,
-                ingredients: ingredients
-            )
-
-            print("DEBUG: Parsed FoodItem - \(foodItem.name), \(ingredients.count) ingredients")
-
-            showFoodConfirmationAlert(foodItem: foodItem)
-
-        } catch {
-            print("ERROR: JSON parsing failed: \(error)")
-            print("DEBUG: Raw cleaned JSON:\n\(cleaned)")
-            showError("Could not parse AI response. Please try again.")
         }
+
+        let foodItem = FoodItem(
+            id: Int.random(in: 100000...999999),
+            name: food.name,
+            calories: Int(food.calories),
+            image: savedImageName,
+            servingSize: food.servingSize,
+            unit: "g",
+            protein: food.proteinContent,
+            carbs: food.carbsContent,
+            fat: food.fatsContent,
+            fiber: food.fiberContent,
+            isSelected: false,
+            desc: food.desc,
+            ingredients: ingredients,
+            confidence: food.confidence
+        )
+
+        print("DEBUG: Parsed FoodItem - \(foodItem.name), \(ingredients.count) ingredients")
+
+        showFoodConfirmationAlert(foodItem: foodItem)
     }
 
     private func showFoodConfirmationAlert(foodItem: FoodItem) {
@@ -513,6 +408,42 @@ class FoodScannerViewController: UIViewController {
         })
 
         present(alert, animated: true)
+    }
+}
+
+// MARK: - Video Data Output Delegate (for Simulator)
+extension FoodScannerViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        guard shouldCaptureNextFrame else { return }
+        shouldCaptureNextFrame = false
+
+        // Convert CMSampleBuffer to UIImage
+        guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            DispatchQueue.main.async { [weak self] in
+                self?.showError("Could not process captured frame")
+                self?.captureButton.isEnabled = true
+            }
+            return
+        }
+
+        let ciImage = CIImage(cvPixelBuffer: imageBuffer)
+        let context = CIContext()
+        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else {
+            DispatchQueue.main.async { [weak self] in
+                self?.showError("Could not process captured frame")
+                self?.captureButton.isEnabled = true
+            }
+            return
+        }
+
+        let image = UIImage(cgImage: cgImage)
+        self.capturedImage = image
+
+        DispatchQueue.main.async { [weak self] in
+            print("DEBUG: Frame captured successfully in simulator mode")
+            self?.showLoadingIndicator(message: "Identifying food...")
+            self?.classifyFood(image: image)
+        }
     }
 }
 

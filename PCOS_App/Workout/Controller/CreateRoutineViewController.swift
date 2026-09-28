@@ -212,16 +212,10 @@ class CreateRoutineViewController: UIViewController {
                 WalkthroughCongratsView.present(
                     in: window,
                     title: "Step 3 Complete!",
-                    body: "Great job creating your custom routine. Now, let's quickly set your activity preference.",
-                    continueTitle: "Set Activity Type"
+                    body: "Great job creating your custom routine. Now, let's look at premade workouts.",
+                    continueTitle: "Continue"
                 ) { [weak self] in
-                    let storyboard = UIStoryboard(name: "Onboarding", bundle: nil)
-                    if let movementTypeVC = storyboard.instantiateViewController(withIdentifier: "MovementTypeViewController") as? MovementTypeViewController {
-                        movementTypeVC.modalPresentationStyle = .overFullScreen
-                        self?.present(movementTypeVC, animated: true) {
-                            WalkthroughManager.shared.advanceToStep(.workoutActivityLevel)
-                        }
-                    }
+                    WalkthroughManager.shared.advanceToStep(.workoutPremade)
                 }
             } else {
                 let alert = UIAlertController(

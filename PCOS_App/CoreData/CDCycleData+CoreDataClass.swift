@@ -1,8 +1,8 @@
 import Foundation
-import CoreData
+internal import CoreData
 
 @objc(CDCycleData)
-public class CDCycleData: NSManagedObject {
+class CDCycleData: NSManagedObject {
 
     var isComplete: Bool {
         endDate != nil

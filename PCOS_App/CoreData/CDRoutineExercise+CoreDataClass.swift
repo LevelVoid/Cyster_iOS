@@ -1,8 +1,8 @@
 import Foundation
-import CoreData
+internal import CoreData
 
 @objc(CDRoutineExercise)
-public class CDRoutineExercise: NSManagedObject {
+class CDRoutineExercise: NSManagedObject {
 
     var exercise: Exercise? {
         get {

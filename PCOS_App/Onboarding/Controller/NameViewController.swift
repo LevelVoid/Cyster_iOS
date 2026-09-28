@@ -1,4 +1,6 @@
 import UIKit
+import FirebaseAuth
+internal import CoreData
 
 class NameViewController: UIViewController, UITextFieldDelegate {
 
@@ -43,6 +45,18 @@ class NameViewController: UIViewController, UITextFieldDelegate {
         let name = nameField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         guard !name.isEmpty else { return }
         UserDefaults.standard.set(name, forKey: "userName")
+        if let uid = Auth.auth().currentUser?.uid,
+           let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            let context = appDelegate.viewContext
+            let request: NSFetchRequest<CDUser> = CDUser.fetchRequest()
+            request.predicate = NSPredicate(format: "firebaseUID == %@", uid)
+            request.fetchLimit = 1
+            if let user = try? context.fetch(request).first {
+                user.name = name
+                user.onboardingStep = 1
+                appDelegate.saveContext()
+            }
+        }
         performSegue(withIdentifier: "showDOB", sender: nil)
     }
 }

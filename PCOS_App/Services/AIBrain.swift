@@ -1,3 +1,14 @@
+//
+// AIBrain.swift
+//
+// Purpose:
+// Orchestrates AI requests across available inference engines.
+//
+// Why this exists:
+// Serves as the single entry point for all AI capabilities (Chat, JSON extraction, Vision),
+// seamlessly routing to the optimal provider (on-device or cloud).
+//
+
 import Foundation
 import FoundationModels
 
@@ -7,15 +18,31 @@ final class AIBrain {
     static let shared = AIBrain()
     private init() {}
 
+    /// Returns the current on-device model availability.
+    var appleIntelligenceStatus: SystemLanguageModel.Availability {
+        SystemLanguageModel.default.availability
+    }
+
     private var foundationModelsAvailable: Bool {
-        if case .available = SystemLanguageModel.default.availability { return true }
+        if case .available = appleIntelligenceStatus { return true }
         return false
+    }
+
+    /// Maps the current unavailability reason to an `AIBrainError`.
+    private var unavailabilityError: AIBrainError {
+        switch appleIntelligenceStatus {
+        case .unavailable(.appleIntelligenceNotEnabled):
+            return .appleIntelligenceNotEnabled
+        case .unavailable(.modelNotReady):
+            return .modelNotReady
+        default:
+            return .deviceNotEligible
+        }
     }
 
     private let cloudEngine = CloudModelEngine()
 
     private var chatSession: LanguageModelSession?
-
     private var cloudChatHistory: [[String: String]] = []
 
     private var systemPrompt: String {
@@ -127,7 +154,88 @@ final class AIBrain {
 
         """
     }
+    
+    // MARK: - Routing logic
 
+    enum ProviderRoute {
+        case chat(prompt: String, systemPrompt: String)
+        case json(context: String, schema: String, instructions: String)
+        case unstructured(prompt: String, systemPrompt: String)
+    }
+    
+    ///
+    /// Routes the request to the optimal available provider.
+    ///
+    /// Why this exists:
+    /// Centralizes provider selection and failover so new endpoints or models
+    /// can be added without modifying feature logic. Internally wraps every
+    /// result in `AIResponse<T>` to capture provider metadata (name, model,
+    /// timestamp, latency), then returns `.content` so callers receive the
+    /// same `T` they always have — no ViewController changes required.
+    ///
+    /// - Parameters:
+    ///   - route: The details of the request (used for logging/future routing decisions).
+    ///   - foundationBlock: Execution block for the on-device Foundation Models engine.
+    ///   - cloudBlock: Execution block for the Cloud (Groq / future Vertex) engine.
+    /// - Returns: The unwrapped content of type `T`.
+    /// - Throws: `AIBrainError` describing which provider failed and why.
+    private func routeRequest<T>(
+        _ route: ProviderRoute,
+        foundationBlock: () async throws -> T,
+        cloudBlock: () async throws -> T
+    ) async throws -> T {
+        let start = Date()
+
+        if foundationModelsAvailable {
+            do {
+                let content = try await foundationBlock()
+                let latency = Int(Date().timeIntervalSince(start) * 1000)
+                let response = AIResponse(
+                    content: content,
+                    providerMetadata: ProviderMetadata(
+                        name: "AppleFoundationModels",
+                        modelId: "SystemLanguageModel.default"
+                    ),
+                    timestamp: Date(),
+                    latencyMS: latency
+                )
+                return response.content
+            } catch {
+                print("⚠️ FoundationModels execution failed (\(error)), falling back to Cloud")
+            }
+        }
+
+        do {
+            let content = try await cloudBlock()
+            let latency = Int(Date().timeIntervalSince(start) * 1000)
+            let response = AIResponse(
+                content: content,
+                providerMetadata: ProviderMetadata(
+                    name: "CloudModelEngine",
+                    modelId: cloudEngine.currentModelId
+                ),
+                timestamp: Date(),
+                latencyMS: latency
+            )
+            return response.content
+        } catch {
+            // Always propagate the real cloud error so callers see the actual failure reason.
+            // Only surface unavailabilityError if neither provider was attempted at all.
+            throw error
+        }
+    }
+
+    ///
+    /// Processes a chat message.
+    ///
+    /// Why this exists:
+    /// Public API for sending messages to the chatbot. Includes casual greeting logic
+    /// and ensures context is only injected for health questions.
+    ///
+    /// - Parameters:
+    ///   - text: The user input.
+    ///   - context: The background health data.
+    /// - Returns: A string containing the assistant's reply.
     func sendChatMessage(_ text: String, context: String) async throws -> String {
 
         let trimmed    = text.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
@@ -166,41 +274,35 @@ final class AIBrain {
             User's question: \(text)
             """
         }
-
-        if foundationModelsAvailable {
-
-            if chatSession == nil {
-                chatSession = LanguageModelSession(
-                    tools: [PCOSResearchTool(), IndianFoodTool()],
-                    instructions: systemPrompt
-                )
-            }
-            do {
-                let response = try await chatSession!.respond(to: contextualMessage)
+        
+        return try await routeRequest(
+            .chat(prompt: contextualMessage, systemPrompt: systemPrompt),
+            foundationBlock: {
+                if self.chatSession == nil {
+                    self.chatSession = LanguageModelSession(
+                        tools: [PCOSResearchTool(), IndianFoodTool()],
+                        instructions: self.systemPrompt
+                    )
+                }
+                let response = try await self.chatSession!.respond(to: contextualMessage)
                 return response.content
-            } catch {
-                print("⚠️ FoundationModels chat failed (\(error)), falling back to Cloud")
-                chatSession = nil
-
+            },
+            cloudBlock: {
+                // Remove the system prompt from the history we pass, as it goes in its own param
+                let historyToPass = self.cloudChatHistory.filter { $0["role"] != "system" }
+                
+                self.cloudChatHistory.append(["role": "user", "content": contextualMessage])
+                let currentHistory = self.cloudChatHistory.filter { $0["role"] != "system" }
+                
+                let reply = try await self.cloudEngine.generateChat(
+                    prompt: contextualMessage,
+                    systemPrompt: self.systemPrompt,
+                    history: historyToPass
+                )
+                self.cloudChatHistory.append(["role": "assistant", "content": reply])
+                return reply
             }
-        }
-
-        if cloudChatHistory.isEmpty {
-            cloudChatHistory = [["role": "system", "content": systemPrompt]]
-        }
-        cloudChatHistory.append(["role": "user", "content": contextualMessage])
-        do {
-            let reply = try await cloudEngine.request(
-                messages: cloudChatHistory,
-                maxTokens: 1024,
-                temperature: 0.75
-            )
-            cloudChatHistory.append(["role": "assistant", "content": reply])
-            return reply
-        } catch {
-            cloudChatHistory.removeLast()
-            throw error
-        }
+        )
     }
 
     private var mealInstructions: String { """
@@ -240,27 +342,33 @@ final class AIBrain {
         SUB OBSERVATION LINE: Output any short phrase. It will be overridden by the app.
         """ }
 
+    ///
+    /// Generates personalized Indian meal recommendations.
+    ///
+    /// Why this exists:
+    /// Provides specific, context-aware meal suggestions based on the user's daily gaps.
+    ///
+    /// - Parameter context: The background health and daily logs.
+    /// - Returns: A `MealRecommendationOutput` object.
     func generateMealRecommendations(context: String) async throws -> MealRecommendationOutput {
-        if foundationModelsAvailable {
-            do {
-
-                let session = LanguageModelSession(instructions: mealInstructions)
+        return try await routeRequest(
+            .json(context: context, schema: "MealRecommendationOutput", instructions: mealInstructions),
+            foundationBlock: {
+                let session = LanguageModelSession(instructions: self.mealInstructions)
                 let response = try await session.respond(
                     to: context,
                     generating: MealRecommendationOutput.self
                 )
                 return response.content
-            } catch {
-                print("⚠️ FoundationModels meal generation failed (\(error)), falling back to Cloud")
-
+            },
+            cloudBlock: {
+                let jsonString = try await self.cloudEngine.generateMealRecommendationsJSON(
+                    context: context,
+                    instructions: self.mealInstructions
+                )
+                return try self.parseMealJSON(jsonString)
             }
-        }
-
-        let jsonString = try await cloudEngine.generateMealRecommendationsJSON(
-            context: context,
-            instructions: mealInstructions
         )
-        return try parseMealJSON(jsonString)
     }
 
     private func parseMealJSON(_ raw: String) throws -> MealRecommendationOutput {
@@ -307,44 +415,70 @@ final class AIBrain {
     private var goalsInstructions: String { """
         Generate exactly 2 personalized daily health goals for a woman with PCOS.
 
-        PRIORITY ORDER — pick the top 2 that apply, in this order:
-        1. Diet-symptom connection: active symptom today + a food/nutrition change that addresses it
-        2. Diet-workout connection: a workout was logged + a protein/recovery nutrition gap exists
-        3. Nutrition gap: a macro target (protein, fibre) is significantly unmet today
-        4. Workout gap: no strength training or movement logged in the past 7 days
+        STEP 1 — Extract ONLY these values from context:
+        - Today's protein (grams logged)
+        - Protein target (grams)
+        - Workout minutes logged today
+        - Strength sessions this past week
+        - Active symptoms today
+        - Cycle phase
+        - Recent week: total workouts, avg protein
+
+        STEP 2 — Identify ONE health opportunity. Prefer:
+        1. Symptom relief (active symptom today + food/nutrition change that addresses it)
+        2. Workout recovery (workout logged + protein/recovery gap)
+        3. Nutrition gap (protein or fibre significantly unmet today)
+        4. Workout gap (no strength training or movement in past 7 days)
+
+        STEP 3 — Choose the smallest meaningful improvement.
+        - Never increase today's challenge by more than 30% vs recent behavior.
+        - 0 workouts last week → suggest 10 min walk (not a full session).
+        - 1 workout last week → suggest 20 min strength.
+        - 4+ workouts last week → suggest full session.
+        - Protein always low → add one protein-rich meal, not a massive jump.
+
+        STEP 4 — Generate exactly 2 missions using ONLY the extracted numbers.
 
         HARD RULES:
-        - CRITICAL: Use ONLY the exact numbers from the context. Read protein target from the "Targets: ...PXg..." line. Never invent or assume typical values.
-        - Never generate a sleep goal — sleep is excluded entirely
-        - ONLY generate goals based on data explicitly present in the context.
-        - If "Symptoms today: none" — do not generate any symptom-based goal.
-        - Never invent or assume symptoms, food logs, or patterns not in the context.
-        - Never suggest weight loss or calorie restriction if BMI is Underweight or Normal.
-        - Both goals must be different categories (nutrition / exercise / symptoms).
-        - Sentences must be under 12 words. No vague goals — name a specific food or action.
-        - icon: Use a valid SF Symbol name (e.g. "fork.knife", "figure.walk", "heart.fill").
+        - Use ONLY the exact numbers from the context. Never invent values.
+        - Never generate a sleep goal.
+        - Never suggest weight loss if BMI is Underweight or Normal.
+        - Both goals must be in different categories (nutrition / exercise / symptoms).
+        - Sentences must be under 12 words. Name a specific food or action.
+        - For protein goals: targetType="protein", completionRule="current>=target".
+        - For workout goals: targetType="workoutMinutes", completionRule="current>=target".
+        - For step goals: targetType="steps", completionRule="current>=target".
+        - For symptom goals: targetType="symptom", completionRule="any".
+        - For manual goals: targetType="manual", completionRule="manual".
         """ }
 
+    ///
+    /// Generates daily health goals for the user.
+    ///
+    /// Why this exists:
+    /// Gives actionable daily goals to improve health based on context.
+    ///
+    /// - Parameter context: The background health and daily logs.
+    /// - Returns: A `DailyGoalsOutput` object.
     func generateDailyGoals(context: String) async throws -> DailyGoalsOutput {
-        if foundationModelsAvailable {
-            do {
-                let session = LanguageModelSession(instructions: goalsInstructions)
+        return try await routeRequest(
+            .json(context: context, schema: "DailyGoalsOutput", instructions: goalsInstructions),
+            foundationBlock: {
+                let session = LanguageModelSession(instructions: self.goalsInstructions)
                 let response = try await session.respond(
                     to: context,
                     generating: DailyGoalsOutput.self
                 )
                 return response.content
-            } catch {
-                print("⚠️ FoundationModels goals generation failed (\(error)), falling back to Cloud")
-
+            },
+            cloudBlock: {
+                let jsonString = try await self.cloudEngine.generateDailyGoalsJSON(
+                    context: context,
+                    instructions: self.goalsInstructions
+                )
+                return try self.parseGoalsJSON(jsonString)
             }
-        }
-
-        let jsonString = try await cloudEngine.generateDailyGoalsJSON(
-            context: context,
-            instructions: goalsInstructions
         )
-        return try parseGoalsJSON(jsonString)
     }
 
     private func parseGoalsJSON(_ raw: String) throws -> DailyGoalsOutput {
@@ -364,37 +498,87 @@ final class AIBrain {
                 let sentence = g["sentence"]  as? String,
                 let category = g["category"] as? String
             else { return nil }
-            return GoalCard(title: title, sentence: sentence, category: category)
+            // New fields with safe defaults for cloud backward-compat
+            let id                 = g["id"] as? String ?? category + "_today"
+            let targetType         = g["targetType"] as? String ?? "manual"
+            let targetValue        = g["targetValue"] as? Double ?? 0
+            let currentValue       = g["currentValue"] as? Double ?? 0
+            let completionRule     = g["completionRule"] as? String ?? "manual"
+            let celebrationMessage = g["celebrationMessage"] as? String ?? "Goal completed!"
+            return GoalCard(
+                id: id,
+                title: title,
+                sentence: sentence,
+                category: category,
+                targetType: targetType,
+                targetValue: targetValue,
+                currentValue: currentValue,
+                completionRule: completionRule,
+                celebrationMessage: celebrationMessage
+            )
         }
         return DailyGoalsOutput(goals: goals)
     }
 
+    ///
+    /// Generates an unstructured response to a prompt.
+    ///
+    /// Why this exists:
+    /// Useful for single-turn AI tasks.
+    ///
+    /// - Parameters:
+    ///   - prompt: The user's input.
+    ///   - instructions: The system instructions.
+    /// - Returns: The AI response string.
     func generateResponse(prompt: String, instructions: String) async throws -> String {
-        if foundationModelsAvailable {
-            do {
+        return try await routeRequest(
+            .unstructured(prompt: prompt, systemPrompt: instructions),
+            foundationBlock: {
                 let session = LanguageModelSession(instructions: instructions)
                 let response = try await session.respond(to: prompt)
                 return response.content
-            } catch {
-                print("⚠️ FoundationModels generation failed (\(error)), falling back to Cloud")
+            },
+            cloudBlock: {
+                return try await self.cloudEngine.generate(prompt: prompt, systemPrompt: instructions)
             }
-        }
-        return try await cloudEngine.generate(prompt: prompt, systemPrompt: instructions)
+        )
     }
 
-    func analyzeMealDescription(description: String, instructions: String) async throws -> String {
-        if foundationModelsAvailable {
-            do {
-                let session = LanguageModelSession(instructions: instructions)
-                let response = try await session.respond(to: description)
-                return response.content
-            } catch {
-                print("⚠️ FoundationModels meal parsing failed (\(error)), falling back to Cloud")
-
+    /// Analyzes a meal description via AI.
+    ///
+    /// Parameters:
+    ///   - description: The text description of the meal.
+    /// Returns: The parsed Food object.
+    /// Throws: AIBrainError if parsing or network fails.
+    func analyzeMealDescription(description: String) async throws -> Food {
+        return try await routeRequest(
+            .unstructured(prompt: description, systemPrompt: "Analyze food text"),
+            foundationBlock: {
+                throw AIBrainError.cloudGenerationFailed
+            },
+            cloudBlock: {
+                return try await self.cloudEngine.analyzeText(text: description)
             }
-        }
-
-        return try await cloudEngine.generate(prompt: description, systemPrompt: instructions)
+        )
+    }
+    
+    /// Analyzes a food image via AI.
+    ///
+    /// Parameters:
+    ///   - imageData: The JPEG representation of the captured image.
+    ///   - prompt: The prompt to pass to the vision model.
+    /// Returns: The parsed Food object.
+    /// Throws: AIBrainError if parsing or network fails.
+    func analyzeFoodImage(imageData: Data, prompt: String) async throws -> Food {
+        return try await routeRequest(
+            .unstructured(prompt: prompt, systemPrompt: "Analyze food image"),
+            foundationBlock: {
+                throw AIBrainError.cloudGenerationFailed
+            },
+            cloudBlock: {
+                return try await self.cloudEngine.generateVision(imageData: imageData, prompt: prompt)
+            }
+        )
     }
 
     func resetChat() {
@@ -408,15 +592,52 @@ final class AIBrain {
 }
 
 enum AIBrainError: LocalizedError {
-    case modelUnavailable
+    // Foundation
     case parsingFailed
+    case deviceNotEligible
+    case appleIntelligenceNotEnabled
+    case modelNotReady
+    
+    // Cloud
+    case networkUnavailable
+    case requestTimedOut
+    case unauthorized
+    case invalidCloudResponse
+    case cloudGenerationFailed
+    
+    // Tools
+    case toolExecutionFailed
+    
+    // Orchestration
+    case noAvailableProvider
+    case unknown(Error)
 
     var errorDescription: String? {
         switch self {
-        case .modelUnavailable:
-            return "No AI engine is available. Please check your internet connection or enable Apple Intelligence."
         case .parsingFailed:
             return "Failed to parse the AI response. Please try again."
+        case .deviceNotEligible:
+            return "Your device doesn't support Apple Intelligence. Please check your internet connection to use the cloud fallback."
+        case .appleIntelligenceNotEnabled:
+            return "Enable Apple Intelligence in Settings to unlock offline AI features, or check your internet connection."
+        case .modelNotReady:
+            return "AI features are warming up and downloading. This only takes a moment. Please try again shortly."
+        case .networkUnavailable:
+            return "Network is unavailable. Please check your connection."
+        case .requestTimedOut:
+            return "The request timed out. Please try again."
+        case .unauthorized:
+            return "Authentication failed. Please check your credentials."
+        case .invalidCloudResponse:
+            return "Received an invalid response from the cloud."
+        case .cloudGenerationFailed:
+            return "Cloud generation failed. Please try again."
+        case .toolExecutionFailed:
+            return "A tool failed to execute properly."
+        case .noAvailableProvider:
+            return "No AI provider is currently available."
+        case .unknown(let error):
+            return "An unknown error occurred: \(error.localizedDescription)"
         }
     }
 }

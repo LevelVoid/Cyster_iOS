@@ -1,5 +1,5 @@
 import Foundation
-import CoreData
+internal import CoreData
 import UIKit
 
 struct FoodLogDataStore {
@@ -50,6 +50,11 @@ struct FoodLogDataStore {
         upsertCustomFood(from: food)
 
         saveContext()
+        // Milestone 6A: Notify DailyGoalManager that a meal was logged
+        // so protein goals can be auto-evaluated without an AI call.
+        Task { @MainActor in
+            DailyGoalManager.shared.evaluateCompletion(for: .mealLogged)
+        }
         print("CDFoodLog saved: \(food.name) with \((cdFood.foodTags as? Set<CDFoodTag>)?.count ?? 0) tags")
     }
 
@@ -111,6 +116,11 @@ struct FoodLogDataStore {
         }
 
         saveContext()
+        // Milestone 6A: Notify DailyGoalManager that food macros changed
+        // so protein goals can be re-evaluated without an AI call.
+        Task { @MainActor in
+            DailyGoalManager.shared.evaluateCompletion(for: .mealLogged)
+        }
         print("CDFoodLog updated: \(food.name)")
     }
 

@@ -89,50 +89,11 @@ final class WalkthroughManager {
     }
 
     func continueAbortedFlow() {
-        let hasDietType = UserDefaults.standard.string(forKey: "userDietType") != nil
-        let hasActivityType = UserDefaults.standard.string(forKey: "userWorkoutType") != nil
-
-        if !hasDietType {
-            forcePresentDietType()
-        } else if !hasActivityType {
-            forcePresentActivityType()
-        } else {
-            completeWalkthrough()
-            showAllSetCongrats()
-        }
+        completeWalkthrough()
+        showAllSetCongrats()
     }
 
-    private func forcePresentDietType() {
-        guard let window = UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .flatMap({ $0.windows })
-            .first(where: { $0.isKeyWindow }) else { return }
 
-        let storyboard = UIStoryboard(name: "Onboarding", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "DietTypeViewController")
-        vc.modalPresentationStyle = .pageSheet
-        var topVC = window.rootViewController
-        while let presented = topVC?.presentedViewController {
-            topVC = presented
-        }
-        topVC?.present(vc, animated: true)
-    }
-
-    private func forcePresentActivityType() {
-        guard let window = UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .flatMap({ $0.windows })
-            .first(where: { $0.isKeyWindow }) else { return }
-
-        let storyboard = UIStoryboard(name: "Onboarding", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "MovementTypeViewController")
-        vc.modalPresentationStyle = .pageSheet
-        var topVC = window.rootViewController
-        while let presented = topVC?.presentedViewController {
-            topVC = presented
-        }
-        topVC?.present(vc, animated: true)
-    }
 
     private func showAllSetCongrats() {
         guard let window = UIApplication.shared.connectedScenes

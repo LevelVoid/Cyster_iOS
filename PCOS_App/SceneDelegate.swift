@@ -17,6 +17,18 @@ class MainTabBarController: UITabBarController {
         forceBottomTabBar()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        HealthKitManager.shared.requestAuthorization { granted, error in
+            if let error = error {
+                print("HealthKit auth error: \(error.localizedDescription)")
+            } else {
+                print("HealthKit authorization granted: \(granted)")
+            }
+        }
+    }
+    
     private func forceBottomTabBar() {
         if #available(iOS 18.0, *) {
             self.mode = .tabBar
@@ -33,28 +45,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
 
         let window = UIWindow(windowScene: windowScene)
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-
-        if OnboardingManager.shared.hasSeenOnboarding || UserDefaults.standard.bool(forKey: "hasCompletedOnboarding") {
-            let tabBarVC = storyboard.instantiateViewController(withIdentifier: "MainTabBarController") as! UITabBarController
-            if #available(iOS 18.0, *) {
-                tabBarVC.mode = .tabBar
-            }
-            window.rootViewController = tabBarVC
-        } else {
-
-            let onboardingStoryboard = UIStoryboard(name: "Onboarding", bundle: nil)
-            if let onboardingVC = onboardingStoryboard.instantiateInitialViewController() {
-                window.rootViewController = onboardingVC
-            } else {
-                let tabBarVC = storyboard.instantiateViewController(withIdentifier: "MainTabBarController") as! UITabBarController
-                if #available(iOS 18.0, *) {
-                    tabBarVC.mode = .tabBar
-                }
-                window.rootViewController = tabBarVC
-            }
-        }
-
+        window.rootViewController = LaunchCoordinator.shared.resolveRootViewController()
         self.window = window
         window.makeKeyAndVisible()
     }

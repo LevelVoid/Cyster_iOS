@@ -1,4 +1,6 @@
 import UIKit
+import FirebaseAuth
+internal import CoreData
 
 class PCOSPhenotypeViewController: UIViewController {
 
@@ -24,6 +26,8 @@ class PCOSPhenotypeViewController: UIViewController {
 
     private func setupUI() {
         continueButton.tintColor = UIColor(hex: "FE7A96")
+        continueButton.isUserInteractionEnabled = false
+        continueButton.alpha = 0.5
 
         let allCards = [typeACard, typeBCard, typeCCard, typeDCard, dontKnowCard]
         for card in allCards {
@@ -91,6 +95,9 @@ class PCOSPhenotypeViewController: UIViewController {
         tappedView.layer.borderWidth = 3
         tappedView.layer.borderColor = UIColor(hex: "#fe7a96").cgColor
         tappedView.backgroundColor = UIColor(hex: "fe7a96").withAlphaComponent(0.1)
+
+        continueButton.isUserInteractionEnabled = true
+        continueButton.alpha = 1.0
     }
 
     @IBAction func continueButtonTapped(_ sender: UIButton) {
@@ -128,26 +135,23 @@ class PCOSPhenotypeViewController: UIViewController {
 
         ProfileService.shared.setProfile(to: profile)
 
-        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+        UserDefaults.standard.set(true, forKey: "hasCompletedWalkthrough")
 
-        UserDefaults.standard.set(false, forKey: "hasCompletedWalkthrough")
+        if let uid = Auth.auth().currentUser?.uid,
+           let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            let context = appDelegate.viewContext
+            let request: NSFetchRequest<CDUser> = CDUser.fetchRequest()
+            request.predicate = NSPredicate(format: "firebaseUID == %@", uid)
+            request.fetchLimit = 1
+            if let user = try? context.fetch(request).first {
+                user.onboardingCompleted = true
+                user.onboardingStep = 8
+                appDelegate.saveContext()
+            }
+        }
 
         print("Complete profile saved! Height: \(heightInCm)cm, Weight: \(weightInKg)kg, Phenotype: \(pcosPhenotype)")
-
-        let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
-        let tabBarVC = mainStoryboard.instantiateViewController(withIdentifier: "MainTabBarController") as! UITabBarController
-
-        if #available(iOS 18.0, *) {
-            tabBarVC.mode = .tabBar
-        }
-
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first {
-            window.rootViewController = tabBarVC
-            window.makeKeyAndVisible()
-
-            UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
-        }
+        LaunchCoordinator.shared.navigateToHome(animated: true)
     }
 }
 

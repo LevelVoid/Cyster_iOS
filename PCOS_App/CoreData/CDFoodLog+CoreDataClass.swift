@@ -1,8 +1,8 @@
 import Foundation
-import CoreData
+internal import CoreData
 
 @objc(CDFoodLog)
-public class CDFoodLog: NSManagedObject {
+class CDFoodLog: NSManagedObject {
 
     var ingredients: [Ingredient]? {
         get {

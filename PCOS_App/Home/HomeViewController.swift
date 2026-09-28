@@ -1,5 +1,6 @@
 import UIKit
 import TipKit
+internal import CoreData
 
 class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollectionViewCellDelegate, LogPeriodCalendarDelegate, SleepCardCollectionViewCellDelegate, UIPopoverPresentationControllerDelegate {
 
@@ -24,8 +25,7 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
         private var walkthroughSymptomLogged: Bool = false
         private var pulseLayer: CALayer?
 
-        private var goalsOutput: DailyGoalsOutput?
-        private var isGoalsLoading = false
+        private var goalsState: DailyGoalsState = .idle
 
         override func viewDidLoad() {
             super.viewDidLoad()
@@ -71,6 +71,14 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             aboutPCOSArticles = AboutPCOSDataStore.shared.fetchSections()
             setupChatbotButton()
             WalkthroughManager.shared.addDelegate(self)
+
+            // Observe goal progress updates from DailyGoalManager
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(onGoalProgressUpdated),
+                name: .dailyGoalProgressUpdated,
+                object: nil
+            )
         }
 
         override func viewWillAppear(_ animated: Bool) {
@@ -112,29 +120,53 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
 
         override func viewDidAppear(_ animated: Bool) {
             super.viewDidAppear(animated)
+            
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                let context = appDelegate.viewContext
+                let request: NSFetchRequest<CDUser> = CDUser.fetchRequest()
+                if let users = try? context.fetch(request) {
+                    print("--- CORE DATA USERS ---")
+                    for user in users {
+                        print("User: name=\(user.name ?? "nil"), uid=\(user.firebaseUID ?? "nil"), step=\(user.onboardingStep), completed=\(user.onboardingCompleted)")
+                        print("  DOB: \(user.dateOfBirth?.description ?? "nil")")
+                        print("  Height: \(user.heightCm) cm, Weight: \(user.weightKg) kg")
+                        print("  Diet: \(user.dietPattern ?? "nil"), Activity: \(user.activityLevel ?? "nil")")
+                    }
+                    print("-----------------------")
+                }
+            }
+            
             handleWalkthroughOnAppear()
         }
 
+        ///
+        /// Loads today's goals via DailyGoalManager.
+        ///
+        /// Why this exists:
+        /// Moves all goal lifecycle logic out of HomeViewController into DailyGoalManager.
+        /// HomeViewController simply reads the current state and updates the UI.
+        /// If goals were already generated today, they load from CoreData instantly — no AI call.
+        ///
         private func loadDailyGoals() {
-            guard !isGoalsLoading else { return }
-            isGoalsLoading = true
-
             Task {
-                let context = await SharedContextEngine.shared.buildContext()
-                do {
-                    let output = try await AIBrain.shared.generateDailyGoals(context: context)
-                    await MainActor.run {
-                        self.goalsOutput = output
-                        self.isGoalsLoading = false
-                        self.collectionView.reloadSections(IndexSet(integer: 3))
-                    }
-                } catch {
-                    await MainActor.run {
-                        self.isGoalsLoading = false
-                        print("Goals error: \(error)")
-                    }
+                await DailyGoalManager.shared.loadTodayGoals()
+                await MainActor.run {
+                    self.goalsState = DailyGoalManager.shared.state
+                    self.collectionView.reloadSections(IndexSet(integer: 3))
                 }
             }
+        }
+
+        ///
+        /// Receives goal progress notifications from DailyGoalManager.
+        ///
+        /// Why this exists:
+        /// When a meal or workout is logged, DailyGoalManager posts `.dailyGoalProgressUpdated`
+        /// so the UI refreshes automatically without HomeViewController polling or managing timers.
+        ///
+        @objc private func onGoalProgressUpdated() {
+            goalsState = DailyGoalManager.shared.state
+            collectionView.reloadSections(IndexSet(integer: 3))
         }
 
         override func viewWillDisappear(_ animated: Bool) {
@@ -173,6 +205,8 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
                 DailyActivityDataStore.shared.mergeHealthKitData(
                     steps: hkSteps, healthKitDailyCalories: Int(hkCalories))
                 self.collectionView.reloadSections(IndexSet(integer: 2))
+                // Milestone 6A: Notify DailyGoalManager that steps were updated
+                DailyGoalManager.shared.evaluateCompletion(for: .stepsUpdated)
             }
         }
 
@@ -513,6 +547,9 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
             SymptomDataStore.saveSymptoms(symptoms, for: Date())
             DispatchQueue.main.async { self.collectionView.reloadData() }
 
+            // Milestone 6A: Notify DailyGoalManager that a symptom was logged
+            DailyGoalManager.shared.evaluateCompletion(for: .symptomLogged)
+
             if WalkthroughManager.shared.isActive && WalkthroughManager.shared.currentStep == .logSymptom {
                 self.walkthroughSymptomLogged = true   
                 self.isShowingWalkthroughCongrats = true
@@ -704,9 +741,12 @@ class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollecti
                     withReuseIdentifier: DailyGoalsCollectionViewCell.identifier,
                     for: indexPath
                 ) as! DailyGoalsCollectionViewCell
-                if let output = goalsOutput {
+                switch goalsState {
+                case .loaded(let output):
                     cell.configure(with: output)
-                } else {
+                case .loading, .idle:
+                    cell.showLoadingState()
+                case .failed:
                     cell.showLoadingState()
                 }
                 return cell

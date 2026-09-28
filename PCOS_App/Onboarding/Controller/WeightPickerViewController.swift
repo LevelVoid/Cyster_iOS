@@ -1,4 +1,6 @@
 import UIKit
+import FirebaseAuth
+internal import CoreData
 
 class WeightPickerViewController: UIViewController {
 
@@ -89,6 +91,20 @@ class WeightPickerViewController: UIViewController {
 
             UserDefaults.standard.set(currentValue, forKey: "userWeight")
             UserDefaults.standard.set(isMetric, forKey: "weightIsMetric")
+
+            if let uid = Auth.auth().currentUser?.uid,
+               let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                let context = appDelegate.viewContext
+                let request: NSFetchRequest<CDUser> = CDUser.fetchRequest()
+                request.predicate = NSPredicate(format: "firebaseUID == %@", uid)
+                request.fetchLimit = 1
+                if let user = try? context.fetch(request).first {
+                    // Assuming weight is stored in kg
+                    user.weightKg = isMetric ? Double(currentValue) : Double(currentValue) / 2.20462
+                    user.onboardingStep = 4
+                    appDelegate.saveContext()
+                }
+            }
 
             print("Weight saved: \(currentValue) \(isMetric ? "kg" : "lbs")")
             performSegue(withIdentifier: "showPhenotype", sender: nil)

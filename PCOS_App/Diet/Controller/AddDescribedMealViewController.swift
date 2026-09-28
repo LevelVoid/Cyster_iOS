@@ -78,7 +78,12 @@ class AddDescribedMealViewController: UIViewController {
 
         var totalProtein = 0.0, totalCarbs = 0.0, totalFat = 0.0, totalFibre = 0.0
         for ingredient in ingredients {
-            let factor = ingredient.quantity / 100.0
+            let factor: Double
+            if let w = ingredient.weight, w > 0, ingredient.quantity < w {
+                factor = 1.0
+            } else {
+                factor = ingredient.quantity / 100.0
+            }
             totalProtein += ingredient.protein * factor
             totalCarbs   += ingredient.carbs   * factor
             totalFat     += ingredient.fats    * factor
@@ -139,14 +144,15 @@ class AddDescribedMealViewController: UIViewController {
         let tagLine = tagLabels.isEmpty ? "No specific health tags available." : "Verified tags: \(tagLabels)."
 
         let instructions = """
-        You are a supportive, realistic nutrition coach for a woman with PCOS.
-        Reply in exactly 1-2 short, simple sentences.
+        You are a honest, PCOS-specialist nutrition coach for an Indian woman.
+        Reply in exactly 1-2 short, simple sentences. Be warm but truthful.
 
         Evaluation Rules:
-        1. IF the meal already contains a good source of protein or fiber (e.g., veggies, beans, dal, eggs, meat), PRAISE her and DO NOT suggest any improvements. Be fully satisfied with the meal.
-        2. IF it is a "cheat meal" or highly unbalanced (e.g., mostly sweets or refined carbs with no protein/fiber), be warm and guilt-free (e.g., "It's totally okay to enjoy your favorite treats!"). Suggest ONE simple addition (like pairing with nuts or taking a short walk) to help balance blood sugar.
-
-        CRITICAL: Never nitpick. If she already added healthy elements, just appreciate it.
+        1. Assess the meal honestly for PCOS impact: glycemic load, insulin response, protein adequacy, and fibre content.
+        2. If the meal is genuinely balanced (adequate protein ≥15g, good fibre, low-medium GI), acknowledge it briefly.
+        3. If the meal is high-GI, low-protein, low-fibre, or insulin-spiking, say so clearly and suggest ONE specific improvement (e.g., "Add a bowl of raita or salad to increase fibre and lower the glycemic impact.").
+        4. For indulgent meals, be kind but honest about the impact — suggest a concrete pairing or swap.
+        5. Never give generic praise like "fantastic choice" unless the meal truly earns it by PCOS standards.
         """
 
         let prompt = """
@@ -181,7 +187,12 @@ class AddDescribedMealViewController: UIViewController {
 
         var totalProtein = 0.0, totalCarbs = 0.0, totalFat = 0.0, totalFibre = 0.0
         for ingredient in ingredients {
-            let factor = ingredient.quantity / 100.0
+            let factor: Double
+            if let w = ingredient.weight, w > 0, ingredient.quantity < w {
+                factor = 1.0
+            } else {
+                factor = ingredient.quantity / 100.0
+            }
             totalProtein += ingredient.protein * factor
             totalCarbs   += ingredient.carbs   * factor
             totalFat     += ingredient.fats    * factor
@@ -403,7 +414,12 @@ class AddDescribedMealViewController: UIViewController {
         var totalFat: Double = 0
 
         for ingredient in ingredients {
-            let factor = ingredient.quantity / 100.0
+            let factor: Double
+            if let w = ingredient.weight, w > 0, ingredient.quantity < w {
+                factor = 1.0
+            } else {
+                factor = ingredient.quantity / 100.0
+            }
             totalProtein += ingredient.protein * factor
             totalCarbs += ingredient.carbs * factor
             totalFat += ingredient.fats * factor
@@ -491,7 +507,12 @@ class AddDescribedMealViewController: UIViewController {
              totalFat = f.fatsContent * servingMultiplier
         } else {
             for ingredient in ingredients {
-                let factor = ingredient.quantity / 100.0
+                let factor: Double
+                if let w = ingredient.weight, w > 0, ingredient.quantity < w {
+                    factor = 1.0
+                } else {
+                    factor = ingredient.quantity / 100.0
+                }
                 totalProtein += ingredient.protein * factor
                 totalCarbs += ingredient.carbs * factor
                 totalFat += ingredient.fats * factor
@@ -796,59 +817,26 @@ extension AddDescribedMealViewController: UITableViewDelegate, UITableViewDataSo
     }
 
     private func fetchIngredientNutritionalData(description: String) async {
-        let instructions = """
-        You are a professional nutritionist specializing in Indian and international foods.
-        When given an ingredient and its amount, return ONLY a valid JSON object with NO extra text,
-        NO markdown, NO code blocks, NO explanation — just raw JSON.
-
-        The JSON must follow this exact structure representing a SINGLE ingredient:
-        {
-          "name": "ingredient name",
-          "quantity": 50.0,
-          "unit": "g",
-          "protein": 5.0,
-          "carbs": 20.0,
-          "fats": 3.0,
-          "fibre": 1.0
-        }
-
-        Rules:
-        - All numeric values must be doubles or integers (no strings for numbers)
-        - quantity is the ACTUAL weight of the ingredient described in grams (e.g. if user says 1 boiled egg, quantity is ~50.0)
-        - protein, carbs, fats, fibre are the macros PER 100G of that ingredient.
-        - Return ONLY the JSON, nothing else.
-        """
-
         await MainActor.run { self.showLoadingIndicator(message: "Analyzing ingredient...") }
 
         do {
-            let responseText = try await AIBrain.shared.analyzeMealDescription(description: description, instructions: instructions)
-            print("DEBUG: Ingredient AI Model response:\n\(responseText)")
+            let food = try await AIBrain.shared.analyzeMealDescription(description: description)
+            print("DEBUG: Ingredient AI Model response: \(food.name)")
 
-            var cleaned = responseText.trimmingCharacters(in: .whitespacesAndNewlines)
-            if cleaned.hasPrefix("```json") {
-                cleaned = String(cleaned.dropFirst(7))
-            } else if cleaned.hasPrefix("```") {
-                cleaned = String(cleaned.dropFirst(3))
+            guard let firstIngredient = food.ingredients?.first else {
+                throw URLError(.badServerResponse)
             }
-            if cleaned.hasSuffix("```") {
-                cleaned = String(cleaned.dropLast(3))
-            }
-            cleaned = cleaned.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            guard let data = cleaned.data(using: .utf8) else { throw URLError(.badServerResponse) }
-            let rawIngredient = try JSONDecoder().decode(AIIngredient.self, from: data)
 
             let newIngredient = Ingredient(
                 id: UUID(),
-                name: rawIngredient.name,
-                quantity: rawIngredient.quantity,
-                weight: rawIngredient.quantity,
-                unit: rawIngredient.unit,
-                protein: rawIngredient.protein,
-                carbs: rawIngredient.carbs,
-                fats: rawIngredient.fats,
-                fibre: rawIngredient.fibre,
+                name: firstIngredient.name,
+                quantity: firstIngredient.quantity,
+                weight: firstIngredient.quantity,
+                unit: firstIngredient.unit ?? "g",
+                protein: firstIngredient.protein,
+                carbs: firstIngredient.carbs,
+                fats: firstIngredient.fats,
+                fibre: firstIngredient.fibre,
                 tags: [.none]
             )
 
@@ -858,7 +846,7 @@ extension AddDescribedMealViewController: UITableViewDelegate, UITableViewDataSo
                 self.tableView.reloadData()
                 self.updateHeaderWithCurrentIngredients()
                 self.updateWeightLabel()
-
+                
                 Task { await self.fetchMealInsight() }
             }
 

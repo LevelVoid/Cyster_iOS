@@ -1,5 +1,5 @@
 import Foundation
-import CoreData
+internal import CoreData
 import UIKit
 
 final class CompletedWorkoutsDataStore {
@@ -42,6 +42,11 @@ final class CompletedWorkoutsDataStore {
         if ctx.hasChanges {
             do {
                 try ctx.save()
+                // Milestone 6A: Notify DailyGoalManager that a workout was completed
+                // so it can auto-evaluate goal completion without an AI call.
+                Task { @MainActor in
+                    DailyGoalManager.shared.evaluateCompletion(for: .workoutCompleted)
+                }
             } catch {
                 print(" Failed to save CDCompletedWorkout: \(error)")
             }

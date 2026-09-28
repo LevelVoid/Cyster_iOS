@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-import CoreData
+internal import CoreData
 
 class SleepDataStore {
 

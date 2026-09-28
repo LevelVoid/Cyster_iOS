@@ -57,4 +57,36 @@ enum ImpactTags: String, Codable, CaseIterable {
     case gasForming
     case gutFriendly
     case none
+
+    private static let backendAliases: [String: ImpactTags] = [
+        "low-gi": .lowGlycemic,
+        "high-gi": .highGlycemic,
+        "medium-gi": .mediumGlycemic,
+        "anti-inflammatory": .antiInflammatory,
+        "high-protein": .highProtein,
+        "high-fiber": .highFibre,
+        "high-fibre": .highFibre,
+        "low-fiber": .lowFibre,
+        "low-fibre": .lowFibre,
+        "whole-grain": .wholeFood,
+        "whole-food": .wholeFood,
+        "probiotic": .gutFriendly,
+        "gut-friendly": .gutFriendly,
+        "healthy-fats": .healthyFats,
+        "low-carb": .lowCarb,
+        "high-carb": .highCarb,
+        "processed": .processed,
+        "pcos-friendly": .pcosFriendly,
+    ]
+
+    init(from decoder: Decoder) throws {
+        let value = try decoder.singleValueContainer().decode(String.self)
+        if let tag = ImpactTags(rawValue: value) {
+            self = tag
+        } else if let tag = ImpactTags.backendAliases[value] {
+            self = tag
+        } else {
+            self = .none
+        }
+    }
 }

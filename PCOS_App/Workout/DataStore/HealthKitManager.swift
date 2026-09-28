@@ -14,12 +14,14 @@ final class HealthKitManager {
         if let activeCal = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) { types.insert(activeCal) }
         if let hr = HKObjectType.quantityType(forIdentifier: .heartRate) { types.insert(hr) }
         if let sleep = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) { types.insert(sleep) }
+        if let period = HKObjectType.categoryType(forIdentifier: .menstrualFlow) { types.insert(period) }
         return types
     }()
 
     private let writeTypes: Set<HKSampleType> = {
         var types = Set<HKSampleType>()
         if let activeCal = HKSampleType.quantityType(forIdentifier: .activeEnergyBurned) { types.insert(activeCal) }
+        if let period = HKSampleType.categoryType(forIdentifier: .menstrualFlow) { types.insert(period) }
         return types
     }()
 

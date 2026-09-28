@@ -13,7 +13,12 @@ struct Ingredient: Codable, Identifiable {
     var tags: [ImpactTags]
 
     var calories: Double? {
-        let factor = quantity / 100.0
+        let factor: Double
+        if let w = weight, w > 0, quantity < w {
+            factor = 1.0
+        } else {
+            factor = quantity / 100.0
+        }
         return ((protein * 4) + (carbs * 4) + (fats * 9)) * factor
     }
 
