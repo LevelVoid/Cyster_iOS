@@ -47,7 +47,145 @@ final class LaunchCoordinator {
         if hasCompletedOnboarding() {
             navigateToHome(animated: true)
         } else {
-            navigateToNameViewController(from: viewController)
+            // Check if this is a fresh install with a backup available
+            checkAndOfferRestore(from: viewController)
+        }
+    }
+    
+    // MARK: - Backup Restore on Fresh Install
+    
+    ///
+    /// Checks if a backup exists and offers to restore it before onboarding.
+    ///
+    /// Parameters:
+    ///   - viewController: The view controller to present alerts from
+    /// Returns: None
+    /// Throws: None
+    ///
+    /// Why this exists:
+    /// When a user reinstalls the app or logs in from a new device, we should
+    /// offer to restore their backup before they go through onboarding again.
+    ///
+    private func checkAndOfferRestore(from viewController: UIViewController) {
+        Task { @MainActor in
+            do {
+                let backupExists = try await BackupManager.shared.checkBackupExists()
+                
+                if backupExists {
+                    // Show restore prompt
+                    let alert = UIAlertController(
+                        title: "Backup Found",
+                        message: "We found a backup of your data. Would you like to restore it?",
+                        preferredStyle: .alert
+                    )
+                    
+                    alert.addAction(UIAlertAction(title: "Restore", style: .default) { [weak self, weak viewController] _ in
+                        guard let self = self, let viewController = viewController else { return }
+                        self.performRestoreAndNavigate(from: viewController)
+                    })
+                    
+                    alert.addAction(UIAlertAction(title: "Start Fresh", style: .cancel) { [weak self, weak viewController] _ in
+                        guard let self = self, let viewController = viewController else { return }
+                        self.navigateToNameViewController(from: viewController)
+                    })
+                    
+                    viewController.present(alert, animated: true)
+                } else {
+                    // No backup, proceed to onboarding
+                    navigateToNameViewController(from: viewController)
+                }
+            } catch {
+                // If check fails, just proceed to onboarding
+                print("LaunchCoordinator — backup check failed: \(error)")
+                navigateToNameViewController(from: viewController)
+            }
+        }
+    }
+    
+    ///
+    /// Performs the backup restore and navigates to home on success.
+    ///
+    /// Parameters:
+    ///   - viewController: The view controller to present alerts from
+    /// Returns: None
+    /// Throws: None
+    ///
+    private func performRestoreAndNavigate(from viewController: UIViewController) {
+        // Show loading indicator
+        let loadingAlert = UIAlertController(
+            title: "Restoring Backup",
+            message: "Please wait while we restore your data...",
+            preferredStyle: .alert
+        )
+        
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.startAnimating()
+        
+        loadingAlert.view.addSubview(indicator)
+        NSLayoutConstraint.activate([
+            indicator.centerXAnchor.constraint(equalTo: loadingAlert.view.centerXAnchor),
+            indicator.bottomAnchor.constraint(equalTo: loadingAlert.view.bottomAnchor, constant: -20)
+        ])
+        
+        viewController.present(loadingAlert, animated: true)
+        
+        Task { @MainActor in
+            do {
+                try await BackupManager.shared.restoreBackup()
+                
+                // Update user onboarding status to completed
+                if let uid = Auth.auth().currentUser?.uid,
+                   let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                    let context = appDelegate.viewContext
+                    let request: NSFetchRequest<CDUser> = CDUser.fetchRequest()
+                    request.predicate = NSPredicate(format: "firebaseUID == %@", uid)
+                    request.fetchLimit = 1
+                    
+                    if let cdUser = try? context.fetch(request).first {
+                        cdUser.onboardingCompleted = true
+                        try? context.save()
+                    }
+                }
+                
+                loadingAlert.dismiss(animated: true) { [weak self] in
+                    guard let self = self else { return }
+                    
+                    let successAlert = UIAlertController(
+                        title: "Restore Complete",
+                        message: "Your data has been restored successfully!",
+                        preferredStyle: .alert
+                    )
+                    
+                    successAlert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+                        self?.navigateToHome(animated: true)
+                    })
+                    
+                    viewController.present(successAlert, animated: true)
+                }
+            } catch {
+                loadingAlert.dismiss(animated: true) { [weak self, weak viewController] in
+                    guard let self = self, let viewController = viewController else { return }
+                    
+                    let errorAlert = UIAlertController(
+                        title: "Restore Failed",
+                        message: error.localizedDescription,
+                        preferredStyle: .alert
+                    )
+                    
+                    errorAlert.addAction(UIAlertAction(title: "Try Again", style: .default) { [weak self, weak viewController] _ in
+                        guard let self = self, let viewController = viewController else { return }
+                        self.performRestoreAndNavigate(from: viewController)
+                    })
+                    
+                    errorAlert.addAction(UIAlertAction(title: "Start Fresh", style: .cancel) { [weak self, weak viewController] _ in
+                        guard let self = self, let viewController = viewController else { return }
+                        self.navigateToNameViewController(from: viewController)
+                    })
+                    
+                    viewController.present(errorAlert, animated: true)
+                }
+            }
         }
     }
 
