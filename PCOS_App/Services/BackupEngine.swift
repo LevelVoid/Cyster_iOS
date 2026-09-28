@@ -65,7 +65,7 @@ final class BackupEngine {
 
     private var pendingChanges: [UUID: PendingChange] = [:]
     private let userDefaultsKey = "pendingChangesData"
-    private let gatewayEndpoint = "https://backup-api-1024644064258.us-central1.run.app"
+    private let gatewayEndpoint = "<backup>"
     private let timeout: TimeInterval = 60.0
 
     private(set) var isUploading = false
