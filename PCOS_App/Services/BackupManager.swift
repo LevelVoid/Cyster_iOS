@@ -10,7 +10,7 @@
 //
 import UIKit
 import Foundation
-import CoreData
+internal import CoreData
 import FirebaseAuth
 
 /// Notification posted when backup status changes.

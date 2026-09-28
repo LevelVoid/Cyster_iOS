@@ -1,6 +1,6 @@
 import UIKit
 import HealthKit
-import CoreData
+internal import CoreData
 import TipKit
 import FirebaseCore
 import RevenueCat
@@ -71,6 +71,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         print("📂 Core Data path: \(NSPersistentContainer.defaultDirectoryURL())")
         _ = SymptomDataStore.shared
+
+        // 3. Start observing Core Data changes for backup
+        Task { @MainActor in
+            CoreDataBackupObserver.shared.startObserving()
+        }
 
         ChatPersistenceManager.shared.deleteOldMessages()
         if #available(iOS 17.0, *) {

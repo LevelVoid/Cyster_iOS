@@ -10,7 +10,7 @@
 //
 
 import Foundation
-import CoreData
+internal import CoreData
 
 @MainActor
 final class SharedContextEngine {

@@ -1,8 +1,8 @@
 import Foundation
-import CoreData
+internal import CoreData
 
 @objc(CDChatMessage)
-public class CDChatMessage: NSManagedObject {
+class CDChatMessage: NSManagedObject {
 
     func toChatMessage() -> ChatMessage {
         return ChatMessage(

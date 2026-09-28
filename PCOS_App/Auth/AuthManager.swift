@@ -5,7 +5,7 @@ import GoogleSignIn
 import AuthenticationServices
 import CryptoKit
 import RevenueCat
-import CoreData
+internal import CoreData
 
 // MARK: - AuthResult
 
@@ -120,56 +120,23 @@ final class AuthManager: NSObject {
                 
                 let refreshToken = user.refreshToken ?? ""
                 let uid = user.uid
-                
+
                 // Persist to Keychain
                 KeychainHelper.save(key: .firebaseUID, value: uid)
                 KeychainHelper.save(key: .firebaseIDToken, value: idToken)
                 KeychainHelper.save(key: .refreshToken, value: refreshToken)
-                
-                // Bootstrap CDUser
-                DispatchQueue.main.async {
-                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                        let context = appDelegate.viewContext
-                        let request: NSFetchRequest<CDUser> = CDUser.fetchRequest()
-                        request.predicate = NSPredicate(format: "firebaseUID == %@", uid)
-                        request.fetchLimit = 1
-                        
-                        context.perform {
-                            let cdUser: CDUser
-                            if let existing = try? context.fetch(request).first {
-                                cdUser = existing
-                            } else {
-                                cdUser = CDUser(context: context)
-                                cdUser.id = UUID()
-                                cdUser.firebaseUID = uid
-                                cdUser.createdAt = Date()
-                                cdUser.name = ""
-                                cdUser.activityLevel = ""
-                                cdUser.dietPattern = ""
-                                cdUser.onboardingStep = 0
-                            }
-                            
-                            cdUser.email = user.email
-                            let providerID = user.providerData.first?.providerID ?? "unknown"
-                            cdUser.authProvider = providerID.contains("google") ? "google" : "apple"
-                            
-                            appDelegate.saveContext()
-                            
-                            // Initialize RevenueCat identity
-                            Purchases.shared.logIn(uid) { _, _, error in
-                                if let error = error {
-                                    print("⚠️ RevenueCat logIn error: \(error.localizedDescription)")
-                                }
-                            }
-                            
-                            // Fire delegate AFTER CDUser is saved so onboarding VCs can safely fetch it
-                            DispatchQueue.main.async {
-                                let result = AuthResult(uid: uid, idToken: idToken, refreshToken: refreshToken)
-                                self?.delegate?.authManagerDidAuthenticate(result: result)
-                            }
-                        } // end context.perform
-                    } // end if let appDelegate
-                } // end DispatchQueue.main.async
+
+                // Initialize RevenueCat identity
+                Purchases.shared.logIn(uid) { _, _, error in
+                    if let error = error {
+                        print("⚠️ RevenueCat logIn error: \(error.localizedDescription)")
+                    }
+                }
+
+                // Fire delegate immediately after authentication
+                // LaunchCoordinator will handle CDUser creation/restore logic
+                let result = AuthResult(uid: uid, idToken: idToken, refreshToken: refreshToken)
+                self?.delegate?.authManagerDidAuthenticate(result: result)
             } // end user.getIDToken
         } // end Auth.auth().signIn
     } // end signInToFirebase

@@ -10,7 +10,7 @@
 //
 
 import Foundation
-import CoreData
+internal import CoreData
 import CryptoKit
 
 /// Posted when meal recommendations are updated (either from cache or fresh generation).

@@ -1,6 +1,6 @@
 import UIKit
 import TipKit
-import CoreData
+internal import CoreData
 
 class HomeViewController: UIViewController, DataPassDelegate, HomeHeaderCollectionViewCellDelegate, LogPeriodCalendarDelegate, SleepCardCollectionViewCellDelegate, UIPopoverPresentationControllerDelegate {
 

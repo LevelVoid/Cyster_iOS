@@ -8,10 +8,10 @@
 // CoreData model for aggregating all daily health and activity data in one place.
 //
 import Foundation
-import CoreData
+internal import CoreData
 
 @objc(CDDailyContext)
-public class CDDailyContext: NSManagedObject {
+class CDDailyContext: NSManagedObject {
 
     var totalCalories: Int {
         if healthKitCalories > 0 {

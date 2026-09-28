@@ -283,16 +283,16 @@ class ProfileTableViewController: UITableViewController {
     }
     
     // MARK: - Backup Methods
-    
+
     ///
-    /// Loads the last backup date from Core Data.
+    /// Loads the last backup date from BackupEngine.
     ///
     /// Parameters: None
     /// Returns: None
     /// Throws: None
     ///
     private func loadBackupStatus() {
-        lastBackupDate = BackupManager.shared.getLastBackupDate()
+        lastBackupDate = BackupEngine.shared.getLastBackupDate()
         tableView.reloadSections(IndexSet(integer: 2), with: .none)
     }
     
@@ -323,7 +323,7 @@ class ProfileTableViewController: UITableViewController {
     }
     
     ///
-    /// Performs the actual backup operation.
+    /// Performs the actual backup operation using BackupEngine.
     ///
     /// Parameters: None
     /// Returns: None
@@ -333,15 +333,15 @@ class ProfileTableViewController: UITableViewController {
     private func performBackup() {
         isBackingUp = true
         tableView.reloadRows(at: [IndexPath(row: 0, section: 2)], with: .none)
-        
+
         Task {
             do {
-                try await BackupManager.shared.createBackup()
-                
+                try await BackupEngine.shared.forceUpload()
+
                 await MainActor.run {
                     isBackingUp = false
                     loadBackupStatus()
-                    
+
                     let alert = UIAlertController(
                         title: "Backup Complete",
                         message: "Your data has been safely backed up to the cloud.",
@@ -354,7 +354,7 @@ class ProfileTableViewController: UITableViewController {
                 await MainActor.run {
                     isBackingUp = false
                     tableView.reloadRows(at: [IndexPath(row: 0, section: 2)], with: .none)
-                    
+
                     let alert = UIAlertController(
                         title: "Backup Failed",
                         message: error.localizedDescription,
@@ -368,7 +368,7 @@ class ProfileTableViewController: UITableViewController {
     }
     
     ///
-    /// Handles the Restore Backup action.
+    /// Handles the Restore Backup action using RestoreManager.
     ///
     /// Parameters: None
     /// Returns: None
@@ -377,12 +377,12 @@ class ProfileTableViewController: UITableViewController {
     @MainActor
     private func handleRestoreBackup() {
         guard !isRestoring else { return }
-        
+
         // Check if backup exists first
         Task {
             do {
-                let exists = try await BackupManager.shared.checkBackupExists()
-                
+                let exists = try await RestoreManager.shared.checkBackupExists()
+
                 await MainActor.run {
                     if !exists {
                         let alert = UIAlertController(
@@ -394,19 +394,19 @@ class ProfileTableViewController: UITableViewController {
                         present(alert, animated: true)
                         return
                     }
-                    
+
                     // Confirm restore action
                     let alert = UIAlertController(
                         title: "Restore Backup",
                         message: "This will restore your data from your last backup. Your current data will be merged with the backup.",
                         preferredStyle: .alert
                     )
-                    
+
                     alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
                     alert.addAction(UIAlertAction(title: "Restore", style: .default) { [weak self] _ in
                         self?.performRestore()
                     })
-                    
+
                     present(alert, animated: true)
                 }
             } catch {
@@ -424,7 +424,7 @@ class ProfileTableViewController: UITableViewController {
     }
     
     ///
-    /// Performs the actual restore operation.
+    /// Performs the actual restore operation using RestoreManager.
     ///
     /// Parameters: None
     /// Returns: None
@@ -434,15 +434,15 @@ class ProfileTableViewController: UITableViewController {
     private func performRestore() {
         isRestoring = true
         tableView.reloadRows(at: [IndexPath(row: 1, section: 2)], with: .none)
-        
+
         Task {
             do {
-                try await BackupManager.shared.restoreBackup()
-                
+                _ = try await RestoreManager.shared.restoreIfAvailable()
+
                 await MainActor.run {
                     isRestoring = false
                     tableView.reloadRows(at: [IndexPath(row: 1, section: 2)], with: .none)
-                    
+
                     let alert = UIAlertController(
                         title: "Restore Complete",
                         message: "Your data has been restored successfully. Please restart the app to see your restored data.",
@@ -455,7 +455,7 @@ class ProfileTableViewController: UITableViewController {
                 await MainActor.run {
                     isRestoring = false
                     tableView.reloadRows(at: [IndexPath(row: 1, section: 2)], with: .none)
-                    
+
                     let alert = UIAlertController(
                         title: "Restore Failed",
                         message: error.localizedDescription,

@@ -1,6 +1,6 @@
 import UIKit
 import FirebaseAuth
-import CoreData
+internal import CoreData
 
 class NameViewController: UIViewController, UITextFieldDelegate {
 

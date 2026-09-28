@@ -1,8 +1,8 @@
 import Foundation
-import CoreData
+internal import CoreData
 
 @objc(CDUser)
-public class CDUser: NSManagedObject {
+class CDUser: NSManagedObject {
 
     var calculatedBMI: Double {
         let heightInMeters = heightCm / 100

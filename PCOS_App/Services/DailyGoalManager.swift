@@ -13,7 +13,7 @@
 //
 
 import Foundation
-import CoreData
+internal import CoreData
 
 /// The observation posted when a goal's progress or completion state changes.
 /// HomeViewController listens to this to update the UI without polling.
