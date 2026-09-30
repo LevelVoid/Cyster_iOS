@@ -1,6 +1,8 @@
 import UIKit
 import FirebaseAuth
 internal import CoreData
+import RevenueCat
+import RevenueCatUI
 
 class PCOSPhenotypeViewController: UIViewController {
 
@@ -151,6 +153,23 @@ class PCOSPhenotypeViewController: UIViewController {
         }
 
         print("Complete profile saved! Height: \(heightInCm)cm, Weight: \(weightInKg)kg, Phenotype: \(pcosPhenotype)")
+        
+        // Present RevenueCat Paywall
+        let paywallVC = PaywallViewController()
+        paywallVC.delegate = self
+        present(paywallVC, animated: true)
+    }
+}
+
+extension PCOSPhenotypeViewController: PaywallViewControllerDelegate {
+    func paywallViewController(_ controller: PaywallViewController, didFinishPurchasingWith customerInfo: CustomerInfo) {
+        PremiumManager.shared.refreshProStatus()
+        controller.dismiss(animated: true) {
+            LaunchCoordinator.shared.navigateToHome(animated: true)
+        }
+    }
+    
+    func paywallViewControllerWasDismissed(_ controller: PaywallViewController) {
         LaunchCoordinator.shared.navigateToHome(animated: true)
     }
 }
