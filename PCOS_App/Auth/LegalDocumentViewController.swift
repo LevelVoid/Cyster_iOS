@@ -292,7 +292,7 @@ private enum LegalContent {
     - Right to erasure: You can request deletion of your data (see Section 11).
     - Right to data portability: You can request your data in a machine-readable format.
     - Right to object: You can object to certain types of processing.
-    To exercise any of these rights, contact us at support@cysterapp.com.
+    To exercise any of these rights, contact us at joincyster@gmail.com.
 
     13. Children's Privacy
     Cyster is not intended for children under 13. We do not knowingly collect personal information from children under 13. If we become aware that we have inadvertently collected such information, we will take steps to delete it promptly.
@@ -302,6 +302,6 @@ private enum LegalContent {
 
     15. Contact Information
     If you have any questions or concerns about this Privacy Policy or our data practices, please contact us:
-    Email: support@cysterapp.com
+    Email: joincyster@gmail.com
     """
 }
