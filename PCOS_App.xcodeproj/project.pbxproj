@@ -14,6 +14,7 @@
 		1C846AB13065A5B300157DB5 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1C846AB03065A5B300157DB5 /* FirebaseCore */; };
 		1C846AB43065A5FA00157DB5 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 1C846AB33065A5FA00157DB5 /* GoogleSignIn */; };
 		1C846AB73065ADAF00157DB5 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 1C846AB63065ADAF00157DB5 /* RevenueCat */; };
+		1C846ABC3065ADAF00157DB5 /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 1C846ABE3065ADAF00157DB5 /* RevenueCatUI */; };
 		1F832979208BE074C0306F1F /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38848CDF9FF987B704A7D9F8 /* ActivityKit.framework */; };
 		41624167DD70FF899CC27DDD /* WorkoutWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7ACD8A682EF94CC66992A097 /* WorkoutWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5021B362188549F625C7E48D /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B358C68D582CEFE7CAB58347 /* WidgetKit.framework */; };
@@ -119,6 +120,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C846ABC3065ADAF00157DB5 /* RevenueCatUI in Frameworks */,
 				1C846AB73065ADAF00157DB5 /* RevenueCat in Frameworks */,
 				1C846AB13065A5B300157DB5 /* FirebaseCore in Frameworks */,
 				1C846AAF3065A5B300157DB5 /* FirebaseAuth in Frameworks */,
@@ -278,6 +280,7 @@
 				1C846AB03065A5B300157DB5 /* FirebaseCore */,
 				1C846AB33065A5FA00157DB5 /* GoogleSignIn */,
 				1C846AB63065ADAF00157DB5 /* RevenueCat */,
+				1C846ABE3065ADAF00157DB5 /* RevenueCatUI */,
 			);
 			productName = PCOS_App;
 			productReference = 190B1DF02ED1B5FF0014994E /* PCOS_App.app */;
@@ -448,6 +451,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PCOS_App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Cyster;
+				INFOPLIST_KEY_CFBundleName = Cyster;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Please give camera access to scan barcode.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Cyster - Your PCOS companion reads your steps, calories, heart rate, and sleep data to help you track your health journey.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Cyster may write workout summaries to Apple Health for a complete picture of your activity.";
@@ -464,7 +468,8 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.team2.cyster;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Cyster;
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -487,6 +492,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PCOS_App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Cyster;
+				INFOPLIST_KEY_CFBundleName = Cyster;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Please give camera access to scan barcode.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Cyster - Your PCOS companion reads your steps, calories, heart rate, and sleep data to help you track your health journey.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Cyster may write workout summaries to Apple Health for a complete picture of your activity.";
@@ -503,7 +509,8 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.team2.cyster;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Cyster;
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -648,7 +655,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.PCOS-AppUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Cyster;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -669,7 +677,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.PCOS-AppUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Cyster;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -805,6 +814,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1C846AB53065ADAF00157DB5 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
 			productName = RevenueCat;
+		};
+		1C846ABE3065ADAF00157DB5 /* RevenueCatUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1C846AB53065ADAF00157DB5 /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCatUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

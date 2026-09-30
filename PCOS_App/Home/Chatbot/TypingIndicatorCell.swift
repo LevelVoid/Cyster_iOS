@@ -29,7 +29,7 @@ final class TypingIndicatorCell: UITableViewCell {
         avatarView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(avatarView)
 
-        avatarLabel.text = "A"
+        avatarLabel.text = "C"
         avatarLabel.font = .systemFont(ofSize: 12, weight: .bold)
         avatarLabel.textColor = .white
         avatarLabel.textAlignment = .center

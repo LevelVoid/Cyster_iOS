@@ -89,21 +89,19 @@ class TempFirstScreenViewController: UIViewController {
         guard let label = gesture.view as? UILabel,
               let text = label.text else { return }
 
-        // Detect which word was tapped
-        let tosRange = (text as NSString).range(of: "Terms")
+        // Use the full "Terms of Service" range for precise hit-testing
+        let tosRange = (text as NSString).range(of: "Terms of Service")
         let privacyRange = (text as NSString).range(of: "Privacy Policy")
 
         let tapPoint = gesture.location(in: label)
         let index = characterIndex(at: tapPoint, in: label)
 
         if NSLocationInRange(index, tosRange) {
-            presentPlaceholder(title: "Terms of Service")
+            openLegalDocument(.termsOfService)
         } else if NSLocationInRange(index, privacyRange) {
-            presentPlaceholder(title: "Privacy Policy")
-        } else {
-            // Tapped anywhere on label — open ToS as default
-            presentPlaceholder(title: "Terms of Service")
+            openLegalDocument(.privacyPolicy)
         }
+        // Tapping outside both link ranges does nothing — correct behaviour.
     }
 
     private func characterIndex(at point: CGPoint, in label: UILabel) -> Int {
@@ -129,12 +127,22 @@ class TempFirstScreenViewController: UIViewController {
         )
     }
 
-    private func presentPlaceholder(title: String) {
-        let vc = PlaceholderWebViewController()
-        vc.pageTitle = title
-        let nav = UINavigationController(rootViewController: vc)
-        nav.modalPresentationStyle = .pageSheet
-        present(nav, animated: true)
+    /// Opens the specified legal document.
+    ///
+    /// Pushes onto the existing navigation stack so the user can tap Back
+    /// and return to the Sign Up screen with their entered data intact.
+    /// If for some reason there is no navigation controller (edge case),
+    /// falls back to a modal sheet.
+    private func openLegalDocument(_ document: LegalDocument) {
+        let vc = LegalDocumentViewController(document: document)
+        if let nav = navigationController {
+            nav.pushViewController(vc, animated: true)
+        } else {
+            // Fallback: wrap in a nav controller so the Back button still works
+            let nav = UINavigationController(rootViewController: vc)
+            nav.modalPresentationStyle = .pageSheet
+            present(nav, animated: true)
+        }
     }
 
     // MARK: - Loading State

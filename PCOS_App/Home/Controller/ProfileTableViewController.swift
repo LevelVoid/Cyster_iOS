@@ -6,7 +6,7 @@ class ProfileTableViewController: UITableViewController {
     private let section0 = ["Health details"]
     private let features = ["Reminders"]
     private let dataBackup = ["Back Up Now", "Restore Backup"]
-    private let legal = ["Privacy Policy", "Terms of Service"]
+    private let legal = ["Terms of Service", "Privacy Policy"]
     
     private var lastBackupDate: Date?
     private var isBackingUp = false
@@ -516,9 +516,10 @@ class ProfileTableViewController: UITableViewController {
     /// Presents placeholder screens for legal documents per Milestone 8A spec.
     ///
     private func handleLegalSelection(_ row: Int) {
-        let title = legal[row]
-        let vc = PlaceholderWebViewController()
-        vc.pageTitle = title
+        let document: LegalDocument = (row == 0) ? .termsOfService : .privacyPolicy
+        let vc = LegalDocumentViewController(document: document)
+        // Settings is inside a UINavigationController, so push gives us the
+        // automatic Back button — no custom close button needed.
         navigationController?.pushViewController(vc, animated: true)
     }
 
