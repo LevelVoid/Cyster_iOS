@@ -451,6 +451,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PCOS_App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Cyster;
+				INFOPLIST_KEY_CFBundleName = Cyster;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Please give camera access to scan barcode.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Cyster - Your PCOS companion reads your steps, calories, heart rate, and sleep data to help you track your health journey.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Cyster may write workout summaries to Apple Health for a complete picture of your activity.";
@@ -467,7 +468,8 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.team2.cyster;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Cyster;
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -490,6 +492,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PCOS_App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Cyster;
+				INFOPLIST_KEY_CFBundleName = Cyster;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Please give camera access to scan barcode.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Cyster - Your PCOS companion reads your steps, calories, heart rate, and sleep data to help you track your health journey.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Cyster may write workout summaries to Apple Health for a complete picture of your activity.";
@@ -506,7 +509,8 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.team2.cyster;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Cyster;
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -651,7 +655,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.PCOS-AppUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Cyster;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -672,7 +677,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.PCOS-AppUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Cyster;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;

@@ -16,7 +16,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "190B1DEF2ED1B5FF0014994E"
-               BuildableName = "PCOS_App.app"
+               BuildableName = "Cyster.app"
                BlueprintName = "PCOS_App"
                ReferencedContainer = "container:PCOS_App.xcodeproj">
             </BuildableReference>
@@ -36,7 +36,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1CA0C0FE2FCDFA2300B3F448"
-               BuildableName = "PCOS_AppUITests.xctest"
+               BuildableName = "Cyster.xctest"
                BlueprintName = "PCOS_AppUITests"
                ReferencedContainer = "container:PCOS_App.xcodeproj">
             </BuildableReference>
@@ -58,7 +58,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "190B1DEF2ED1B5FF0014994E"
-            BuildableName = "PCOS_App.app"
+            BuildableName = "Cyster.app"
             BlueprintName = "PCOS_App"
             ReferencedContainer = "container:PCOS_App.xcodeproj">
          </BuildableReference>
@@ -81,7 +81,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "190B1DEF2ED1B5FF0014994E"
-            BuildableName = "PCOS_App.app"
+            BuildableName = "Cyster.app"
             BlueprintName = "PCOS_App"
             ReferencedContainer = "container:PCOS_App.xcodeproj">
          </BuildableReference>
