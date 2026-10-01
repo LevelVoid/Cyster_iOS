@@ -70,7 +70,7 @@ final class AccountDeletionManager {
 
     // MARK: - Properties
 
-    private let gatewayEndpoint = "<backup>"
+    private let gatewayEndpoint = "https://backup-api-1024644064258.us-central1.run.app"
     private let timeout: TimeInterval = 60.0
 
     private(set) var isDeletingAccount = false

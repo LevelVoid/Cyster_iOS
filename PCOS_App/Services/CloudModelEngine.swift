@@ -19,7 +19,7 @@ final class CloudModelEngine: AIModelEngineProtocol {
     var currentModelId: String { "gemini-2.5-flash" }
 
     // MARK: - Vertex Configuration
-    private let gatewayEndpoint = "<ai>"
+    private let gatewayEndpoint = "https://ai-gateway-1024644064258.us-central1.run.app"
     private let defaultTimeout: TimeInterval = 30.0
     private let maxRetries: Int = 3
     
