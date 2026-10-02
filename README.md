@@ -18,16 +18,9 @@ Cyster was built to change that.
 
 ---
 
-## Try on TestFlight
-
-**[Join the beta →](https://testflight.apple.com/join/5gXW68Jn)**
-_Open on your iPhone. Requires iOS 17 or later._
-
----
-
 ## Why we built this
 
-[Founder's name] was diagnosed with PCOS at 14 and found only scattered forums and 
+A 14 year old girl diagnosed with PCOS found only scattered forums and 
 generic period-tracking apps — nothing that treated PCOS as the complex, 
 phenotype-dependent condition it actually is. Cyster was built to be the resource 
 that didn't exist then: research-grounded, personalized, and built specifically 
