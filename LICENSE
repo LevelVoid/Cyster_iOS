@@ -1,89 +1,25 @@
-# PROPRIETARY SOURCE-AVAILABLE LICENSE
+MIT License
 
-**Copyright © 2026 Cyster Team**
+Copyright (c) 2026 Cyster Team
 - Abhinaya Rajarajan
 - Dnyaneshwari Gogawale
 - Pradeep Biswas
 - Sakshi Beloshe
 
-All Rights Reserved.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-## 1. Notice
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-This repository contains the source code and associated documentation 
-(the "Software") for Cyster, a PCOS companion application. The Software is 
-made available publicly for **viewing, learning, and evaluation purposes only**. 
-The compiled application is separately distributed commercially via TestFlight 
-and, upon release, the App Store — that distribution is governed by Apple's 
-standard End User License Agreement, not by this license.
-
-## 2. Permitted Uses
-
-You are permitted, free of charge, to:
-
-1. View, read, clone, and study the source code for personal education
-2. Reference specific code excerpts in technical interviews, coursework, or 
-   portfolio discussions, with attribution to this repository
-3. Fork the repository for personal, non-distributed learning purposes
-4. Submit bug reports, security disclosures, and suggestions via GitHub Issues
-5. Evaluate the Software for the purpose of hackathon, award, or competition 
-   judging to which it has been submitted
-
-## 3. Prohibited Uses
-
-You are expressly **not** permitted to:
-
-1. Use the Software, in whole or in part, for any commercial purpose
-2. Distribute, sublicense, rent, lease, or otherwise share copies of the 
-   Software or any derivative of it with third parties
-3. Modify the Software and redistribute it, in whole or in part, under your 
-   own name or as part of another project
-4. Use the Software, its design, architecture, or any substantial portion of 
-   its code to build or inform a competing product or service
-5. Reverse engineer, decompile, or disassemble the compiled application for 
-   any commercial purpose
-6. Remove, obscure, or alter any copyright, attribution, or license notices 
-   contained in the Software
-7. Use the Cyster name, logo, or branding without prior written permission
-
-
-## 4. No License to Patents or Trademarks
-
-This license grants no rights to any patents owned or controlled by the 
-copyright holders, nor any rights to use the "Cyster" trademark or associated 
-branding.
-
-## 5. Termination
-
-Any use of the Software in violation of Section 3 automatically terminates 
-the limited permissions granted in Section 2, without notice, and may result 
-in legal action.
-
-## 5. Disclaimer of Warranty
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. THE SOFTWARE IS NOT 
-INTENDED TO DIAGNOSE, TREAT, CURE, OR PREVENT ANY MEDICAL CONDITION, AND IS 
-NOT A SUBSTITUTE FOR PROFESSIONAL MEDICAL ADVICE.
-
-## 6. Limitation of Liability
-
-IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR 
-OTHER LIABILITY ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR 
-THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-## 7. Commercial Distribution
-
-The compiled application is available via TestFlight: 
-https://testflight.apple.com/join/5gXW68Jn
-
-For commercial licensing of the source code, partnership inquiries, or 
-permission requests outside the scope of this license, contact:
-**joincyster@gmail.com**
-
----
-
-*This license applies to the source code in this repository only. It does not 
-apply to the compiled application distributed through Apple's App Store or 
-TestFlight, which is governed by Apple's platform terms.*
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
