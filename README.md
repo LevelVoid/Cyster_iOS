@@ -14,6 +14,7 @@ Cyster was built to change that.
 &nbsp;![Platform](https://img.shields.io/badge/Platform-iOS%2017%2B-lightgrey?logo=apple)
 &nbsp;![Swift](https://img.shields.io/badge/Swift-UIKit-orange?logo=swift)
 &nbsp;![Backend](https://img.shields.io/badge/Backend-FastAPI%20%7C%20Cloud%20Run-009688?logo=fastapi)
+&nbsp;![License](https://img.shields.io/badge/License-MIT-green)
 
 ---
 
@@ -21,6 +22,17 @@ Cyster was built to change that.
 
 **[Join the beta →](https://testflight.apple.com/join/5gXW68Jn)**
 _Open on your iPhone. Requires iOS 17 or later._
+
+---
+
+## Why we built this
+
+[Founder's name] was diagnosed with PCOS at 14 and found only scattered forums and 
+generic period-tracking apps — nothing that treated PCOS as the complex, 
+phenotype-dependent condition it actually is. Cyster was built to be the resource 
+that didn't exist then: research-grounded, personalized, and built specifically 
+with Indian diets and lifestyle in mind, where PCOS prevalence is nearly double 
+the global average.
 
 ---
 
@@ -84,12 +96,25 @@ future RAG/vector-storage-backed personalization.
 
 ---
 
+## Getting Started
+
+[Add: local setup instructions — cloning, environment variables, how to run the 
+iOS app in Xcode and the backend locally, if judges need to build from source]
+
+---
+
+## License
+
+This project is open-source under the [MIT License](LICENSE).
+
+---
+
 ## Team
 
-Group 2 — iOS Development Cohort of MIT WPU, Pune
+MIT-WPU Group 2 — iOS Development Project
 Selected for the Apple & Infosys iOS Student Developer Program
 
 - Abhinaya Rajarajan 
 - Dnyaneshwari Gogawale 
 - Pradeep Biswas 
-- Sakshi Beloshe
+- Sakshi Beloshe 
