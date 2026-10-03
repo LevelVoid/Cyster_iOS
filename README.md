@@ -89,12 +89,6 @@ future RAG/vector-storage-backed personalization.
 
 ---
 
-## Getting Started
-
-[Add: local setup instructions — cloning, environment variables, how to run the 
-iOS app in Xcode and the backend locally, if judges need to build from source]
-
----
 
 ## License
 
